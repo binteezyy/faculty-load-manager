@@ -5,9 +5,10 @@
 *.pot
 *.pyc
 __pycache__/
-local_settings.py
+# local_settings.py
 *migrations*
 faculty_load_manager/db.sqlite3
-*settings.py
+# *settings.py
 
 env/
+.vscode
