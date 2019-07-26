@@ -1,0 +1,19 @@
+{% extends 'users/base.html' %}
+
+
+{% block title %}
+Login
+{% endblock title %}
+
+
+{% block header %}
+Login
+{% endblock header %}
+
+{% block content %}
+<form method="POST">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" />
+</form>
+{% endblock content %}
