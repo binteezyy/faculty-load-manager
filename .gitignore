@@ -1,0 +1,13 @@
+# *db.sqlite3
+
+### Django ###
+*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+*migrations*
+faculty_load_manager/db.sqlite3
+*settings.py
+
+env/
