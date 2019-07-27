@@ -48,7 +48,7 @@ def register_view(request):
     
     if form.is_valid():
         user = form.save(commit=False)
-        password = form.cleaned_data('password')
+        password = form.cleaned_data['password']
         user.set_password(password)
         user.save()
 

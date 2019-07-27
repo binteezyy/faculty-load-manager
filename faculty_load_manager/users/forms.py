@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 
 class UserLoginForm(forms.Form):
-    username = forms.CharField()
+    username = forms.EmailField(label='Email address')
     password = forms.CharField(widget=forms.PasswordInput)
 
     def clean(self, *args, **kwargs):
@@ -22,32 +22,31 @@ class UserLoginForm(forms.Form):
 
 
 class UserRegisterForm(forms.ModelForm):
-    email = forms.EmailField(label='Email address')
-    email2 = forms.EmailField(label='Confirm Email')
+    username = forms.EmailField(label='Email address')
+    username2 = forms.EmailField(label='Confirm Email')
     password = forms.CharField(widget=forms.PasswordInput)
 
     class Meta:
         model = User
         fields = [
             'username',
-            'email',
-            'email2',
-            'password'
+            'username2',
+            'password',
         ]
 
     def clean(self, *args, **kwargs):
-        email = self.cleaned_data.get('email')
-        email2 = self.cleaned_data.get('email2')
         username = self.cleaned_data.get('username')
+        username2 = self.cleaned_data.get('username2')
+        # username = self.cleaned_data.get('username')
 
-        if email != email2:
+        if username != username2:
             raise forms.ValidationError("Emails does not match")
         
-        email_q = User.objects.filter(email=email)
-        username_q = User.objects.filter(username=username)
-        if username_q.exists():
-            raise forms.ValidationError("Username already registered")
-        elif email_q.exists():
+        email_q = User.objects.filter(username=username)
+        # username_q = User.objects.filter(username=username)
+        # if username_q.exists():
+        #     raise forms.ValidationError("Username already registered")
+        if email_q.exists():
             raise forms.ValidationError("Email already registered")
 
         return super(UserRegisterForm, self).clean(*args, **kwargs)
