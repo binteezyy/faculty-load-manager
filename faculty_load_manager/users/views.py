@@ -62,6 +62,7 @@ def register_view(request):
 
     context = {
         'form':form,
+        'title':'Register',
     }
     return render(request, 'components/register.html', context)
 
