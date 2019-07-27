@@ -1,0 +1,32 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="author" content="">
+    <title>
+      {{ title }}
+    </title>
+
+    <link rel="stylesheet" href="{% static "vendor/materialize/css/materialize.min.css" %}">
+    <!-- CSS -->
+    {% block extra_css %}
+    {% endblock extra_css %}
+</head>
+
+<body>
+    {% block container %}
+
+    {% endblock container %}
+</body>
+  <!-- SCRIPTS -->
+  <script src="{% static 'vendor/materialize/js/materialize.min.js' %}" >
+
+  </script>
+  {% block extra_js %}
+
+  {% endblock extra_js %}
+</html>
