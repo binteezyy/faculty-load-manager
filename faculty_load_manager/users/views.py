@@ -17,11 +17,11 @@ def home_view(request):
     context = {
         'user': request.user,
     }
-    return render(request, 'users/home.html', context)
+    return render(request, 'components/home.html', context)
 
 def login_view(request):
     next = request.GET.get('next')
-    
+
     if request.user.is_authenticated:
         return HttpResponseRedirect(reverse('home'))
     else:
@@ -29,7 +29,7 @@ def login_view(request):
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
-            
+
             user = authenticate(username=username, password=password)
             login(request, user)
 
@@ -39,13 +39,14 @@ def login_view(request):
 
         context = {
             'form': form,
+            'title': 'Login',
         }
-        return render(request, 'users/login.html', context)
+        return render(request, 'components/login.html', context)
 
 def register_view(request):
     next = request.GET.get('next')
     form = UserRegisterForm(request.POST or None)
-    
+
     if form.is_valid():
         user = form.save(commit=False)
         password = form.cleaned_data['password']
@@ -58,11 +59,12 @@ def register_view(request):
         if next:
             return redirect(next)
         return HttpResponseRedirect(reverse('home'))
-    
+
     context = {
         'form':form,
+        'title':'Register',
     }
-    return render(request, 'users/register.html', context)
+    return render(request, 'components/register.html', context)
 
 def logout_view(request):
     logout(request)
