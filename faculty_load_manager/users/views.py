@@ -68,10 +68,6 @@ def register_view(request):
 
 def pload_view(request):
     
-    context = {
-        'form':form,
-        'title':"Select Loads",
-    }
     return render(request, 'components/pload.html')
 
 def logout_view(request):
