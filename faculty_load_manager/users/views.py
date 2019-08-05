@@ -66,6 +66,10 @@ def register_view(request):
     }
     return render(request, 'components/register.html', context)
 
+def pload_view(request):
+    
+    return render(request, 'components/pload.html')
+
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse('login'))
