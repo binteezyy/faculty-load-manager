@@ -67,8 +67,10 @@ def register_view(request):
     return render(request, 'components/register.html', context)
 
 def pload_view(request):
-    
-    return render(request, 'components/pload.html')
+    context = {
+        'user': request.user,
+    }
+    return render(request, 'components/pload.html', context)
 
 def logout_view(request):
     logout(request)
