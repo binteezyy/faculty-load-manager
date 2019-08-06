@@ -3,10 +3,19 @@
 {% block content %}
 
 {% block header %}
-Logged in as {{user.username}}
 {% endblock header %}
 <div class="row">
-    <h2>hello hehe</h2>
+    <h2>Preferred Schedule</h2><br>
+    <h4>Monday    </h4>
+    <select>
+        <option value="1">07:30-08:00</option>
+        <option value="2">08:00-08:30</option>
+        <option value="3">08:30-09:00</option>
+        <option value="4">09:00-09:30</option>
+        <option value="5">09:30-10:00</option>
+        <option value="6">10:00-10:30</option>
+        <option value="7">10:30-11:00</option>
+    </select>
 </div>
 
 {% endblock content %}
