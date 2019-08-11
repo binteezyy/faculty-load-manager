@@ -11,40 +11,42 @@
 {% endblock header %}
 <div class="row">
     <h4>Preferred Schedule</h4><br>
-    <table class="browser-default">
-        <tr>
-            <th>Monday</th>
-            <th>Tuesday</th>
-            <th>Wednesday</th>
-            <th>Thursday</th>
-            <th>Friday</th>
-            <th>Saturday</th>
-            <th>Sunday</th>
-        </tr>
-        <tr>
-            <td><input type="checkbox" name="mon01" value="mon01"><span>07:30-08:00</span></td>
-            <td><input type="checkbox" name="tue01" value="tue01"><span>07:30-08:00</span></td>
-            <td><input type="checkbox" name="wed01" value="wed01"><span>07:30-08:00</span></td>
-            <td><input type="checkbox" name="thu01" value="thu01"><span>07:30-08:00</span></td>
-            <td><input type="checkbox" name="fri01" value="fri01"><span>07:30-08:00</span></td>
-            <td><input type="checkbox" name="sat01" value="sat01"><span>07:30-08:00</span></td>
-            <td><input type="checkbox" name="sun01" value="sun01"><span>07:30-08:00</span></td>
-        </tr>
-    </table><br>
-    <h5>Monday </h5>
-    <select name="monday" size="9" class="browser-default" multiple>
-        <option value="" disabled selected>Choose time for Monday</option>
-        <option value="1">07:30-08:00</option>
-        <option value="2">08:00-08:30</option>
-        <option value="3">08:30-09:00</option>
-        <option value="4">09:00-09:30</option>
-        <option value="5">09:30-10:00</option>
-        <option value="6">10:00-10:30</option>
-        <option value="7">10:30-11:00</option>
-        <option value="8">11:00-11:30</option>
-        <option value="9">11:30-12:00</option>
-    </select><br>
-    <button class="sample" type="submit">Confirm</button>
+    <form action="#">
+        <table class="browser-default">
+            <tr>
+                <th>Monday</th>
+                <th>Tuesday</th>
+                <th>Wednesday</th>
+                <th>Thursday</th>
+                <th>Friday</th>
+                <th>Saturday</th>
+                <th>Sunday</th>
+            </tr>
+            <tr>
+                <td><input type="checkbox" name="mon01" value="mon01"><span>07:30-08:00</span></td>
+                <td><input type="checkbox" name="tue01" value="tue01"><span>07:30-08:00</span></td>
+                <td><input type="checkbox" name="wed01" value="wed01"><span>07:30-08:00</span></td>
+                <td><input type="checkbox" name="thu01" value="thu01"><span>07:30-08:00</span></td>
+                <td><input type="checkbox" name="fri01" value="fri01"><span>07:30-08:00</span></td>
+                <td><input type="checkbox" name="sat01" value="sat01"><span>07:30-08:00</span></td>
+                <td><input type="checkbox" name="sun01" value="sun01"><span>07:30-08:00</span></td>
+            </tr>
+        </table><br>
+        <h5>Monday </h5>
+        <select name="monday" size="9" class="browser-default" multiple>
+            <option value="" disabled selected>Choose time for Monday</option>
+            <option value="1">07:30-08:00</option>
+            <option value="2">08:00-08:30</option>
+            <option value="3">08:30-09:00</option>
+            <option value="4">09:00-09:30</option>
+            <option value="5">09:30-10:00</option>
+            <option value="6">10:00-10:30</option>
+            <option value="7">10:30-11:00</option>
+            <option value="8">11:00-11:30</option>
+            <option value="9">11:30-12:00</option>
+        </select><br>
+        <button class="sample" type="submit">Confirm</button>
+    </form>
 </div>
 
 {% endblock content %}
