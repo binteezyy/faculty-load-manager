@@ -4,6 +4,12 @@
 
 {% block header %}
 {% endblock header %}
+{% for field in form %}
+    <label>
+        <input type="checkbox">
+        <span>{{ field.name }}</span>
+    </label
+{% endfor %}
 <div class="row">
     <h4>Preferred Schedule</h4><br>
     <table class="browser-default">
@@ -17,13 +23,13 @@
             <th>Sunday</th>
         </tr>
         <tr>
-            <td><input type="checkbox" name="mon01" value="mon01">07:30-08:00</td>
-            <td><input type="checkbox" name="tue01" value="tue01">07:30-08:00</td>
-            <td><input type="checkbox" name="wed01" value="wed01">07:30-08:00</td>
-            <td><input type="checkbox" name="thu01" value="thu01">07:30-08:00</td>
-            <td><input type="checkbox" name="fri01" value="fri01">07:30-08:00</td>
-            <td><input type="checkbox" name="sat01" value="sat01">07:30-08:00</td>
-            <td><input type="checkbox" name="sun01" value="sun01">07:30-08:00</td>
+            <td><input type="checkbox" name="mon01" value="mon01"><span>07:30-08:00</span></td>
+            <td><input type="checkbox" name="tue01" value="tue01"><span>07:30-08:00</span></td>
+            <td><input type="checkbox" name="wed01" value="wed01"><span>07:30-08:00</span></td>
+            <td><input type="checkbox" name="thu01" value="thu01"><span>07:30-08:00</span></td>
+            <td><input type="checkbox" name="fri01" value="fri01"><span>07:30-08:00</span></td>
+            <td><input type="checkbox" name="sat01" value="sat01"><span>07:30-08:00</span></td>
+            <td><input type="checkbox" name="sun01" value="sun01"><span>07:30-08:00</span></td>
         </tr>
     </table><br>
     <h5>Monday </h5>
