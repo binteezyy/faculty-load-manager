@@ -11,7 +11,8 @@
 {% endblock header %}
 <div class="row">
     <h4>Preferred Schedule</h4><br>
-    <form action="#">
+    <form action="#" method="POST">
+        {% csrf_token %}
         <table class="centered">
             <thead>
                 <tr>
