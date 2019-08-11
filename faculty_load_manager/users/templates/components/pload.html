@@ -1,15 +1,14 @@
 {% extends 'container/container.html' %}
 {% load staticfiles %}
 {% block content %}
-
-{% block header %}
-{% endblock header %}
 {% for field in form %}
     <label>
         <input type="checkbox">
         <span>{{ field.name }}</span>
     </label>
 {% endfor %}
+{% block header %}
+{% endblock header %}
 <div class="row">
     <h4>Preferred Schedule</h4><br>
     <table class="browser-default">
