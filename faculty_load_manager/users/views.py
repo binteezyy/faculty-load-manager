@@ -70,7 +70,7 @@ def pload_view(request):
     context = {
         'user': request.user,
     }
-    if request=="POST":
+    if request.method=="POST":
         return render(request, 'wow', context)
     else:
         return render(request, 'components/pload.html', context)
