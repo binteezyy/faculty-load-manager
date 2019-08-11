@@ -70,7 +70,10 @@ def pload_view(request):
     context = {
         'user': request.user,
     }
-    return render(request, 'components/pload.html', context)
+    if request=="POST":
+        return render(request, 'wow', context)
+    else:
+        return render(request, 'components/pload.html', context)
 
 def logout_view(request):
     logout(request)
