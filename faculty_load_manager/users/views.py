@@ -66,6 +66,15 @@ def register_view(request):
     }
     return render(request, 'components/register.html', context)
 
+def pload_view(request):
+    context = {
+        'user': request.user,
+    }
+    if request.method=="POST":
+        return render(request, 'wow', context)
+    else:
+        return render(request, 'components/pload.html', context)
+
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse('login'))

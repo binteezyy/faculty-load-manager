@@ -1,28 +1,20 @@
 {% extends 'container/container.html' %}
 {% load staticfiles %}
+{% load crispy_forms_tags %}
 {% block content %}
 
-<div class="row">
-   <div class="col s6 offset-s3">
-     <div class="login-card card animated fadeInDown">
-       <div class="card-image">
-         <img height="300px" width="150px" src="https://upload.wikimedia.org/wikipedia/commons/b/b6/PUP_Engineering_and_Architecture_Building_Front_view.jpg">
-        
-       </div>
-       <div class="card-content">
-         <form method="POST">
-             {% csrf_token %}
-             {{ form }}
-             <button class="btn waves-effect waves-light" type="submit">Submit</button>
-         </form>
-       </div>
-       <div class="card-action">
-         <br>
-         <!--a href="#"></a-->
-       </div>
-     </div>
-   </div>
+<div class="card animated fadeInDown login-card">
+ <div class="view">
+   <img height="250px" width="125px"
+        class="card-img-top"
+        src="https://upload.wikimedia.org/wikipedia/commons/b/b6/PUP_Engineering_and_Architecture_Building_Front_view.jpg">
  </div>
-
-
+ <div class="card-content">
+   <form method="POST" class="text-center border border-light p-3">
+       {% csrf_token %}
+       {{ form|crispy }}
+       <button class="btn btn-success btn-block" type="submit">Submit</button>
+   </form>
+ </div>
+</div>
 {% endblock content %}
