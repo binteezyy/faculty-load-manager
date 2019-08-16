@@ -9,6 +9,7 @@ from django.contrib.auth import (
 from .forms import UserLoginForm, UserRegisterForm
 
 from django.contrib.auth.decorators import login_required
+from users.models import *
 # Create your views here.
 
 @login_required(login_url='/login/')
@@ -78,3 +79,16 @@ def pload_view(request):
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse('login'))
+
+
+def ss(request):
+
+    for x,day in TimeSelect.DAY_OF_THE_WEEK:
+        for y, day in TimeSelect.TIME_SELECT:
+            sched = TimeSelect.objects.create(
+                select_day = x,
+                select_time = y
+            )
+            sched.save()
+
+    return HttpResponse("SCHEDS CREATED")
