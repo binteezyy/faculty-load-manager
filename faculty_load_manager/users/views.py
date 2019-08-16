@@ -11,7 +11,7 @@ from .forms import UserLoginForm, UserRegisterForm
 from django.contrib.auth.decorators import login_required
 from users.models import *
 # Create your views here.
-
+from pprint import pprint
 @login_required(login_url='/login/')
 def home_view(request):
 
@@ -69,7 +69,7 @@ def register_view(request):
 
 def pload_view(request):
     time_schedules = TimeSelect.objects.all()
-
+    current_user = request.user
     context = {
         'user': request.user,
         'time_schedules': time_schedules,
@@ -77,6 +77,18 @@ def pload_view(request):
         'times': TimeSelect.TIME_SELECT,
     }
     if request.method=="POST":
+        selected = request.POST.getlist('timedays')
+        current_user = request.user
+        preferred_sched =  PreferredSchedule(user = current_user)
+
+        preferred_sched.save()
+        pprint(selected)
+        for x in selected:
+            daytime = x.split('-')
+            print(daytime)
+            d = TimeSelect.objects.filter(select_time=daytime[1]).get(select_day=daytime[0])
+            preferred_sched.preferred_time.add(d)
+
         return HttpResponse("POSTED")
     else:
         return render(request, 'components/pload.html', context)
@@ -85,7 +97,7 @@ def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse('login'))
 
-
+@login_required
 def ss(request):
     for x,day in TimeSelect.DAY_OF_THE_WEEK:
         for y, day in TimeSelect.TIME_SELECT:

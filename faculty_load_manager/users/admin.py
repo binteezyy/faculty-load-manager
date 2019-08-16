@@ -17,8 +17,10 @@ class PostTimeSelect(admin.ModelAdmin):
 
 
 class PostPreferredTime(admin.ModelAdmin):
+    list_display = ('user','created_at','updated_at')
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
     }
+
 admin.site.register(TimeSelect,PostTimeSelect)
-admin.site.register(PreferredTime,PostPreferredTime)
+admin.site.register(PreferredSchedule,PostPreferredTime)

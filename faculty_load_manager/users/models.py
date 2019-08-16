@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
+from django.conf import settings
+
 
 class EmailBackend(ModelBackend):
     def authenticate(self, username=None, password=None, **kwargs):
@@ -43,6 +45,12 @@ class TimeSelect(models.Model):
         unique_together = ('select_time','select_day')
     def __str__(self):
         return f'{self.get_select_day_display()} — {self.get_select_time_display()}'
-    
-class PreferredTime(models.Model):
+
+class PreferredSchedule(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
     preferred_time = models.ManyToManyField(TimeSelect)
+    created_at = models.DateTimeField(auto_now_add=True , null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
