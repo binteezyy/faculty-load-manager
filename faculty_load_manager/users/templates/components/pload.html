@@ -1,5 +1,8 @@
 {% extends 'container/container.html' %}
 {% load staticfiles %}
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static "css/pload-grid.css" %}">
+{% endblock %}
 {% block content %}
 {% for field in form %}
     <label>
@@ -9,10 +12,26 @@
 {% endfor %}
 {% block header %}
 {% endblock header %}
-<div class="fuller">
+<div class="container-fluid">
     <form method="POST" >
         {% csrf_token %}
         <h4>Preferred Schedule</h4><br>
+        <div class="row grid-container">
+          {% for val,day in days %}
+          <div class="col ">
+            {{ day }}<br>
+            {% for v,time in times %}
+                <div class="checkbox p">
+                  <label><input type="checkbox" name="{{day}}{{v}}" value="{{val}}{{v}}">{{ time }}</label>
+                </div>
+            {% endfor %}
+
+          </div>
+          {% endfor %}
+
+        </div>
+
+        {% comment %}
         <div class="grid-container">
             <div class="grid-item">
                 Monday<br>
@@ -224,7 +243,9 @@
                 <p><label><input type="checkbox" name="sun26" value="sun26"><span>20:00-20:30</span></label></p>
                 <p><label><input type="checkbox" name="sun27" value="sun27"><span>20:30-21:00</span></label></p>
             </div>
-        </div><br>
+          </div><br>
+
+        {% endcomment %}
         <button class="sample" type="submit">Submit</button>
     </form>
 </div>

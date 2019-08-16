@@ -68,8 +68,13 @@ def register_view(request):
     return render(request, 'components/register.html', context)
 
 def pload_view(request):
+    time_schedules = TimeSelect.objects.all()
+
     context = {
         'user': request.user,
+        'time_schedules': time_schedules,
+        'days': TimeSelect.DAY_OF_THE_WEEK,
+        'times': TimeSelect.TIME_SELECT,
     }
     if request.method=="POST":
         return HttpResponse("POSTED")
@@ -82,7 +87,6 @@ def logout_view(request):
 
 
 def ss(request):
-
     for x,day in TimeSelect.DAY_OF_THE_WEEK:
         for y, day in TimeSelect.TIME_SELECT:
             sched = TimeSelect.objects.create(
