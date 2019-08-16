@@ -1,5 +1,12 @@
-.grid-container {
+.full-container {
+    display: flex;
+	flex-wrap: wrap;
     margin-top: 10vh !important;
+    margin-right: -15px;
+	margin-left: -15px
+}
+
+.grid-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     background-color: #2196F3;
