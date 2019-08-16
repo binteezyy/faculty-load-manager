@@ -43,5 +43,6 @@ class TimeSelect(models.Model):
         unique_together = ('select_time','select_day')
     def __str__(self):
         return f'{self.get_select_day_display()} — {self.get_select_time_display()}'
+    
 class PreferredTime(models.Model):
     preferred_time = models.ManyToManyField(TimeSelect)
