@@ -1,3 +1,11 @@
+.fuller {
+    display: flex;
+	flex-wrap: wrap;
+    margin-top: 10vh !important;
+    margin-right: -15px;
+	margin-left: -15px
+}
+
 .grid-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -6,9 +14,13 @@
     grid-gap: 10px;
 }
 .grid-item {
-    background-color: rgba(255, 255, 255, 0.8);
     border: 1px solid rgba(0, 0, 0, 0.8);
-    padding: 20px;
+    padding: 5px;
     font-size: 30px;
     text-align: center;
+}
+
+.grid-item:p{
+    font-size: 15px;
+    text-align: justify;
 }
