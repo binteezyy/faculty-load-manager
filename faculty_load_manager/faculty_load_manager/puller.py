@@ -4,7 +4,7 @@ from time import sleep
 
 os.system("cls")
 os.system("git checkout kkshinichi-dev2")
-t = (2018, 12, 28, 8, 44, 4, 4, 362, 0)
+t = (2019, 8, 16, 8, 44, 4, 4, 362, 0)
 curtime = time.asctime(t)
 
 while True:
