@@ -1,8 +1,5 @@
 {% extends 'container/container.html' %}
 {% load staticfiles %}
-{% block extra_css %}
-  <link rel="stylesheet" href="{% static "css/pload-grid.css" %}">
-{% endblock %}
 {% block content %}
 {% for field in form %}
     <label>
@@ -12,11 +9,11 @@
 {% endfor %}
 {% block header %}
 {% endblock header %}
-<div class="container-fluid">
+<div class="container">
     <form method="POST" >
         {% csrf_token %}
         <h4>Preferred Schedule</h4><br>
-        <div class="row grid-container">
+        <div class="row">
           {% for val,day in days %}
           <div class="col-sm">
             {{ day }}<br>
