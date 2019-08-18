@@ -1,0 +1,5 @@
+{% extends 'load_manager/container/container.html' %}
+{% load staticfiles %}
+{% block content %}
+Logged in as {{user.username}} <a href="{% url 'logout' %}"> Logout</a>
+{% endblock content %}
