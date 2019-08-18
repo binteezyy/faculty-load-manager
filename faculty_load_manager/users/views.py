@@ -3,7 +3,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 
 from django.contrib.auth import (
     authenticate,
-    logout
+    logout,
+    login
 )
 
 from .forms import UserRegisterForm
@@ -15,6 +16,7 @@ def register_view(request):
         user = form.save(commit=False)
         password = form.cleaned_data['password']
         user.set_password(password)
+        user.is_staff=False
         user.save()
 
         new_user = authenticate(username=user.username, password=password)
