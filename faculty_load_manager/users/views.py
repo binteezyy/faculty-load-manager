@@ -3,7 +3,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 
 from django.contrib.auth import (
     authenticate,
-    logout
+    logout,
+    login
 )
 
 from .forms import UserRegisterForm
