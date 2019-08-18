@@ -41,7 +41,7 @@ class UserRegisterForm(forms.ModelForm):
 
         if username != username2:
             raise forms.ValidationError("Emails does not match")
-
+        
         email_q = User.objects.filter(username=username)
         # username_q = User.objects.filter(username=username)
         # if username_q.exists():
