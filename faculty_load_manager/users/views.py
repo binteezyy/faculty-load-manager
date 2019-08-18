@@ -6,6 +6,7 @@ from django.contrib.auth import (
     logout
 )
 
+from .forms import UserRegisterForm
 def register_view(request):
     next = request.GET.get('next')
     form = UserRegisterForm(request.POST or None)
@@ -27,8 +28,8 @@ def register_view(request):
         'form':form,
         'title':'Register',
     }
-    return render(request, 'components/register.html', context)
-    
+    return render(request, 'users/components/register.html', context)
+
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse('home'))

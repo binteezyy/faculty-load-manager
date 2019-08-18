@@ -11,7 +11,6 @@ from django.contrib.auth import (
     login,
     logout
 )
-from .forms import UserLoginForm, UserRegisterForm
 
 from django.contrib.auth.decorators import login_required
 from users.models import *
@@ -44,7 +43,7 @@ def home_view(request):
             'form': form,
             'title': 'Login',
         }
-        return render(request, 'components/login.html', context)
+        return render(request, 'users/components/login.html', context)
 
 def pload_view(request):
     time_schedules = TimeSelect.objects.all()
