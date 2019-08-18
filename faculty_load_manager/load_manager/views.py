@@ -9,9 +9,7 @@ from pprint import pprint
 from django.contrib.auth import (
     authenticate,
     login,
-    logout
 )
-from .forms import UserLoginForm, UserRegisterForm
 
 from django.contrib.auth.decorators import login_required
 from users.models import *
@@ -26,7 +24,7 @@ def home_view(request):
         context = {
             'user': request.user,
         }
-        return render(request, 'components/home.html', context)
+        return render(request, 'load_manager/components/home.html', context)
     else:
         form = UserLoginForm(request.POST or None)
         if form.is_valid():
@@ -44,8 +42,9 @@ def home_view(request):
             'form': form,
             'title': 'Login',
         }
-        return render(request, 'components/login.html', context)
+        return render(request, 'users/components/login.html', context)
 
+@login_required
 def pload_view(request):
     time_schedules = TimeSelect.objects.all()
     current_user = request.user
@@ -70,8 +69,7 @@ def pload_view(request):
 
         return HttpResponse("POSTED")
     else:
-        return render(request, 'components/pload.html', context)
-
+        return render(request, 'load_manager/components/pload.html', context)
 @login_required
 def ss(request):
     for x,day in TimeSelect.DAY_OF_THE_WEEK:
