@@ -45,7 +45,7 @@ def home_view(request):
             'title': 'Login',
         }
         return render(request, 'components/login.html', context)
-        
+
 def pload_view(request):
     time_schedules = TimeSelect.objects.all()
     current_user = request.user
