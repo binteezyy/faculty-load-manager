@@ -20,8 +20,14 @@ class PostPreferredSchedule(admin.ModelAdmin):
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
     }
-
+admin.site.register(YearSection)
+admin.site.register(SemesterSection)
+admin.site.register(Room)
+admin.site.register(Year)
 admin.site.register(Subject)
+admin.site.register(SchoolYear)
+admin.site.register(SemesterOffering)
+admin.site.register(SectionOffering)
 admin.site.register(PreferredTime,PostTimeSelect)
 admin.site.register(PreferredSchedule,PostPreferredSchedule)
 

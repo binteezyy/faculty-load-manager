@@ -51,7 +51,7 @@ def pload_view(request):
     context = {
         'user': request.user,
         'time_schedules': time_schedules,
-        'days': PreferredTime.DAY_OF_THE_WEEK,
+        'days': DAY_OF_THE_WEEK,
         'times': PreferredTime.TIME_SELECT,
     }
     if request.method=="POST":
@@ -71,7 +71,7 @@ def pload_view(request):
         return render(request, 'load_manager/components/pload.html', context)
 @login_required
 def ss(request):
-    for x,day in PreferredTime.DAY_OF_THE_WEEK:
+    for x,day in DAY_OF_THE_WEEK():
         for y, day in PreferredTime.TIME_SELECT:
             sched = PreferredTime.objects.create(
                 select_day = x,
