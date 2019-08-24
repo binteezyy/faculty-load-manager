@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
 from django.conf import settings
@@ -16,8 +17,47 @@ class EmailBackend(ModelBackend):
                 return user
         return None
 
+class Year(models.Model):
+    import datetime
+    current_year = datetime.date.today().year
+    year = models.IntegerField(default=current_year, validators=[MinValueValidator(0), MaxValueValidator(current_year + 5)])
 
-class TimeSelect(models.Model):
+    def __str__(self):
+        return f'{self.year}'
+
+class Subject(models.Model):
+    SERVICE = [
+     (0, 'From Curicculum'),
+     (1, 'Service Subject'),
+     (2, 'Petition'),
+     (3, 'Tutorial'),
+    ]
+
+    year_level = models.IntegerField(default=1,
+        validators=[
+            MaxValueValidator(6),
+            MinValueValidator(1)
+        ]
+        )
+    subject_code = models.CharField(max_length=15)
+    subject_name = models.CharField(max_length=128)
+    minor_flag = models.BooleanField(default=False)
+    service_flag = models.IntegerField(choices = SERVICE, default = 0)
+    thesis_flag = models.BooleanField(default=False)
+    ojt_flag = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f'{self.subject_name}'
+
+class Curriculum(models.Model):
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
+    start_year = models.ForeignKey(Year,on_delete=models.CASCADE, related_name='startyear')
+    end_year = models.ForeignKey(Year,on_delete=models.CASCADE, related_name='endyear')
+
+    def __str__(self):
+        return f'{self.start_year} — {self.end_year}'
+
+class PreferredTime(models.Model):
     DAY_OF_THE_WEEK = [
      (0, 'MONDAY'),
      (1, 'TUESDAY'),
@@ -51,6 +91,19 @@ class PreferredSchedule(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
     )
-    preferred_time = models.ManyToManyField(TimeSelect)
+    preferred_subject = models.ManyToManyField(Subject)
+    preferred_time = models.ManyToManyField(PreferredTime)
     created_at = models.DateTimeField(auto_now_add=True , null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
+
+class SemesterOffering(models.Model):
+    SEMESTERS = [
+     (0, 'FIRST SEMESTER'),
+     (1, 'SECOND SEMESTER'),
+     (2, 'SUMMER')
+    ]
+    semester = models.IntegerField(choices = SEMESTERS, default = 0)
+    subject = models.ManyToManyField(Subject)
+
+class SectionOffering(models.Model):
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)

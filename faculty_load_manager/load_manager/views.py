@@ -46,13 +46,13 @@ def home_view(request):
 
 @login_required
 def pload_view(request):
-    time_schedules = TimeSelect.objects.all()
+    time_schedules = PreferredTime.objects.all()
     current_user = request.user
     context = {
         'user': request.user,
         'time_schedules': time_schedules,
-        'days': TimeSelect.DAY_OF_THE_WEEK,
-        'times': TimeSelect.TIME_SELECT,
+        'days': PreferredTime.DAY_OF_THE_WEEK,
+        'times': PreferredTime.TIME_SELECT,
     }
     if request.method=="POST":
         selected = request.POST.getlist('timedays')
@@ -60,11 +60,10 @@ def pload_view(request):
         preferred_sched =  PreferredSchedule(user = current_user)
 
         preferred_sched.save()
-        pprint(selected)
         for x in selected:
             daytime = x.split('-')
             print(daytime)
-            d = TimeSelect.objects.filter(select_time=daytime[1]).get(select_day=daytime[0])
+            d = PreferredTime.objects.filter(select_time=daytime[1]).get(select_day=daytime[0])
             preferred_sched.preferred_time.add(d)
 
         return HttpResponse("POSTED")
@@ -72,9 +71,9 @@ def pload_view(request):
         return render(request, 'load_manager/components/pload.html', context)
 @login_required
 def ss(request):
-    for x,day in TimeSelect.DAY_OF_THE_WEEK:
-        for y, day in TimeSelect.TIME_SELECT:
-            sched = TimeSelect.objects.create(
+    for x,day in PreferredTime.DAY_OF_THE_WEEK:
+        for y, day in PreferredTime.TIME_SELECT:
+            sched = PreferredTime.objects.create(
                 select_day = x,
                 select_time = y
             )

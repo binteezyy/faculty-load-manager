@@ -15,15 +15,15 @@ from .models import *
 class PostTimeSelect(admin.ModelAdmin):
     list_display = ('select_day','select_time')
 
-
-class PostPreferredTime(admin.ModelAdmin):
+class PostPreferredSchedule(admin.ModelAdmin):
     list_display = ('user','created_at','updated_at')
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
     }
 
-admin.site.register(TimeSelect,PostTimeSelect)
-admin.site.register(PreferredSchedule,PostPreferredTime)
+admin.site.register(Subject)
+admin.site.register(PreferredTime,PostTimeSelect)
+admin.site.register(PreferredSchedule,PostPreferredSchedule)
 
 
 # Register your models here.
