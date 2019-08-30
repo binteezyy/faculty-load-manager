@@ -1,8 +1,7 @@
 from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse, HttpResponseRedirect
 
-
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required,user_passes_test
 from .models import *
 # Create your views here.
 from pprint import pprint
@@ -80,3 +79,31 @@ def ss(request):
             sched.save()
 
     return HttpResponse("SCHEDS CREATED")
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def site_settings(request):
+    context = {
+        'school_year': SchoolYear.objects.all(),
+        'semester': SEMESTERS(),
+    }
+    settings = Setting.objects.get_or_create()
+
+    return render(request, 'load_manager/components/settings.html', context)
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def change_settings(request):
+    if request.is_ajax():
+        attr = request.POST.get('data-attr')
+        data = request.POST.get('data')
+        print(attr + '\t' + data)
+        settings = Setting.objects.get(id=1)
+        if attr == 'SchoolYear':
+            settings.school_year = SchoolYear.objects.get(pk=data)
+        elif attr == 'Semester':
+            settings.semester = data
+        settings.save()
+    else:
+        print("NO AJAX")
+
+    return HttpResponse("POSTED")

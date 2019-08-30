@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
 from django.conf import settings
 
+# ==================== SELECT FUNCTIONS ||
 def DAY_OF_THE_WEEK():
     return [
      (0, 'MONDAY'),
@@ -20,10 +21,12 @@ def SEMESTERS():
      (1, 'SECOND SEMESTER'),
      (2, 'SUMMER')
     ]
+
+# ==================== MAIN ||
 class Year(models.Model):
     import datetime
     current_year = datetime.date.today().year
-    year = models.IntegerField(default=current_year, validators=[MinValueValidator(0), MaxValueValidator(current_year + 5)])
+    year = models.IntegerField(default=current_year, validators=[MinValueValidator(0), MaxValueValidator(current_year + 5)],unique=True)
 
     def __str__(self):
         return f'{self.year}'
@@ -35,7 +38,7 @@ class Subject(models.Model):
     (3, 'Tutorial'),
     ]
 
-    year_level = models.IntegerField(default=1,
+    year_level = models.PositiveIntegerField(default=1,
     validators=[
     MaxValueValidator(6),
     MinValueValidator(1)
@@ -108,7 +111,6 @@ class PreferredSchedule(models.Model):
     created_at = models.DateTimeField(auto_now_add=True , null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
 class SemesterOffering(models.Model):
-
     school_year = models.ForeignKey(SchoolYear, on_delete=models.CASCADE)
     semester = models.IntegerField(choices = SEMESTERS(), default = 0, validators=[
         MaxValueValidator(2),
