@@ -1,3 +1,8 @@
+/* https://fezvrasta.github.io/bootstrap-material-design/docs/4.0/getting-started/download/ */
 .main {
   margin-top: 5%;
+}
+
+.settings-card {
+  height: 50vh;
 }

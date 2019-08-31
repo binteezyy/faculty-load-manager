@@ -1,24 +1,12 @@
 from django.db import models
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
 from django.conf import settings
 
-
-class EmailBackend(ModelBackend):
-    def authenticate(self, username=None, password=None, **kwargs):
-        UserModel = get_user_model()
-        try:
-            user = UserModel.objects.get(email=username)
-        except UserModel.DoesNotExist:
-            return None
-        else:
-            if user.check_password(password):
-                return user
-        return None
-
-
-class TimeSelect(models.Model):
-    DAY_OF_THE_WEEK = [
+# ==================== SELECT FUNCTIONS ||
+def DAY_OF_THE_WEEK():
+    return [
      (0, 'MONDAY'),
      (1, 'TUESDAY'),
      (2, 'WEDNESDAY'),
@@ -27,6 +15,83 @@ class TimeSelect(models.Model):
      (5, 'SATURDAY'),
      (6, 'SUNDAY')
     ]
+def SEMESTERS():
+    return [
+     (0, 'FIRST SEMESTER'),
+     (1, 'SECOND SEMESTER'),
+     (2, 'SUMMER')
+    ]
+
+# ==================== MAIN ||
+class Year(models.Model):
+    import datetime
+    current_year = datetime.date.today().year
+    year = models.IntegerField(default=current_year, validators=[MinValueValidator(0), MaxValueValidator(current_year + 5)],unique=True)
+
+    def __str__(self):
+        return f'{self.year}'
+class Curriculum(models.Model):
+    start_year = models.ForeignKey(Year,on_delete=models.CASCADE, related_name='startyear')
+    end_year = models.ForeignKey(Year,on_delete=models.CASCADE, related_name='endyear')
+    class Meta:
+        unique_together = ('start_year','end_year')
+    def __str__(self):
+        return f'{self.start_year} — {self.end_year}'
+class Subject(models.Model):
+    SERVICE = [
+    (0, 'From Curicculum'),
+    (1, 'Service Subject'),
+    (2, 'Petition'),
+    (3, 'Tutorial'),
+    ]
+
+    year_level = models.PositiveIntegerField(default=1,
+    validators=[
+    MaxValueValidator(6),
+    MinValueValidator(1)
+    ]
+    )
+    curriculum = models.
+    subject_code = models.CharField(max_length=15)
+    subject_name = models.CharField(max_length=128)
+    minor_flag = models.BooleanField(default=False)
+    service_flag = models.IntegerField(choices = SERVICE, default = 0)
+    thesis_flag = models.BooleanField(default=False)
+    ojt_flag = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f'{self.subject_name}'
+        
+class SchoolYear(models.Model):
+    start_year = models.ForeignKey(Year,on_delete=models.CASCADE, related_name='startyear')
+    end_year = models.ForeignKey(Year,on_delete=models.CASCADE, related_name='endyear')
+    class Meta:
+        unique_together = ('start_year','end_year')
+    def __str__(self):
+        return f'{self.start_year} — {self.end_year}'
+class YearSection(models.Model):
+    name = models.CharField(max_length=15, null=True, blank=True)
+    year_level = models.PositiveIntegerField(default = 1,validators=[MinValueValidator(1)])
+    section = models.PositiveIntegerField(default = 1,validators=[MinValueValidator(1)])
+    class Meta:
+        unique_together = ('year_level','section')
+    def __str__(self):
+        if self.name:
+            return f'{self.name}'
+        else:
+            return f'{self.year_level} - {self.section}'
+# class SemesterSection(models.Model):
+#     semester = models.IntegerField(choices = SEMESTERS(), default = 0, validators=[
+#         MaxValueValidator(2),
+#         MinValueValidator(0)
+#     ])
+#     school_year = models.ForeignKey(SchoolYear, on_delete=models.CASCADE)
+#     sections = models.ManyToManyField(YearSection)
+class Room(models.Model):
+    room_name = models.CharField(max_length=15)
+    def __str__(self):
+        return self.room_name
+class PreferredTime(models.Model):
     TIME_SELECT = [
     (0, '07:30-08:00'),     (1, '08:00-08:30'),     (2, '08:30-09:00'),
     (3, '09:00-09:30'),     (4, '09:30-10:00'),     (5, '10:00-10:30'),
@@ -40,17 +105,42 @@ class TimeSelect(models.Model):
     ]
 
     select_time = models.IntegerField(choices = TIME_SELECT, default = 0)
-    select_day = models.IntegerField(choices = DAY_OF_THE_WEEK, default = 0)
+    select_day = models.IntegerField(choices = DAY_OF_THE_WEEK(), default = 0)
     class Meta:
         unique_together = ('select_time','select_day')
     def __str__(self):
         return f'{self.get_select_day_display()} — {self.get_select_time_display()}'
-
 class PreferredSchedule(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
     )
-    preferred_time = models.ManyToManyField(TimeSelect)
+    preferred_subject = models.ManyToManyField(Subject)
+    preferred_time = models.ManyToManyField(PreferredTime)
     created_at = models.DateTimeField(auto_now_add=True , null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
+
+class SemesterOffering(models.Model):
+    school_year = models.ForeignKey(SchoolYear, on_delete=models.CASCADE)
+    semester = models.IntegerField(choices = SEMESTERS(), default = 0, validators=[
+        MaxValueValidator(2),
+        MinValueValidator(0)
+    ])
+    subject = models.ManyToManyField(Subject)
+    class Meta:
+        unique_together = ('school_year','semester')
+    def __str__(self):
+        return f'[{self.school_year}]  {self.get_semester_display()}'
+
+class SectionOffering(models.Model):
+    professor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
+
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
+    school_year = models.ForeignKey(SchoolYear, on_delete=models.CASCADE)
+    day = models.IntegerField(choices = DAY_OF_THE_WEEK(), default = 0)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    def __str__(self):
+        return f'{self.subject}'
