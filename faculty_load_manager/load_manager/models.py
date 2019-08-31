@@ -30,13 +30,7 @@ class Year(models.Model):
 
     def __str__(self):
         return f'{self.year}'
-class Curriculum(models.Model):
-    start_year = models.ForeignKey(Year,on_delete=models.CASCADE, related_name='startyear')
-    end_year = models.ForeignKey(Year,on_delete=models.CASCADE, related_name='endyear')
-    class Meta:
-        unique_together = ('start_year','end_year')
-    def __str__(self):
-        return f'{self.start_year} — {self.end_year}'
+
 class Subject(models.Model):
     SERVICE = [
     (0, 'From Curicculum'),
@@ -51,7 +45,7 @@ class Subject(models.Model):
     MinValueValidator(1)
     ]
     )
-    curriculum = models.
+    curriculum = models.CharField(max_length=50)
     subject_code = models.CharField(max_length=15)
     subject_name = models.CharField(max_length=128)
     minor_flag = models.BooleanField(default=False)
@@ -61,7 +55,7 @@ class Subject(models.Model):
 
     def __str__(self):
         return f'{self.subject_name}'
-        
+
 class SchoolYear(models.Model):
     start_year = models.ForeignKey(Year,on_delete=models.CASCADE, related_name='startyear')
     end_year = models.ForeignKey(Year,on_delete=models.CASCADE, related_name='endyear')
