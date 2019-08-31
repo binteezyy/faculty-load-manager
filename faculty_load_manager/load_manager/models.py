@@ -30,7 +30,10 @@ class Year(models.Model):
 
     def __str__(self):
         return f'{self.year}'
-
+class Curicculum(models.Model):
+    curriculum = models.CharField(max_length=50)
+    def __str__(self):
+        return f'{self.Curicculum}'
 class Subject(models.Model):
     SERVICE = [
     (0, 'From Curicculum'),
@@ -49,7 +52,8 @@ class Subject(models.Model):
         MaxValueValidator(2),
         MinValueValidator(0)
     ])
-    curriculum = models.CharField(max_length=50)
+
+    curriculum = models.ForeignKey(Curriculum, on_delete=models.CASCADE)
     subject_code = models.CharField(max_length=15)
     subject_name = models.CharField(max_length=128)
     minor_flag = models.BooleanField(default=False)
