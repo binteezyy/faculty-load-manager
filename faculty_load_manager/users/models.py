@@ -24,6 +24,7 @@ class Setting(models.Model):
         MinValueValidator(0)
     ],
     null = True)
+    curriculum = models.ForeignKey(Curriculum, on_delete=models.CASCADE, null = True)
 
     def __str__(self):
         return f'SETTINGS'

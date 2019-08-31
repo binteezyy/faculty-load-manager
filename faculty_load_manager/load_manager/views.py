@@ -82,9 +82,11 @@ def ss(request):
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def site_settings(request):
+    curriculum = Curriculum.objects.all()
     context = {
         'school_year': SchoolYear.objects.all(),
         'semester': SEMESTERS(),
+        'curriculum': curriculum,
     }
     settings = Setting.objects.get_or_create()
 
@@ -102,6 +104,8 @@ def change_settings(request):
             settings.school_year = SchoolYear.objects.get(pk=data)
         elif attr == 'Semester':
             settings.semester = data
+        elif attr == 'Curriculum':
+            settings.curriculum = Curriculum.objects.get(pk=data)
         settings.save()
     else:
         print("NO AJAX")

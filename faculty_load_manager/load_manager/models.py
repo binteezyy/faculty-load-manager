@@ -36,7 +36,7 @@ class Curriculum(models.Model):
         return f'{self.curriculum}'
 class Subject(models.Model):
     SERVICE = [
-    (0, 'From Curicculum'),
+    (0, 'From Curriculum'),
     (1, 'Service Subject'),
     (2, 'Petition'),
     (3, 'Tutorial'),
