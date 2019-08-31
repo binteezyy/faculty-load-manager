@@ -21,7 +21,6 @@ class PostPreferredSchedule(admin.ModelAdmin):
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
     }
 admin.site.register(YearSection)
-admin.site.register(SemesterSection)
 admin.site.register(Room)
 admin.site.register(Year)
 admin.site.register(Subject)
