@@ -60,9 +60,13 @@ class Subject(models.Model):
     service_flag = models.IntegerField(choices = SERVICE, default = 0)
     thesis_flag = models.BooleanField(default=False)
     ojt_flag = models.BooleanField(default=False)
-
+    lab_hours = models.PositiveIntegerField(default=0)
+    lec_hours = models.PositiveIntegerField(default=0)
     def __str__(self):
         return f'{self.subject_name}'
+    class Meta:
+        ordering=['year_level', 'semester']
+
 
 class SchoolYear(models.Model):
     start_year = models.ForeignKey(Year,on_delete=models.CASCADE, related_name='startyear')
@@ -82,13 +86,13 @@ class YearSection(models.Model):
             return f'{self.name}'
         else:
             return f'{self.year_level} - {self.section}'
-# class SemesterSection(models.Model):
-#     semester = models.IntegerField(choices = SEMESTERS(), default = 0, validators=[
-#         MaxValueValidator(2),
-#         MinValueValidator(0)
-#     ])
-#     school_year = models.ForeignKey(SchoolYear, on_delete=models.CASCADE)
-#     sections = models.ManyToManyField(YearSection)
+class SemesterSection(models.Model):
+    semester = models.IntegerField(choices = SEMESTERS(), default = 0, validators=[
+        MaxValueValidator(2),
+        MinValueValidator(0)
+    ])
+    school_year = models.ForeignKey(SchoolYear, on_delete=models.CASCADE)
+    sections = models.ManyToManyField(YearSection)
 class Room(models.Model):
     room_name = models.CharField(max_length=15)
     def __str__(self):
@@ -138,6 +142,7 @@ class SectionOffering(models.Model):
     professor = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
+        null=True
     )
 
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)

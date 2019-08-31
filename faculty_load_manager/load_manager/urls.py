@@ -10,4 +10,5 @@ urlpatterns = [
 
     ## AJAX
     path('settings/change/', views.change_settings, name='change-settings'),
+    path('parse/', views.parse_view, name='parse_view'),
 ]
