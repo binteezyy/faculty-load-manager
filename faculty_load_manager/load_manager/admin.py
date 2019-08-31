@@ -29,6 +29,6 @@ admin.site.register(SemesterOffering)
 admin.site.register(SectionOffering)
 admin.site.register(PreferredTime,PostTimeSelect)
 admin.site.register(PreferredSchedule,PostPreferredSchedule)
-
+admin.site.register(Curriculum)
 
 # Register your models here.

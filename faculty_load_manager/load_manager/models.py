@@ -30,13 +30,13 @@ class Year(models.Model):
 
     def __str__(self):
         return f'{self.year}'
-class Curicculum(models.Model):
+class Curriculum(models.Model):
     curriculum = models.CharField(max_length=50)
     def __str__(self):
-        return f'{self.Curicculum}'
+        return f'{self.curriculum}'
 class Subject(models.Model):
     SERVICE = [
-    (0, 'From Curicculum'),
+    (0, 'From Curriculum'),
     (1, 'Service Subject'),
     (2, 'Petition'),
     (3, 'Tutorial'),

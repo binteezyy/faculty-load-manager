@@ -34,6 +34,14 @@
           {% endfor %}
         </select>
       </div>
+      <div class="form-group col-md-6">
+        <label for="Curriculum" class="bmd-label-floating">Curriculum</label>
+        <select class="form-control" id="Curriculum" name="sel">
+          {% for c in curriculum %}
+            <option value="{{c.id}}"> {{ c }}</option>
+          {% endfor %}
+        </select>
+      </div>
     </div>
   </div>
 
