@@ -45,6 +45,10 @@ class Subject(models.Model):
     MinValueValidator(1)
     ]
     )
+    semester = models.IntegerField(choices = SEMESTERS(), default = 0, validators=[
+        MaxValueValidator(2),
+        MinValueValidator(0)
+    ])
     curriculum = models.CharField(max_length=50)
     subject_code = models.CharField(max_length=15)
     subject_name = models.CharField(max_length=128)
