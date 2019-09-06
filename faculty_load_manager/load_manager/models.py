@@ -30,18 +30,15 @@ class Year(models.Model):
 
     def __str__(self):
         return f'{self.year}'
-class Curriculum(models.Model):
-    curriculum = models.CharField(max_length=50)
-    def __str__(self):
-        return f'{self.curriculum}'
-class Subject(models.Model):
-    SERVICE = [
-    (0, 'From Curriculum'),
-    (1, 'Service Subject'),
-    (2, 'Petition'),
-    (3, 'Tutorial'),
-    ]
 
+class Curriculum(models.Model):
+    curriculum = models.CharField(max_length=56, unique=True)
+    description = models.CharField(max_length=128, blank=True)
+
+    def __str__(self):
+        return f'Curriculum {self.curriculum}'
+
+class Subject(models.Model):
     year_level = models.PositiveIntegerField(default=1,
     validators=[
     MaxValueValidator(6),
@@ -52,51 +49,104 @@ class Subject(models.Model):
         MaxValueValidator(2),
         MinValueValidator(0)
     ])
-
     curriculum = models.ForeignKey(Curriculum, on_delete=models.CASCADE)
     subject_code = models.CharField(max_length=15)
     subject_name = models.CharField(max_length=128)
     minor_flag = models.BooleanField(default=False)
-    service_flag = models.IntegerField(choices = SERVICE, default = 0)
     thesis_flag = models.BooleanField(default=False)
     ojt_flag = models.BooleanField(default=False)
     lab_hours = models.PositiveIntegerField(default=0)
     lec_hours = models.PositiveIntegerField(default=0)
+
     def __str__(self):
         return f'{self.subject_name}'
+
     class Meta:
         ordering=['year_level', 'semester']
-
+        unique_together = ('subject_code', 'subject_name')
 
 class SchoolYear(models.Model):
     start_year = models.ForeignKey(Year,on_delete=models.CASCADE, related_name='startyear')
     end_year = models.ForeignKey(Year,on_delete=models.CASCADE, related_name='endyear')
+
     class Meta:
         unique_together = ('start_year','end_year')
+        
     def __str__(self):
         return f'{self.start_year} — {self.end_year}'
-class YearSection(models.Model):
-    name = models.CharField(max_length=15, null=True, blank=True)
-    year_level = models.PositiveIntegerField(default = 1,validators=[MinValueValidator(1)])
-    section = models.PositiveIntegerField(default = 1,validators=[MinValueValidator(1)])
-    class Meta:
-        unique_together = ('year_level','section')
-    def __str__(self):
-        if self.name:
-            return f'{self.name}'
-        else:
-            return f'{self.year_level} - {self.section}'
-class SemesterSection(models.Model):
+
+class BlockSection(models.Model):
+    school_year = models.ForeignKey(SchoolYear, on_delete=models.CASCADE)
     semester = models.IntegerField(choices = SEMESTERS(), default = 0, validators=[
         MaxValueValidator(2),
         MinValueValidator(0)
     ])
-    school_year = models.ForeignKey(SchoolYear, on_delete=models.CASCADE)
-    sections = models.ManyToManyField(YearSection)
-class Room(models.Model):
-    room_name = models.CharField(max_length=15)
+    year_level = models.PositiveIntegerField(default = 1,validators=[MinValueValidator(1)])
+    section = models.CharField(max_length=56)
+    
+    class Meta:
+        unique_together = ('school_year','semester','year_level','section')
+
     def __str__(self):
-        return self.room_name
+        return f'{self.year_level} - {self.section}'
+
+class SemesterOffering(models.Model):
+    school_year = models.ForeignKey(SchoolYear, on_delete=models.CASCADE)
+    semester = models.IntegerField(choices = SEMESTERS(), default = 0, validators=[
+        MaxValueValidator(2),
+        MinValueValidator(0)
+    ])
+    subject = models.ManyToManyField(Subject)
+
+    class Meta:
+        unique_together = ('school_year','semester')
+
+    def __str__(self):
+        return f'[{self.school_year}]  {self.get_semester_display()}'
+
+class Room(models.Model):
+    ROOM_CAT = [
+        (0, 'Lab'),
+        (1, 'Lecture'),
+    ]
+    room_name = models.CharField(max_length=15)
+    room_category = models.IntegerField(choices = ROOM_CAT, default=1)
+
+    def __str__(self):
+        return f'{self.room_name} - {self.get_room_category_display()}'
+    
+    class Meta:
+        unique_together = ('room_name', 'room_category')
+
+class SectionOffering(models.Model):
+    SERVICE = [
+    (0, 'From Curriculum'),
+    (1, 'Service Subject'),
+    (2, 'Petition'),
+    (3, 'Tutorial'),
+    ]
+
+    professor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        null=True
+    )
+    
+    school_year = models.ForeignKey(SchoolYear, on_delete=models.CASCADE)
+    semester = models.IntegerField(choices = SEMESTERS(), default = 0, validators=[
+        MaxValueValidator(2),
+        MinValueValidator(0)
+    ])
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
+    block_section = models.ForeignKey(BlockSection, on_delete=models.CASCADE)
+    service_flag = models.IntegerField(choices = SERVICE, default = 0)
+
+    def __str__(self):
+        return f'{self.subject} - {self.professor} - {self.block_section}'
+
+    class Meta:
+        unique_together = ('professor', 'school_year', 'semester', 'subject', 'block_section', 'service_flag')
+
 class PreferredTime(models.Model):
     TIME_SELECT = [
     (0, '07:30-08:00'),     (1, '08:00-08:30'),     (2, '08:30-09:00'),
@@ -112,10 +162,31 @@ class PreferredTime(models.Model):
 
     select_time = models.IntegerField(choices = TIME_SELECT, default = 0)
     select_day = models.IntegerField(choices = DAY_OF_THE_WEEK(), default = 0)
+
     class Meta:
         unique_together = ('select_time','select_day')
+
     def __str__(self):
         return f'{self.get_select_day_display()} — {self.get_select_time_display()}'
+
+class FacultyLoad(models.Model):
+    LOAD_CAT = [
+        (0, 'Lab'),
+        (1, 'Lecture'),
+    ]
+
+    load_category = models.IntegerField(choices = LOAD_CAT, default=1)
+    preferred_time = models.ManyToManyField(PreferredTime)
+    load_day = models.IntegerField(choices = DAY_OF_THE_WEEK(), default = 0)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    subject = models.ForeignKey(SectionOffering, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.load_category} - {self.subject}'
+
+    class Meta:
+        unique_together = ('load_category', 'subject')
+
 class PreferredSchedule(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -124,13 +195,17 @@ class PreferredSchedule(models.Model):
     preferred_subject = models.ManyToManyField(Subject)
     preferred_time = models.ManyToManyField(PreferredTime)
     created_at = models.DateTimeField(auto_now_add=True , null=True)
+<<<<<<< HEAD
     updated_at = models.DateTimeField(auto_now=True, null=True)
 class SemesterOffering(models.Model):
+=======
+>>>>>>> parser
     school_year = models.ForeignKey(SchoolYear, on_delete=models.CASCADE)
     semester = models.IntegerField(choices = SEMESTERS(), default = 0, validators=[
         MaxValueValidator(2),
         MinValueValidator(0)
     ])
+<<<<<<< HEAD
     subject = models.ManyToManyField(Subject)
     class Meta:
         unique_together = ('school_year','semester')
@@ -142,10 +217,9 @@ class SectionOffering(models.Model):
         on_delete=models.CASCADE,
         null=True
     )
+=======
 
-    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
-    school_year = models.ForeignKey(SchoolYear, on_delete=models.CASCADE)
-    day = models.IntegerField(choices = DAY_OF_THE_WEEK(), default = 0)
-    room = models.ForeignKey(Room, on_delete=models.CASCADE)
-    def __str__(self):
-        return f'{self.subject}'
+    class Meta:
+        unique_together = ('user', 'school_year', 'semester')
+>>>>>>> parser
+
