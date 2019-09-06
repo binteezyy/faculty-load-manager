@@ -5,94 +5,41 @@
 {% endblock %}
 {% block content %}
 <div class="card animated fadeInDown settings-card">
-  <div class="card-header">
-    <h5>Semester</h5>
-  </div>
-  <div class="card-content">
-    <div class="container-fluid">
-      <div class="row p-3">
-        <div class="form-group col-md-6">
-          <label for="SchoolYear" class="bmd-label-floating">School Year</label>
-          <select class="form-control" id="SchoolYear" name="sel">
-            {% for sy in school_year %}
-              <option value="{{sy.id}}" >{{ sy }}</option>
-            {% endfor %}
+ <div class="card-content">
 
-          </select>
-        </div>
-        <div class="form-group col-md-6">
-          <label for="Semester" class="bmd-label-floating">Semester</label>
-          <select class="form-control" id="Semester" name="sel">
-            {% for s,value in semester %}
-              <option value="{{s}}"> {{ value }}</option>
-            {% endfor %}
-          </select>
-        </div>
-      </div>
+  <div class="container">
+    <div class="row">
+      <div class="switch col">
+       <label>
+         <input type="checkbox">
+         Settings1
+       </label>
       </div>
     </div>
+    <div class="row p-2">
+      <div class="form-group col-md-6">
+        <label for="SchoolYear" class="bmd-label-floating">School Year</label>
+        <select class="form-control" id="SchoolYear" name="sel">
+          {% for sy in school_year %}
+            <option value="{{sy.id}}" >{{ sy }}</option>
+          {% endfor %}
 
-</div>
-
-<div class="card animated fadeInDown settings-card">
-  <div class="card-header">
-    <h5>Curriculum</h5>
-  </div>
-  <div class="card-content">
-<div class="container-fluid curriculum">
-      <div class="row">
-        <div class="form-group col">
-        <label for="firstc" class="clabel">First Year</label>
-        <select class="form-control" id="firstc" name="sel">
-          {% for c in curriculum %}
-          <option value="{{c.id}}"> {{ c }}</option>
-          {% endfor %}
         </select>
       </div>
-      </div>
-      <div class="row">
-        <div class="form-group col">
-        <label for="secondc" class="clabel">Second Year</label>
-        <select class="form-control" id="secondc" name="sel">
-          {% for c in curriculum %}
-          <option value="{{c.id}}"> {{ c }}</option>
+      <div class="form-group col-md-6">
+        <label for="Semester" class="bmd-label-floating">Semester</label>
+        <select class="form-control" id="Semester" name="sel">
+          {% for s,value in semester %}
+            <option value="{{s}}"> {{ value }}</option>
           {% endfor %}
         </select>
-      </div>
-      </div>
-      <div class="row">
-        <div class="form-group col">
-        <label for="thirdc" class="clabel">Third Year</label>
-        <select class="form-control" id="thirdc" name="sel">
-          {% for c in curriculum %}
-          <option value="{{c.id}}"> {{ c }}</option>
-          {% endfor %}
-        </select>
-      </div>
-      </div>
-      <div class="row">
-        <div class="form-group col">
-        <label for="fourthc" class="clabel">Fourth Year</label>
-        <select class="form-control" id="fourthc" name="sel">
-          {% for c in curriculum %}
-          <option value="{{c.id}}"> {{ c }}</option>
-          {% endfor %}
-        </select>
-      </div>
-      </div>
-      <div class="row">
-        <div class="form-group col">
-        <label for="fifthc" class="clabel">Fifth Year</label>
-        <select class="form-control" id="fifthc" name="sel">
-          {% for c in curriculum %}
-          <option value="{{c.id}}"> {{ c }}</option>
-          {% endfor %}
-        </select>
-      </div>
       </div>
     </div>
   </div>
+
+ </div>
 </div>
+
 {% endblock content %}
 
 {% block extra_js %}
