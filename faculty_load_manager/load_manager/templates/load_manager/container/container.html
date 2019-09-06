@@ -15,8 +15,8 @@
     <span>Home</span>
     </a>
   </li>
-<li class="sb-item">
-  <a class="sb-link" href="#">
+<li class="sb-item {% if viewtype == 'load-manager' %}active{% endif %} dashboard">
+  <a class="sb-link" href="{% url 'load-manager-list' %}">
   <i></i>
   <span>Load Management</span>
   </a>
@@ -55,7 +55,7 @@
     </div>
   </nav>
 
-  <div class="container-fluid">
+  <div class="content container-fluid">
     {% block content %}
     {% endblock content %}
   </div>

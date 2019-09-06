@@ -47,6 +47,10 @@ def home_view(request):
 
 @login_required
 def load_manager_list(request):
+    context = {
+        'title': 'LOAD MANAGER',
+        'viewtype': 'load-manager',
+    }
     return render(request, 'load_manager/components/faculty-load/list.html', context)
 def pload_view(request):
     time_schedules = PreferredTime.objects.all()

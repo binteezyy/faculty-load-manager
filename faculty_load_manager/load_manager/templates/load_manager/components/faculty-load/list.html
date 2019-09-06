@@ -1,12 +1,19 @@
 {% extends 'load_manager/container/container.html' %}
 {% load staticfiles %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static "load_manager.css" %}">
+{% endblock %}
 {% block content %}
-<div class="card animated fadeInDown settings-card">
+
+
+<div class="card animated fadeInDown lm-current">
   <div class="card-header">
-    <h5>Semester</h5>
+    <h5>Current Submission</h5>
   </div>
   <div class="card-content">
     <div class="container-fluid">
+      <button type="button" class="btn btn-raised btn-lg">SUBMIT PREFERRED SCHEDULE</button>
       <div class="row p-3">
         <div class="form-group col-md-6">
           <label for="SchoolYear" class="bmd-label-floating">School Year</label>
@@ -31,4 +38,12 @@
 
 </div>
 
+<div class="card animated fadeInDown lm-list">
+  <div class="card-header">
+    <h5>All Submissions</h5>
+  </div>
+  <div class="card-content">
+
+  </div>
+</div>
 {% endblock %}
