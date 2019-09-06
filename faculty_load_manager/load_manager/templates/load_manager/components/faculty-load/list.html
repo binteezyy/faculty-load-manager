@@ -13,7 +13,10 @@
   </div>
   <div class="card-content">
     <div class="container-fluid">
+      {% if submission %}
+      {% else %}
       <button type="button" class="btn btn-raised btn-lg"><a href="{% url 'load-manager-create' %}">SUBMIT PREFERRED SCHEDULE</a> </button>
+      {% endif %}
       <div class="row p-3">
         <div class="form-group col-md-6">
           <label for="SchoolYear" class="bmd-label-floating">School Year</label>

@@ -47,9 +47,15 @@ def home_view(request):
 
 @login_required
 def load_manager_list(request):
+    settings = Setting.objects.get(pk=1)
+    if PreferredSchedule.objects.filter(user=request.user,school_year=settings.school_year,semester=settings.semester).exists():
+        cs = True
+    else:
+        cs = False
     context = {
         'title': 'LOAD MANAGER',
         'viewtype': 'load-manager',
+        'submission': cs,
     }
     return render(request, 'load_manager/components/faculty-load/list.html', context)
 def load_manager_create(request):
@@ -68,7 +74,7 @@ def load_manager_create(request):
         preferred_sched =  PreferredSchedule(user = current_user,
                                             semester = setting.semester,
                                             school_year = setting.school_year)
-        
+
         preferred_sched.save()
         for x in selected:
             daytime = x.split('-')
