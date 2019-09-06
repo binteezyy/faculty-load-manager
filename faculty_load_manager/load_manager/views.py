@@ -81,12 +81,72 @@ def pload_view(request):
 def ss(request):
     for x,day in DAY_OF_THE_WEEK():
         for y, day in PreferredTime.TIME_SELECT:
-            sched = PreferredTime.objects.create(
+            try:
+                sched = PreferredTime.objects.get(
                 select_day = x,
                 select_time = y
-            )
-            sched.save()
-
+                )
+                print(f'{x} {y} already exists')
+            except PreferredTime.DoesNotExist:
+                sched = PreferredTime(
+                    select_day = x,
+                    select_time = y
+                )
+                sched.save()
+    try:
+        x = Room.objects.get(room_name='310', room_category=1)
+        print('Exists')
+    except Room.DoesNotExist:
+        x = Room(room_name='310', room_category=1)
+        x.save()
+    try:
+        x = Room.objects.get(room_name='311', room_category=0)
+        print('Exists')
+    except Room.DoesNotExist:
+        x = Room(room_name='311', room_category=0)
+        x.save()
+    try:
+        x = Room.objects.get(room_name='312', room_category=0)
+        print('Exists')
+    except Room.DoesNotExist:
+        x = Room(room_name='312', room_category=0)
+        x.save()
+    try:
+        x = Room.objects.get(room_name='313', room_category=0)
+        print('Exists')
+    except Room.DoesNotExist:
+        x = Room(room_name='313', room_category=0)
+        x.save()
+    try:
+        x = Room.objects.get(room_name='314', room_category=0)
+        print('Exists')
+    except Room.DoesNotExist:
+        x = Room(room_name='314', room_category=0)
+        x.save()
+    try:
+        x = Room.objects.get(room_name='315', room_category=0)
+        print('Exists')
+    except Room.DoesNotExist:
+        x = Room(room_name='315', room_category=0)
+        x.save()
+    try:
+        x = Room.objects.get(room_name='300', room_category=0)
+        print('Exists')
+    except Room.DoesNotExist:
+        x = Room(room_name='300', room_category=0)
+        x.save()
+    try:
+        x = Room.objects.get(room_name='302', room_category=1)
+        print('Exists')
+    except Room.DoesNotExist:
+        x = Room(room_name='302', room_category=1)
+        x.save()
+    try:
+        x = Room.objects.get(room_name='316', room_category=1)
+        print('Exists')
+    except Room.DoesNotExist:
+        x = Room(room_name='316', room_category=1)
+        x.save()
     return HttpResponse("SCHEDS CREATED")
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
@@ -264,3 +324,111 @@ def generate_semester_offering(request):
     return HttpResponse(semOff.subject.all())
 
 
+def generate_section_offering(request):
+    curriculum = Curriculum.objects.get(curriculum='1112')
+    semester = 0
+    school_year = SchoolYear.objects.latest('pk')
+    try:
+        fifth_count = BlockSection.objects.filter(school_year=school_year, semester=semester, year_level=5).count()
+    except:
+        fifth_count = 0
+    print(f'fifth year - {fifth_count}')
+    try:
+        fourth_count = BlockSection.objects.filter(school_year=school_year, semester=semester, year_level=4).count()
+    except:
+        fourth_count = 0
+    print(f'fourth year - {fourth_count}')
+    try:
+        third_count = BlockSection.objects.filter(school_year=school_year, semester=semester, year_level=3).count()
+    except:
+        third_count = 0  
+    print(f'third year - {third_count}')
+    try:
+        second_count = BlockSection.objects.filter(school_year=school_year, semester=semester, year_level=2).count()
+    except:
+        second_count = 0
+    print(f'second year - {second_count}')
+    try:
+        first_count = BlockSection.objects.filter(school_year=school_year, semester=semester, year_level=1).count()
+    except:
+        first_count = 0
+    print(f'first year - {first_count}')
+
+    semOff = SemesterOffering.objects.get(school_year=school_year, semester=semester)
+    first_s = Subject.objects.filter(year_level=1, semester=semester, curriculum=curriculum).filter(
+            Q(subject_code__startswith='COEN')|Q(subject_code__startswith='BSCOE'))
+    second_s = Subject.objects.filter(year_level=2, semester=semester, curriculum=curriculum).filter(
+            Q(subject_code__startswith='COEN')|Q(subject_code__startswith='BSCOE'))
+    third_s = Subject.objects.filter(year_level=3, semester=semester, curriculum=curriculum).filter(
+            Q(subject_code__startswith='COEN')|Q(subject_code__startswith='BSCOE'))
+    fourth_s = Subject.objects.filter(year_level=4, semester=semester, curriculum=curriculum).filter(
+            Q(subject_code__startswith='COEN')|Q(subject_code__startswith='BSCOE'))
+    fifth_s = Subject.objects.filter(year_level=5, semester=semester, curriculum=curriculum).filter(
+            Q(subject_code__startswith='COEN')|Q(subject_code__startswith='BSCOE'))
+    if fifth_count > 0 and fifth_s.count() > 0:
+        for i in range(fifth_count):
+            bs = BlockSection.objects.filter(school_year=school_year, semester=semester, year_level=5)[i]
+            for j in range(fifth_s.count()):
+                try:
+                    new_secOff = SectionOffering.objects.get(school_year=school_year, semester=semester, subject=fifth_s[j], 
+                    block_section=bs)
+                except SectionOffering.DoesNotExist:
+                    new_secOff = SectionOffering(school_year=school_year, semester=semester, subject=fifth_s[j], 
+                    block_section=bs)  
+                    new_secOff.save()
+                print(new_secOff)
+
+    if fourth_count > 0 and fourth_s.count() > 0:
+        for i in range(fourth_count):
+            bs = BlockSection.objects.filter(school_year=school_year, semester=semester, year_level=4)[i]
+            for j in range(fourth_s.count()):
+                try:
+                    new_secOff = SectionOffering.objects.get(school_year=school_year, semester=semester, subject=fourth_s[j], 
+                    block_section=bs)
+                except SectionOffering.DoesNotExist:
+                    new_secOff = SectionOffering(school_year=school_year, semester=semester, subject=fourth_s[j], 
+                    block_section=bs)  
+                    new_secOff.save()
+                print(new_secOff)
+
+    if third_count > 0 and third_s.count() > 0:
+        for i in range(third_count):
+            bs = BlockSection.objects.filter(school_year=school_year, semester=semester, year_level=3)[i]
+            for j in range(third_s.count()):
+                try:
+                    new_secOff = SectionOffering.objects.get(school_year=school_year, semester=semester, subject=third_s[j], 
+                    block_section=bs)
+                except SectionOffering.DoesNotExist:
+                    new_secOff = SectionOffering(school_year=school_year, semester=semester, subject=third_s[j], 
+                    block_section=bs)  
+                    new_secOff.save()
+                print(new_secOff)
+
+    if second_count > 0 and second_s.count() > 0:
+        for i in range(second_count):
+            bs = BlockSection.objects.filter(school_year=school_year, semester=semester, year_level=2)[i]
+            for j in range(second_s.count()):
+                try:
+                    new_secOff = SectionOffering.objects.get(school_year=school_year, semester=semester, subject=second_s[j], 
+                    block_section=bs)
+                except SectionOffering.DoesNotExist:
+                    new_secOff = SectionOffering(school_year=school_year, semester=semester, subject=second_s[j], 
+                    block_section=bs)  
+                    new_secOff.save()
+                print(new_secOff)
+
+    if first_count > 0 and first_s.count() > 0:
+        for i in range(first_count):
+            bs = BlockSection.objects.filter(school_year=school_year, semester=semester, year_level=1)[i]
+            for j in range(first_s.count()):
+                try:
+                    new_secOff = SectionOffering.objects.get(school_year=school_year, semester=semester, subject=first_s[j], 
+                    block_section=bs)
+                except SectionOffering.DoesNotExist:
+                    new_secOff = SectionOffering(school_year=school_year, semester=semester, subject=first_s[j], 
+                    block_section=bs)  
+                    new_secOff.save()
+                print(new_secOff)
+    
+    
+    return HttpResponse("generated section offering")
