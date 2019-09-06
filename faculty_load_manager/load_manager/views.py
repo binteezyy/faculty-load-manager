@@ -186,3 +186,81 @@ def parse_view(request):
 
 
     return HttpResponse("PARSED")
+
+from django.db.models import Q
+
+def generate_semester_offering(request):
+    first_c = Curriculum.objects.get(curriculum='1112')
+    second_c = Curriculum.objects.get(curriculum='1112')
+    third_c = Curriculum.objects.get(curriculum='1112')
+    fourth_c = Curriculum.objects.get(curriculum='1112')
+    fifth_c = Curriculum.objects.get(curriculum='1112')
+    semester = 0
+    start_year = 2020
+    end_year = 2021
+
+    try:
+        start = Year.objects.get(year=start_year)
+    except Year.DoesNotExist:
+        new_year = Year(year=start_year)
+        new_year.save()
+        start = Year.objects.get(year=start_year)
+    
+    try:
+        end = Year.objects.get(year=end_year)
+    except Year.DoesNotExist:
+        new_year = Year(year=end_year)
+        new_year.save()
+        end  = Year.objects.get(year=end_year)
+
+    try:
+        sy = SchoolYear.objects.get(start_year=start, end_year=end)
+    except SchoolYear.DoesNotExist:
+        new_sy = SchoolYear(start_year=start, end_year=end)
+        new_sy.save()
+        sy = SchoolYear.objects.get(start_year=start, end_year=end)
+    
+    try:
+        semOff = SemesterOffering.objects.get(school_year=sy, semester=semester)
+    except SemesterOffering.DoesNotExist:
+        # return HttpResponse("Does Not")
+        new_so = SemesterOffering.objects.create(school_year=sy, semester=semester)
+        new_so.save()
+
+        semOff = SemesterOffering.objects.get(school_year=sy, semester=semester)
+    
+        first_s = Subject.objects.filter(year_level=1, semester=semester, curriculum=first_c).filter(
+            Q(subject_code__startswith='COEN')|Q(subject_code__startswith='BSCOE'))
+        second_s = Subject.objects.filter(year_level=2, semester=semester, curriculum=second_c).filter(
+            Q(subject_code__startswith='COEN')|Q(subject_code__startswith='BSCOE'))
+        third_s = Subject.objects.filter(year_level=3, semester=semester, curriculum=third_c).filter(
+            Q(subject_code__startswith='COEN')|Q(subject_code__startswith='BSCOE'))
+        fourth_s = Subject.objects.filter(year_level=4, semester=semester, curriculum=fourth_c).filter(
+            Q(subject_code__startswith='COEN')|Q(subject_code__startswith='BSCOE'))
+        fifth_s = Subject.objects.filter(year_level=5, semester=semester, curriculum=fifth_c).filter(
+            Q(subject_code__startswith='COEN')|Q(subject_code__startswith='BSCOE'))
+
+        first_s = list(first_s)
+        second_s = list(second_s)
+        third_s = list(third_s)
+        fourth_s = list(fourth_s)
+        fifth_s = list(fifth_s)
+        print(first_s)
+        semOff.subject.add(*first_s)
+        print(second_s)
+        semOff.subject.add(*second_s)
+        print(third_s)
+        semOff.subject.add(*third_s)
+        print(fourth_s)
+        semOff.subject.add(*fourth_s)
+        print(fifth_s)
+        semOff.subject.add(*fifth_s)
+        semOff.save()
+
+    context = {
+        'subjects': semOff.subject.all(),
+    }
+
+    return HttpResponse(semOff.subject.all())
+
+
