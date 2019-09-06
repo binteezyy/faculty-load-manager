@@ -125,7 +125,6 @@ class PreferredSchedule(models.Model):
     preferred_time = models.ManyToManyField(PreferredTime)
     created_at = models.DateTimeField(auto_now_add=True , null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
-
 class SemesterOffering(models.Model):
     school_year = models.ForeignKey(SchoolYear, on_delete=models.CASCADE)
     semester = models.IntegerField(choices = SEMESTERS(), default = 0, validators=[
@@ -137,7 +136,6 @@ class SemesterOffering(models.Model):
         unique_together = ('school_year','semester')
     def __str__(self):
         return f'[{self.school_year}]  {self.get_semester_display()}'
-
 class SectionOffering(models.Model):
     professor = models.ForeignKey(
         settings.AUTH_USER_MODEL,

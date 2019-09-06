@@ -22,6 +22,8 @@ def home_view(request):
     if request.user.is_authenticated:
         context = {
             'user': request.user,
+            'viewtype': 'home',
+            'title': 'Home'
         }
         return render(request, 'load_manager/components/home.html', context)
     else:
@@ -44,6 +46,8 @@ def home_view(request):
         return render(request, 'users/components/login.html', context)
 
 @login_required
+def load_manager_list(request):
+    return render(request, 'load_manager/components/faculty-load/list.html', context)
 def pload_view(request):
     time_schedules = PreferredTime.objects.all()
     current_user = request.user
@@ -68,6 +72,7 @@ def pload_view(request):
         return HttpResponse("POSTED")
     else:
         return render(request, 'load_manager/components/pload.html', context)
+
 @login_required
 def ss(request):
     for x,day in DAY_OF_THE_WEEK():
@@ -130,7 +135,7 @@ def parse_view(request):
     except Curriculum.DoesNotExist:
         new_curriculum = Curriculum(curriculum=str(curriculum))
         new_curriculum.save()
-    
+
     curriculum_get = Curriculum.objects.get(curriculum=str(curriculum))
 
     for x in range(2,int(len(tables))): #run through tables from tables[2]
@@ -158,7 +163,7 @@ def parse_view(request):
                 strlab = ''.join(lab_hours)
             except:
                 lab_hours = 'None'
-            
+
             if strcode == 'TOTAL UNITS':
                 if semester == 2:
                     semester = 0

@@ -21,8 +21,11 @@
     {% endblock extra_css %}
 </head>
 <body>
-    {% block container %}
-    {% endblock container %}
+    <div class="wrapper">
+      {% block container %}
+      {% endblock container %}
+    </div>
+
 </body>
   <!-- SCRIPTS -->
   <script src="{% static "js/jquery-3.2.1.min.js" %}"></script>

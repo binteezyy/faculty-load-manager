@@ -1,0 +1,34 @@
+{% extends 'load_manager/container/container.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="card animated fadeInDown settings-card">
+  <div class="card-header">
+    <h5>Semester</h5>
+  </div>
+  <div class="card-content">
+    <div class="container-fluid">
+      <div class="row p-3">
+        <div class="form-group col-md-6">
+          <label for="SchoolYear" class="bmd-label-floating">School Year</label>
+          <select class="form-control" id="SchoolYear" name="sel">
+            {% for sy in school_year %}
+              <option value="{{sy.id}}" >{{ sy }}</option>
+            {% endfor %}
+
+          </select>
+        </div>
+        <div class="form-group col-md-6">
+          <label for="Semester" class="bmd-label-floating">Semester</label>
+          <select class="form-control" id="Semester" name="sel">
+            {% for s,value in semester %}
+              <option value="{{s}}"> {{ value }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      </div>
+    </div>
+
+</div>
+
+{% endblock %}
