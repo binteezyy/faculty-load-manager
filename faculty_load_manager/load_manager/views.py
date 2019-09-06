@@ -52,7 +52,7 @@ def load_manager_list(request):
         'viewtype': 'load-manager',
     }
     return render(request, 'load_manager/components/faculty-load/list.html', context)
-def pload_view(request):
+def load_manager_create(request):
     time_schedules = PreferredTime.objects.all()
     current_user = request.user
     context = {
@@ -63,9 +63,12 @@ def pload_view(request):
     }
     if request.method=="POST":
         selected = request.POST.getlist('timedays')
+        setting = Setting.objects.get(pk=1)
         current_user = request.user
-        preferred_sched =  PreferredSchedule(user = current_user)
-
+        preferred_sched =  PreferredSchedule(user = current_user,
+                                            semester = setting.semester,
+                                            school_year = setting.school_year)
+        
         preferred_sched.save()
         for x in selected:
             daytime = x.split('-')
@@ -93,6 +96,7 @@ def ss(request):
 def site_settings(request):
     curriculum = Curriculum.objects.all()
     context = {
+        'viewtype': 'settings',
         'school_year': SchoolYear.objects.all(),
         'semester': SEMESTERS(),
         'curriculum': curriculum,
@@ -205,7 +209,7 @@ def generate_semester_offering(request):
         new_year = Year(year=start_year)
         new_year.save()
         start = Year.objects.get(year=start_year)
-    
+
     try:
         end = Year.objects.get(year=end_year)
     except Year.DoesNotExist:
@@ -219,7 +223,7 @@ def generate_semester_offering(request):
         new_sy = SchoolYear(start_year=start, end_year=end)
         new_sy.save()
         sy = SchoolYear.objects.get(start_year=start, end_year=end)
-    
+
     try:
         semOff = SemesterOffering.objects.get(school_year=sy, semester=semester)
     except SemesterOffering.DoesNotExist:
@@ -228,7 +232,7 @@ def generate_semester_offering(request):
         new_so.save()
 
         semOff = SemesterOffering.objects.get(school_year=sy, semester=semester)
-    
+
         first_s = Subject.objects.filter(year_level=1, semester=semester, curriculum=first_c).filter(
             Q(subject_code__startswith='COEN')|Q(subject_code__startswith='BSCOE'))
         second_s = Subject.objects.filter(year_level=2, semester=semester, curriculum=second_c).filter(
@@ -262,5 +266,3 @@ def generate_semester_offering(request):
     }
 
     return HttpResponse(semOff.subject.all())
-
-

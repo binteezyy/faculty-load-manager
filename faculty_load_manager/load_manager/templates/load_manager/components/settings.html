@@ -100,7 +100,7 @@
     $('select.form-control').change(function(){
       $.ajax({
                 type: 'POST',
-                url: '{% url 'change-settings' %}',
+                url: '{% url 'settings-change' %}',
                 headers: { "X-CSRFToken": '{{csrf_token}}' },
                 data: {
                     'data-attr': this.id,

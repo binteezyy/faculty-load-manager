@@ -9,36 +9,48 @@
 {% endfor %}
 {% block header %}
 {% endblock header %}
-<div class="container">
-    <form method="POST" >
-        {% csrf_token %}
-        <h4>Preferred Schedule</h4><br>
-        <div class="pload">
-          <h5>Preferred Subjects</h5>
-          <hr>
-        </div>
-        <div class="ptime">
-          <h5>Preffered Time</h5>
-          <hr>
-          <div class="row">
-            {% for val,day in days %}
-            <div class="col-sm">
-              {{ day }}<br>
-              {% for v,time in times %}
-              <div class="checkbox p">
-                <label><input type="checkbox" name="timedays" value="{{val}}-{{v}}">{{ time }}</label>
-              </div>
-              {% endfor %}
+<div class="card animated fadeInDown lm-current">
+  <div class="card-header">
+    <h4>Preferred Schedule</h4>
+  </div>
+  <div class="card-content">
 
+    <div class="container-fluid">
+    <form method="POST" >
+      {% csrf_token %}
+
+
+      <div class="pload">
+        <h5>Preferred Subjects</h5>
+        <hr>
+      </div>
+      <div class="ptime">
+        <h5>Preffered Time</h5>
+        <div class="card-header">
+          <h5>Current Submission</h5>
+        </div>
+        <hr>
+        <div class="row">
+          {% for val,day in days %}
+          <div class="col-sm">
+            {{ day }}<br>
+            {% for v,time in times %}
+            <div class="checkbox p">
+              <label><input type="checkbox" name="timedays" value="{{val}}-{{v}}">{{ time }}</label>
             </div>
             {% endfor %}
 
           </div>
+          {% endfor %}
 
         </div>
 
-        <button type="submit" class="btn btn-raised btn-success">Submit</button>
+      </div>
+      <button type="submit" class="btn btn-raised btn-success">Submit</button>
+
     </form>
+  </div>
+  </div>
 </div>
 
 {% endblock content %}
