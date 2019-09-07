@@ -205,3 +205,6 @@ class PreferredSchedule(models.Model):
 
     class Meta:
         unique_together = ('user', 'school_year', 'semester')
+
+    def __str__(self):
+        return f'PROF{self.user.pk}PLOAD{self.pk}'
