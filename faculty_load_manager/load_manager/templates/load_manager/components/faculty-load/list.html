@@ -3,6 +3,44 @@
 
 {% block extra_css %}
   <link rel="stylesheet" href="{% static "load_manager.css" %}">
+  <link rel="stylesheet" href="{% static "vendor/DataTables/datatables.min.css" %}">
+{% endblock %}
+
+{% block extra_js %}
+  <script type="text/javascript" src="{% static "vendor/DataTables/datatables.min.js" %}"></script>
+
+  <script type="text/javascript">
+  $('#psched-table').DataTable( {
+    // "select": true,
+    // "buttons": true,
+    "dataType":'json',
+    // "ajax": {
+    //  "processing": true,
+    //  "dataSrc":'',
+    //  "url": url,
+    // },
+    // "columnDefs": [
+    //   { "className": 'col-id',
+    //     "targets":   0,
+    //     "data": "fields.quantity",
+    //     },
+    //   { "className": 'col-date-created',
+    //     "targets":   1,
+    //     "data": "fields.product",
+    //     },
+    //   { "className": 'col-quotation-description text-nowrap',
+    //     "targets":   2,
+    //     "data": 'fields.price',
+    //   },
+    //   { "className": 'col-quotation-description text-nowrap',
+    //     "targets":   3,
+    //     "data": 'fields.total',
+    //   },
+    // ],
+    // dom:"<'row'<'col-sm-12 col-md-12 border p-2'f>>" + //<'col-sm-12 col-md-6'f>
+    //       "<'row'<'col-sm-12'tr>>" ,
+  });
+  </script>
 {% endblock %}
 {% block content %}
 
@@ -13,26 +51,19 @@
   </div>
   <div class="card-content">
     <div class="container-fluid">
-      <button type="button" class="btn btn-raised btn-lg">SUBMIT PREFERRED SCHEDULE</button>
-      <div class="row p-3">
-        <div class="form-group col-md-6">
-          <label for="SchoolYear" class="bmd-label-floating">School Year</label>
-          <select class="form-control" id="SchoolYear" name="sel">
-            {% for sy in school_year %}
-              <option value="{{sy.id}}" >{{ sy }}</option>
-            {% endfor %}
+      {% if submission %}
+      <p>Status:</p>
+      <p>Subjects:</p>
+      <ul>
+        {% for subject in psubj.preferred_subject.all %}
+          <li>{{ subject }}</li>
+        {% endfor %}
+      </ul>
 
-          </select>
-        </div>
-        <div class="form-group col-md-6">
-          <label for="Semester" class="bmd-label-floating">Semester</label>
-          <select class="form-control" id="Semester" name="sel">
-            {% for s,value in semester %}
-              <option value="{{s}}"> {{ value }}</option>
-            {% endfor %}
-          </select>
-        </div>
-      </div>
+      {% else %}
+      <button type="button" class="btn btn-raised btn-lg"><a href="{% url 'load-manager-create' %}">SUBMIT PREFERRED SCHEDULE</a> </button>
+      {% endif %}
+
       </div>
     </div>
 
@@ -43,7 +74,17 @@
     <h5>All Submissions</h5>
   </div>
   <div class="card-content">
+    <table id="psched-table" class="table table-bordered table-hover" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info">
+       <thead >
+         <tr role="row" class="text-center">
+           <th>ID</th>
+           <th>Date Created</th>
+           <th>Description</th>
 
+         </tr>
+       </thead>
+       <tbody></tbody>
+  </table>
   </div>
 </div>
 {% endblock %}

@@ -86,6 +86,7 @@ class BlockSection(models.Model):
 
     class Meta:
         unique_together = ('school_year','semester','year_level','section')
+        ordering = ['school_year', 'semester', 'year_level', 'section']
 
     def __str__(self):
         return f'{self.year_level} - {self.section}'
@@ -129,7 +130,7 @@ class SectionOffering(models.Model):
     professor = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        null=True
+        null=True, blank=True
     )
 
     school_year = models.ForeignKey(SchoolYear, on_delete=models.CASCADE)
@@ -145,7 +146,7 @@ class SectionOffering(models.Model):
         return f'{self.subject} - {self.professor} - {self.block_section}'
 
     class Meta:
-        unique_together = ('professor', 'school_year', 'semester', 'subject', 'block_section', 'service_flag')
+        unique_together = ('school_year', 'semester', 'subject', 'block_section', 'service_flag')
 
 class PreferredTime(models.Model):
     TIME_SELECT = [
@@ -200,6 +201,10 @@ class PreferredSchedule(models.Model):
         MaxValueValidator(2),
         MinValueValidator(0)
     ])
+    is_editable = models.BooleanField(default=True)
 
     class Meta:
         unique_together = ('user', 'school_year', 'semester')
+
+    def __str__(self):
+        return f'PROF{self.user.pk}PLOAD{self.pk}'

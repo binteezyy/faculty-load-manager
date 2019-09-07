@@ -21,9 +21,18 @@
   <span>Load Management</span>
   </a>
 </li>
-<li class="sb-item">
+<!--li class="sb-item">
   <a class="sb-link" href="#"></a>
+</li-->
+{% if request.user.is_staff %}
+<hr>
+<li class="sb-item {% if viewtype == 'settings' %}active{% endif %} dashboard">
+  <a class="sb-link" href="{% url 'settings' %}">
+  <i></i>
+  <span>Settings</span>
+  </a>
 </li>
+{% endif %}
 </ul>
 <div id="main-container">
   <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4" style="z-index: 1;">

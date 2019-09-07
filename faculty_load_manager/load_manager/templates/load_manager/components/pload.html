@@ -1,5 +1,23 @@
 {% extends 'load_manager/container/container.html' %}
 {% load staticfiles %}
+{% block extra_css %}
+<!-- SELECT2 -->
+<link href="{% static "vendor/select2/css/select2.min.css" %}" rel="stylesheet" />
+
+{% endblock %}
+{% block extra_js %}
+<!-- SELECT2 -->
+<script src="{% static "vendor/select2/js/select2.min.js" %}"></script>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('.psubject-select').select2({
+      maximumSelectionLength: 3,
+    });
+  });
+</script>
+
+{% endblock %}
 {% block content %}
 {% for field in form %}
     <label>
@@ -7,38 +25,55 @@
         <span>{{ field.name }}</span>
     </label>
 {% endfor %}
-{% block header %}
-{% endblock header %}
-<div class="container">
+<div class="card animated fadeInDown lm-current">
+  <div class="card-header">
+    <h4>Preferred Schedule</h4>
+  </div>
+  <div class="card-content">
+
+    <div class="container-fluid">
     <form method="POST" >
-        {% csrf_token %}
-        <h4>Preferred Schedule</h4><br>
-        <div class="pload">
-          <h5>Preferred Subjects</h5>
-          <hr>
-        </div>
-        <div class="ptime">
-          <h5>Preffered Time</h5>
-          <hr>
+      {% csrf_token %}
+
+      <div class="pload">
+        <h5>Preferred Subjects</h5>
+        <select class="psubject-select" name="psubjects" multiple="multiple">
+          {% for subject in subjects %}
+            <option value="{{ subject.pk }}">{{ subject }}</option>
+          {% endfor %}
+
+        </select>
+      </div>
+      <div class="ptime">
+        <h5>Preffered Time</h5>
+        <div class="container">
           <div class="row">
-            {% for val,day in days %}
-            <div class="col-sm">
-              {{ day }}<br>
-              {% for v,time in times %}
-              <div class="checkbox p">
-                <label><input type="checkbox" name="timedays" value="{{val}}-{{v}}">{{ time }}</label>
+            <div class="row p-2">
+              <br>
+              {% for val,day in days %}
+              <div class="col-sm">
+                {{ day }}<br>
+                {% for v,time in times %}
+                <div class="checkbox p">
+                  <label><input type="checkbox" name="timedays" value="{{val}}-{{v}}">{{ time }}</label>
+                </div>
+                {% endfor %}
+
               </div>
               {% endfor %}
 
             </div>
-            {% endfor %}
-
           </div>
-
         </div>
+        <hr>
 
-        <button type="submit" class="btn btn-raised btn-success">Submit</button>
+
+      </div>
+      <button type="submit" class="btn btn-raised btn-success">Submit</button>
+
     </form>
+  </div>
+  </div>
 </div>
 
 {% endblock content %}
