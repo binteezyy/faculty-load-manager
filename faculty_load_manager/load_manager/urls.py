@@ -19,4 +19,5 @@ urlpatterns = [
     ## AJAX
     path('parse/', views.parse_view, name='parse_view'),
     path('generate/', views.generate_semester_offering, name='generate_semester_offering'),
+    path('so/', views.generate_section_offering, name='generate_section_offering'),
 ]
