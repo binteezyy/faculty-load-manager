@@ -61,6 +61,27 @@ def load_manager_list(request):
         'psubj': psched,
     }
     return render(request, 'load_manager/components/faculty-load/list.html', context)
+
+@login_required
+def load_manager_tables(request):
+    import json
+    loads = PreferredSchedule.objects.filter(user=request.user)
+
+    data = []
+    for load in loads:
+        print(load.semester)
+        x = {"fields":{"id":load.pk,
+                       "date_submit":load.created_at.strftime("%d-%m-%Y %I:%M%p"),
+                       "school_year": str(load.school_year),
+                       "semester": str(load.get_semester_display()),
+                       "details": "",
+                       "status": "",
+             }
+        }
+        data.append(x)
+    data = json.dumps(data)
+    return HttpResponse(data, content_type='application/json')
+@login_required
 def load_manager_create(request):
     settings = Setting.objects.get(pk=1)
     time_schedules = PreferredTime.objects.all()
@@ -362,7 +383,7 @@ def generate_section_offering(request):
     try:
         third_count = BlockSection.objects.filter(school_year=school_year, semester=semester, year_level=3).count()
     except:
-        third_count = 0  
+        third_count = 0
     print(f'third year - {third_count}')
     try:
         second_count = BlockSection.objects.filter(school_year=school_year, semester=semester, year_level=2).count()
@@ -391,11 +412,11 @@ def generate_section_offering(request):
             bs = BlockSection.objects.filter(school_year=school_year, semester=semester, year_level=5)[i]
             for j in range(fifth_s.count()):
                 try:
-                    new_secOff = SectionOffering.objects.get(school_year=school_year, semester=semester, subject=fifth_s[j], 
+                    new_secOff = SectionOffering.objects.get(school_year=school_year, semester=semester, subject=fifth_s[j],
                     block_section=bs)
                 except SectionOffering.DoesNotExist:
-                    new_secOff = SectionOffering(school_year=school_year, semester=semester, subject=fifth_s[j], 
-                    block_section=bs)  
+                    new_secOff = SectionOffering(school_year=school_year, semester=semester, subject=fifth_s[j],
+                    block_section=bs)
                     new_secOff.save()
                 print(new_secOff)
 
@@ -404,11 +425,11 @@ def generate_section_offering(request):
             bs = BlockSection.objects.filter(school_year=school_year, semester=semester, year_level=4)[i]
             for j in range(fourth_s.count()):
                 try:
-                    new_secOff = SectionOffering.objects.get(school_year=school_year, semester=semester, subject=fourth_s[j], 
+                    new_secOff = SectionOffering.objects.get(school_year=school_year, semester=semester, subject=fourth_s[j],
                     block_section=bs)
                 except SectionOffering.DoesNotExist:
-                    new_secOff = SectionOffering(school_year=school_year, semester=semester, subject=fourth_s[j], 
-                    block_section=bs)  
+                    new_secOff = SectionOffering(school_year=school_year, semester=semester, subject=fourth_s[j],
+                    block_section=bs)
                     new_secOff.save()
                 print(new_secOff)
 
@@ -417,11 +438,11 @@ def generate_section_offering(request):
             bs = BlockSection.objects.filter(school_year=school_year, semester=semester, year_level=3)[i]
             for j in range(third_s.count()):
                 try:
-                    new_secOff = SectionOffering.objects.get(school_year=school_year, semester=semester, subject=third_s[j], 
+                    new_secOff = SectionOffering.objects.get(school_year=school_year, semester=semester, subject=third_s[j],
                     block_section=bs)
                 except SectionOffering.DoesNotExist:
-                    new_secOff = SectionOffering(school_year=school_year, semester=semester, subject=third_s[j], 
-                    block_section=bs)  
+                    new_secOff = SectionOffering(school_year=school_year, semester=semester, subject=third_s[j],
+                    block_section=bs)
                     new_secOff.save()
                 print(new_secOff)
 
@@ -430,11 +451,11 @@ def generate_section_offering(request):
             bs = BlockSection.objects.filter(school_year=school_year, semester=semester, year_level=2)[i]
             for j in range(second_s.count()):
                 try:
-                    new_secOff = SectionOffering.objects.get(school_year=school_year, semester=semester, subject=second_s[j], 
+                    new_secOff = SectionOffering.objects.get(school_year=school_year, semester=semester, subject=second_s[j],
                     block_section=bs)
                 except SectionOffering.DoesNotExist:
-                    new_secOff = SectionOffering(school_year=school_year, semester=semester, subject=second_s[j], 
-                    block_section=bs)  
+                    new_secOff = SectionOffering(school_year=school_year, semester=semester, subject=second_s[j],
+                    block_section=bs)
                     new_secOff.save()
                 print(new_secOff)
 
@@ -443,14 +464,13 @@ def generate_section_offering(request):
             bs = BlockSection.objects.filter(school_year=school_year, semester=semester, year_level=1)[i]
             for j in range(first_s.count()):
                 try:
-                    new_secOff = SectionOffering.objects.get(school_year=school_year, semester=semester, subject=first_s[j], 
+                    new_secOff = SectionOffering.objects.get(school_year=school_year, semester=semester, subject=first_s[j],
                     block_section=bs)
                 except SectionOffering.DoesNotExist:
-                    new_secOff = SectionOffering(school_year=school_year, semester=semester, subject=first_s[j], 
-                    block_section=bs)  
+                    new_secOff = SectionOffering(school_year=school_year, semester=semester, subject=first_s[j],
+                    block_section=bs)
                     new_secOff.save()
                 print(new_secOff)
-    
-    
-    return HttpResponse("generated section offering")
 
+
+    return HttpResponse("generated section offering")
