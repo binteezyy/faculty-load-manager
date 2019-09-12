@@ -21,15 +21,24 @@
   <span>Load Management</span>
   </a>
 </li>
+
+
 <!--li class="sb-item">
   <a class="sb-link" href="#"></a>
 </li-->
 {% if request.user.is_staff %}
 <hr>
+<h5>Chairperson</h5>
 <li class="sb-item {% if viewtype == 'settings' %}active{% endif %} dashboard">
   <a class="sb-link" href="{% url 'settings' %}">
   <i></i>
   <span>Settings</span>
+  </a>
+</li>
+<li class="sb-item {% if viewtype == '' %}active{% endif %} dashboard">
+  <a class="sb-link" href="{% url 'settings-curriculum' %}">
+  <i></i>
+  <span>Curriculum</span>
   </a>
 </li>
 {% endif %}

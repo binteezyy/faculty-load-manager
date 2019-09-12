@@ -1,0 +1,52 @@
+{% extends 'load_manager/container/container.html' %}
+{% load staticfiles %}
+
+{% block extra_css %}
+{% endblock %}
+{% block content %}
+  <div class="card animated fadeInDown settings-card">
+    <div class="card-header">
+      <h5>Curriculum</h5>
+    </div>
+    <div class="card-content">
+      <div class="container-fluid">
+        <div class="row p-3">
+          <div class="col">
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info">
+                <thead>
+                  <tr role="row" class="text-center">
+                    <th style="width:10%">Curriculum</th>
+                    <th style="width:10%">Description</th>
+                    <th>Details</th>
+                    <th style="width:10%">Status</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+
+  </div>
+{% endblock content %}
+
+{% block extra_js %}
+  <script type="text/javascript">
+    $('select.form-control').change(function(){
+      $.ajax({
+                type: 'POST',
+                url: '{% url 'settings-change' %}',
+                headers: { "X-CSRFToken": '{{csrf_token}}' },
+                data: {
+                    'data-attr': this.id,
+                    'data': $(this).val(),
+                },
+                dataType: 'json'
+         });
+    }
+    )
+  </script>
+{% endblock %}

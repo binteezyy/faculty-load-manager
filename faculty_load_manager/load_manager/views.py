@@ -62,6 +62,9 @@ def load_manager_list(request):
     }
     return render(request, 'load_manager/components/faculty-load/list.html', context)
 
+#===================================================
+#                   LOAD MANAGER
+#===================================================
 @login_required
 def load_manager_tables(request):
     import json
@@ -87,6 +90,7 @@ def load_manager_create(request):
     time_schedules = PreferredTime.objects.all()
     current_user = request.user
     subjs = SemesterOffering.objects.get(school_year=settings.school_year,semester=settings.semester).subject.all()
+
     context = {
         'title': 'LOAD MANAGER | FORM',
         'viewtype': 'load-manager',
@@ -119,6 +123,9 @@ def load_manager_create(request):
     else:
         return render(request, 'load_manager/components/pload.html', context)
 
+#===================================================
+#                   UTILITIES
+#===================================================
 @login_required
 def ss(request):
     for x,day in DAY_OF_THE_WEEK():
@@ -190,6 +197,10 @@ def ss(request):
         x = Room(room_name='316', room_category=1)
         x.save()
     return HttpResponse("SCHEDS CREATED")
+
+#===================================================
+#               CHAIRPERSON VIEW
+#===================================================
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def site_settings(request):
@@ -202,7 +213,7 @@ def site_settings(request):
     }
     settings = Setting.objects.get_or_create()
 
-    return render(request, 'load_manager/components/settings.html', context)
+    return render(request, 'load_manager/components/settings/settings.html', context)
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
@@ -223,6 +234,15 @@ def change_settings(request):
         print("NO AJAX")
 
     return HttpResponse("POSTED")
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def curriculum_settings(request):
+    context = {
+        'viewtype': 'curriculum',
+    }
+
+    return render(request, 'load_manager/components/settings/curriculum.html', context)
 
 from bs4 import BeautifulSoup
 import re
