@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse, HttpResponseRedirect
-
+from django.contrib.auth.decorators import login_required,user_passes_test
 from django.contrib.auth import (
     authenticate,
     logout,
@@ -8,6 +8,14 @@ from django.contrib.auth import (
 )
 
 from .forms import UserRegisterForm
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def user_pool_management(request):
+    context = {
+            'viewtype': 'user-pool-management',
+    }
+    return render(request, 'load_manager/components/chairperson/user-pool-management.html', context)
 def register_view(request):
     next = request.GET.get('next')
     form = UserRegisterForm(request.POST or None)
