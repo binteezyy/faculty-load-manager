@@ -8,6 +8,9 @@ from django.contrib.auth import (
 )
 
 from .forms import UserRegisterForm
+from django.contrib.auth.models import User
+
+from .models import *
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
@@ -16,6 +19,28 @@ def user_pool_management(request):
             'viewtype': 'user-pool-management',
     }
     return render(request, 'load_manager/components/chairperson/user-pool-management.html', context)
+@login_required
+def user_pool_mangement_table(request):
+    import json
+    from pprint import pprint
+    users = User.objects.all()
+
+    data = []
+    for user in users:
+        profile = FacultyProfile.objects.get(id=user.id)
+        x = {"fields":{"user-fname":user.first_name,
+                       "user-lname":user.last_name,
+                       "user-email":user.email,
+                       "user-type": profile.get_faculty_type_display(),
+                       "user-rhours":profile.regular_hours,
+                       "user-pthours":profile.part_time_hours,
+             }
+        }
+        data.append(x)
+    data = json.dumps(data)
+    pprint(data)
+    return HttpResponse(data, content_type='application/json')
+
 def register_view(request):
     next = request.GET.get('next')
     form = UserRegisterForm(request.POST or None)
