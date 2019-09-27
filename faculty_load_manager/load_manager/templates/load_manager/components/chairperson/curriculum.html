@@ -8,50 +8,56 @@
 <!-- DATATABLES-->
 {% endblock %}
 {% block content %}
-  <div class="card animated fadeInDown settings-card">
-    <div class="card-header">
-      <h5>Curriculum</h5>
-
-    </div>
-    <div class="card-content">
-      <div class="container-fluid">
-        <div class="row">
-          <select class="form-control" id="curriculum-select" name="curriculum" style="width:150px;">
-            {% for curriculum in curriculums %}
-              <option value="{{ curriculum.pk }}">{{ curriculum }}</option>
-            {% endfor %}
-          </select>
-        </div>
-        <div class="row p-3">
-          <div class="col">
-            <div class="table-responsive">
-              <table id="curriculum-table" class="table table-bordered table-hover" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info">
-                <thead>
-                  <tr role="row" class="text-center">
-                    <th style="width:10%">Curriculum</th>
-                    <th style="width:10%">Description</th>
-                    <th>Details</th>
-                    <th style="width:10%">Status</th>
-                  </tr>
-                </thead>
-                <tbody></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-        </div>
-      </div>
+{% include "_modal.html" %}
+<div class="card animated fadeInDown settings-card">
+  <div class="card-header">
+    <h5>Curriculum</h5> <button type="button" id="curriculum-upload" class="btn btn-success btn-outline-success"
+      name="button">Upload Curriculum</button>
 
   </div>
+  <div class="card-content">
+    <div class="container-fluid">
+      <div class="row">
+        <select class="form-control" id="curriculum-select" name="curriculum" style="width:150px;">
+          {% for curriculum in curriculums %}
+          <option value="{{ curriculum.pk }}">{{ curriculum }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="row p-3">
+        <div class="col">
+          <div class="table-responsive">
+            <table id="curriculum-table" class="table table-bordered table-hover" width="100%" cellspacing="0"
+              role="grid" aria-describedby="dataTable_info">
+              <thead>
+                <tr role="row" class="text-center">
+                  <th style="width:10%">Curriculum</th>
+                  <th style="width:10%">Description</th>
+                  <th>Details</th>
+                  <th style="width:10%">Status</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
 {% endblock content %}
 
 {% block extra_js %}
-  <!-- SELECT2 -->
-  <script src="{% static "vendor/select2/js/select2.min.js" %}"></script>
-  <script type="text/javascript" src="{% static "vendor/DataTables/datatables.min.js" %}"></script>
-  <script type="text/javascript">
+<!-- SELECT2 -->
+<script src="{% static "vendor/select2/js/select2.min.js" %}"></script>
+<script type="text/javascript" src="{% static "vendor/DataTables/datatables.min.js" %}"></script>
+<script type="text/javascript">
 
-  $(document).ready(function() {
+  $(document).ready(function () {
+    $("#curriculum-upload").modalForm({
+      formURL: "{% url 'settings-curriculum-upload' %}"
+    });
     $('#curriculum-select').select2({
       // maximumSelectionLength: 3,
     });
@@ -59,20 +65,20 @@
       alert('wow');
     });
 
-    var tables = '/'+ $('#curriculum-select').val() + '/subjects/';
+    var tables = '/' + $('#curriculum-select').val() + '/subjects/';
     $('#curriculum-table').DataTable({
-      "ajax":{
+      "ajax": {
         "processing": true,
-        "dataSrc":'',
+        "dataSrc": '',
         "url": '/settings/curriculum/1/subjects/',
       },
-      "columnDefs":[
-        {"className": 'col-subject'}
+      "columnDefs": [
+        { "className": 'col-subject' }
       ]
     })
   });
 
 
-  </script>
+</script>
 
 {% endblock %}
