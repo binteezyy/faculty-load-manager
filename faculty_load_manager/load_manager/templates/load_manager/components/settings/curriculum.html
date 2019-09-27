@@ -2,18 +2,30 @@
 {% load staticfiles %}
 
 {% block extra_css %}
+<!-- SELECT2 -->
+<link rel="stylesheet" href="{% static "vendor/DataTables/datatables.min.css" %}">
+<link href="{% static "vendor/select2/css/select2.min.css" %}" rel="stylesheet" />
+<!-- DATATABLES-->
 {% endblock %}
 {% block content %}
   <div class="card animated fadeInDown settings-card">
     <div class="card-header">
       <h5>Curriculum</h5>
+
     </div>
     <div class="card-content">
       <div class="container-fluid">
+        <div class="row">
+          <select class="form-control" id="curriculum-select" name="curriculum" style="width:150px;">
+            {% for curriculum in curriculums %}
+              <option value="{{ curriculum.pk }}">{{ curriculum }}</option>
+            {% endfor %}
+          </select>
+        </div>
         <div class="row p-3">
           <div class="col">
             <div class="table-responsive">
-              <table class="table table-bordered table-hover" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info">
+              <table id="curriculum-table" class="table table-bordered table-hover" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info">
                 <thead>
                   <tr role="row" class="text-center">
                     <th style="width:10%">Curriculum</th>
@@ -34,19 +46,34 @@
 {% endblock content %}
 
 {% block extra_js %}
+  <!-- SELECT2 -->
+  <script src="{% static "vendor/select2/js/select2.min.js" %}"></script>
+  <script type="text/javascript" src="{% static "vendor/DataTables/datatables.min.js" %}"></script>
   <script type="text/javascript">
-    $('select.form-control').change(function(){
-      $.ajax({
-                type: 'POST',
-                url: '{% url 'settings-change' %}',
-                headers: { "X-CSRFToken": '{{csrf_token}}' },
-                data: {
-                    'data-attr': this.id,
-                    'data': $(this).val(),
-                },
-                dataType: 'json'
-         });
-    }
-    )
+
+  $(document).ready(function() {
+    $('#curriculum-select').select2({
+      // maximumSelectionLength: 3,
+    });
+    $('#curriculum-select').on('select2:select', function (e) {
+      alert('wow');
+    });
+
+    var tables = '/'+ $('#curriculum-select').val() + '/subjects/';
+    alert(tables);
+    $('#curriculum-table').DataTable({
+      "ajax":{
+        "processing": true,
+        "dataSrc":'',
+        "url": '/settings/curriculum/1/subjects/',
+      },
+      "columnDefs":[
+        {"className": 'col-subject'}
+      ]
+    })
+  });
+
+
   </script>
+
 {% endblock %}

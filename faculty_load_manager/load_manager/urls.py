@@ -17,6 +17,8 @@ urlpatterns = [
     path('settings/', views.site_settings, name='settings'),
     path('settings/change/', views.change_settings, name='settings-change'),
     path('settings/curriculum/', views.curriculum_settings, name='settings-curriculum'),
+    path('settings/curriculum/<int:pk>/subjects/', views.curriculum_settings_subject, name='settings-curriculum-subjects'),
+    
     ## AJAX
     path('parse/', views.parse_view, name='parse_view'),
     path('generate/', views.generate_semester_offering, name='generate_semester_offering'),

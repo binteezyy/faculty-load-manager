@@ -238,12 +238,32 @@ def change_settings(request):
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def curriculum_settings(request):
+    curriculums = Curriculum.objects.all()
     context = {
         'viewtype': 'curriculum',
+        'curriculums': curriculums,
     }
 
     return render(request, 'load_manager/components/settings/curriculum.html', context)
+def curriculum_settings_subject(request,pk):
+    import json
+    from pprint import pprint
+    subjects = Subject.objects.filter(curriculum=pk)
+    data = []
+    for subject in subjects:
+        x = {"fields":{"subject-name":subject.subject_name,
+                       "subject-code":subject.subject_code,
+                       "year-level":subject.year_level,
+                       "semester":subject.get_semester_display()
 
+             }
+        }
+        data.append(x)
+    data = json.dumps(data)
+    pprint(data)
+    return HttpResponse(data, content_type='application/json')
+
+    return HttpResponse(subjects)
 from bs4 import BeautifulSoup
 import re
 from pprint import pprint
