@@ -18,8 +18,9 @@ def user_pool_management(request):
     context = {
             'viewtype': 'user-pool-management',
     }
-    return render(request, 'load_manager/components/chairperson/user-pool-management.html', context)
+    return render(request, 'load_manager/components/chairperson/users-management/index.html', context)
 @login_required
+@user_passes_test(lambda u: u.is_superuser)
 def user_pool_mangement_table(request):
     import json
     from pprint import pprint
@@ -41,6 +42,13 @@ def user_pool_mangement_table(request):
     pprint(data)
     return HttpResponse(data, content_type='application/json')
 
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def user_pool_management_create(request):
+    context = {}
+    return render(request, 'load_manager/components/chairperson/users-management/add-users.html', context)
+
+@login_required
 def register_view(request):
     next = request.GET.get('next')
     form = UserRegisterForm(request.POST or None)
