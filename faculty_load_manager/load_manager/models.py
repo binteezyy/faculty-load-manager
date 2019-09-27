@@ -199,10 +199,19 @@ class FacultyLoad(models.Model):
         unique_together = ('load_category', 'subject')
 
 class PreferredSchedule(models.Model):
+    STATUS = [
+        (0, 'To be reviewed'),
+        (1, 'Processed'),
+        (2, 'Locked'),
+    ]
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
     )
+    status = models.IntegerField(choices = STATUS, default = 0, validators=[
+        MaxValueValidator(2),
+        MinValueValidator(0)
+    ])
     preferred_subject = models.ManyToManyField(Subject)
     preferred_time = models.ManyToManyField(PreferredTime)
     created_at = models.DateTimeField(auto_now_add=True , null=True)

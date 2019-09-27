@@ -14,24 +14,41 @@
     // "select": true,
     // "buttons": true,
     "dataType":'json',
-    // "ajax": {
-    //  "processing": true,
-    //  "dataSrc":'',
-    //  "url": url,
-    // },
-    // "columnDefs": [
-    //   { "className": 'col-id',
-    //     "targets":   0,
-    //     "data": "fields.quantity",
-    //     },
-    //   { "className": 'col-date-created',
-    //     "targets":   1,
-    //     "data": "fields.product",
-    //     },
-    //   { "className": 'col-quotation-description text-nowrap',
-    //     "targets":   2,
-    //     "data": 'fields.price',
-    //   },
+    "ajax": {
+     "processing": true,
+     "dataSrc":'',
+     "url": "{% url 'load-manager-history-tables' %}",
+    },
+    "columnDefs": [
+      { "className": 'col-id',
+        "targets":   0,
+        "data": "fields.id",
+        },
+      { "className": 'col-date-submit',
+        "targets":   1,
+        "data": "fields.date_submit",
+        },
+      { "className": 'col-school-year',
+        "targets":   2,
+        "data": 'fields.school_year',
+      },
+      { "className": 'col-semester',
+        "targets":   3,
+        "data": 'fields.semester',
+      },
+      { "className": 'col-details',
+        "targets":   4,
+        "data": null,
+        render:function(data, type, row)
+          {
+            return '<button type="button" class="read btn btn-sm btn-primary m-1" data-id="">'+
+              '<span class="fa fa-eye"></span> View</button>'
+          },
+      },
+      { "className": 'col-status',
+        "targets":   5,
+        "data": 'fields.status',
+      },
     //   { "className": 'col-quotation-description text-nowrap',
     //     "targets":   3,
     //     "data": 'fields.total',
@@ -39,7 +56,7 @@
     // ],
     // dom:"<'row'<'col-sm-12 col-md-12 border p-2'f>>" + //<'col-sm-12 col-md-6'f>
     //       "<'row'<'col-sm-12'tr>>" ,
-  });
+  ]});
   </script>
 {% endblock %}
 {% block content %}
@@ -71,20 +88,25 @@
 
 <div class="card animated fadeInDown lm-list">
   <div class="card-header">
-    <h5>All Submissions</h5>
+    <h5>History</h5>
   </div>
   <div class="card-content">
-    <table id="psched-table" class="table table-bordered table-hover" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info">
+    <div class="table-responsive p-2">
+      <table id="psched-table" class="table table-bordered table-hover" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info">
        <thead >
          <tr role="row" class="text-center">
-           <th>ID</th>
-           <th>Date Created</th>
-           <th>Description</th>
-
+           <th style="width:10%">Form No.</th>
+           <th style="width:10%">Date Submitted</th>
+           <th style="width:10%">School Year</th>
+           <th style="width:10%">Semester</th>
+           <th>Details</th>
+           <th style="width:10%">Status</th>
          </tr>
        </thead>
        <tbody></tbody>
-  </table>
+     </table>
+
+    </div>
   </div>
 </div>
 {% endblock %}

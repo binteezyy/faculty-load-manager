@@ -5,9 +5,10 @@ urlpatterns = [
     path('', views.home_view, name='home'),
 
     # LOAD MANAGER
-    path('load-manager/', views.load_manager_list, name='load-manager-list'),
-    path('load-manager/create/',views.load_manager_create, name='load-manager-create'),
-    path('load-manager/form/', views.load_manager_create, name='load-manager-form'),
+    path('my/load-manager/', views.load_manager_list, name='load-manager-list'),
+    path('my/load-manager/create/',views.load_manager_create, name='load-manager-create'),
+    path('my/load-manager/form/', views.load_manager_create, name='load-manager-form'),
+    path('load-manager/my-history/',views.load_manager_tables, name='load-manager-history-tables'),
 
     ## TEST URLS
     path('ss', views.ss, name='ss'),
@@ -15,7 +16,9 @@ urlpatterns = [
     ## SETTINGS
     path('settings/', views.site_settings, name='settings'),
     path('settings/change/', views.change_settings, name='settings-change'),
-
+    path('settings/curriculum/', views.curriculum_settings, name='settings-curriculum'),
+    path('settings/curriculum/<int:pk>/subjects/', views.curriculum_settings_subject, name='settings-curriculum-subjects'),
+    
     ## AJAX
     path('parse/', views.parse_view, name='parse_view'),
     path('generate/', views.generate_semester_offering, name='generate_semester_offering'),
