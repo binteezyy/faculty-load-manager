@@ -92,12 +92,19 @@ class BlockSection(models.Model):
         return f'{self.year_level} - {self.section}'
 
 class SemesterOffering(models.Model):
+    ROOM_CAT = [
+        (0, 'Lab'),
+        (1, 'Lecture'),
+        (2, 'Electronics Lab'),
+    ]
+
     school_year = models.ForeignKey(SchoolYear, on_delete=models.CASCADE)
     semester = models.IntegerField(choices = SEMESTERS(), default = 0, validators=[
         MaxValueValidator(2),
         MinValueValidator(0)
     ])
     subject = models.ManyToManyField(Subject)
+    pref_room = models.IntegerField(choices = ROOM_CAT, default=1)
 
     class Meta:
         unique_together = ('school_year','semester')
@@ -109,6 +116,7 @@ class Room(models.Model):
     ROOM_CAT = [
         (0, 'Lab'),
         (1, 'Lecture'),
+        (2, 'Electronics Lab'),
     ]
     room_name = models.CharField(max_length=15)
     room_category = models.IntegerField(choices = ROOM_CAT, default=1)
@@ -172,8 +180,10 @@ class PreferredTime(models.Model):
 
 class FacultyLoad(models.Model):
     LOAD_CAT = [
-        (0, 'Lab'),
-        (1, 'Lecture'),
+        (0, 'Lab 1'),
+        (1, 'Lab 2'),
+        (2, 'Lec 1'),
+        (3, 'Lec 2'),
     ]
 
     load_category = models.IntegerField(choices = LOAD_CAT, default=1)
