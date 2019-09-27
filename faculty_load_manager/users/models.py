@@ -70,3 +70,6 @@ class FacultyProfile(models.Model):
         default=1, validators=[MinValueValidator(1)])
     part_time_hours = models.PositiveIntegerField(
         default=1, validators=[MinValueValidator(1)])
+
+    def __str__(self):
+        return f'{self.faculty} {self.get_faculty_type_display()}'
