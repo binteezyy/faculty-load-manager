@@ -7,10 +7,11 @@
 {% endblock %}
 
 {% block content %}
+{% include "_modal.html" %}
   <div class="card animated fadeInDown settings-card">
     <div class="card-header">
       <h5>User Pool Management</h5>
-        <button type="button" class="btn btn-success btn-outline-success" name="button">Register Faculty +</button>
+        <button type="button" id="create-user" class="btn btn-success btn-outline-success" name="button">Register Faculty +</button>
     </div>
     <div class="card-content">
       <div class="container-fluid">
@@ -43,8 +44,12 @@
 
 {% block extra_js %}
   <script type="text/javascript" src="{% static "vendor/DataTables/datatables.min.js" %}"></script>
+
   <script type="text/javascript">
   $(document).ready(function() {
+    $("#create-user").modalForm({
+       formURL: "{% url 'chairperson-upm-user-create' %}"
+   });
 
     $('#users-table').DataTable({
       "ajax":{

@@ -20,6 +20,7 @@ urlpatterns = [
     path('settings/curriculum/<int:pk>/subjects/', views.curriculum_settings_subject, name='settings-curriculum-subjects'),
     path('chairperson/user-management/', user_pool_management,name='chairperson-upm'),
     path('chairperson/user-management/users/table', user_pool_mangement_table,name='chairperson-upm-user-table'),
+    path('chairperson/user-management/users/create', user_pool_management_create,name='chairperson-upm-user-create'),
     ## AJAX
     path('parse/', views.parse_view, name='parse_view'),
     path('generate/', views.generate_semester_offering, name='generate_semester_offering'),
