@@ -213,7 +213,7 @@ def site_settings(request):
     }
     settings = Setting.objects.get_or_create()
 
-    return render(request, 'load_manager/components/settings/settings.html', context)
+    return render(request, 'load_manager/components/chairperson/settings.html', context)
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
@@ -244,7 +244,7 @@ def curriculum_settings(request):
         'curriculums': curriculums,
     }
 
-    return render(request, 'load_manager/components/settings/curriculum.html', context)
+    return render(request, 'load_manager/components/chairperson/curriculum.html', context)
 def curriculum_settings_subject(request,pk):
     import json
     from pprint import pprint

@@ -1,6 +1,6 @@
 from django.urls import path, include
 from . import views
-
+from users.views import *
 urlpatterns = [
     path('', views.home_view, name='home'),
 
@@ -13,12 +13,13 @@ urlpatterns = [
     ## TEST URLS
     path('ss', views.ss, name='ss'),
 
-    ## SETTINGS
+    ## CHAIRPERSON VIEW
     path('settings/', views.site_settings, name='settings'),
     path('settings/change/', views.change_settings, name='settings-change'),
     path('settings/curriculum/', views.curriculum_settings, name='settings-curriculum'),
     path('settings/curriculum/<int:pk>/subjects/', views.curriculum_settings_subject, name='settings-curriculum-subjects'),
-    
+    path('chairperson/user-management/', user_pool_management,name='chairperson-upm'),
+    path('chairperson/user-management/users/table', user_pool_mangement_table,name='chairperson-upm-user-table'),
     ## AJAX
     path('parse/', views.parse_view, name='parse_view'),
     path('generate/', views.generate_semester_offering, name='generate_semester_offering'),
