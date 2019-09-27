@@ -2,8 +2,9 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 
+
 class UserLoginForm(forms.Form):
-    username = forms.EmailField(label='Email address')
+    username = forms.CharField(label='Username')
     password = forms.CharField(widget=forms.PasswordInput)
 
     def clean(self, *args, **kwargs):
@@ -22,31 +23,33 @@ class UserLoginForm(forms.Form):
 
 
 class UserRegisterForm(forms.ModelForm):
-    username = forms.EmailField(label='Email address')
-    username2 = forms.EmailField(label='Confirm Email')
+    username = forms.CharField(label='Username')
+    email = forms.EmailField(label='Email')
+    email2 = forms.EmailField(label='Confirm Email')
     password = forms.CharField(widget=forms.PasswordInput)
 
     class Meta:
         model = User
         fields = [
             'username',
-            'username2',
+            'email',
+            'email2',
             'password',
         ]
 
     def clean(self, *args, **kwargs):
+        email = self.cleaned_data.get('email')
+        email2 = self.cleaned_data.get('email2')
         username = self.cleaned_data.get('username')
-        username2 = self.cleaned_data.get('username2')
-        # username = self.cleaned_data.get('username')
 
-        if username != username2:
+        if email != email2:
             raise forms.ValidationError("Emails does not match")
-        
-        email_q = User.objects.filter(username=username)
-        # username_q = User.objects.filter(username=username)
-        # if username_q.exists():
-        #     raise forms.ValidationError("Username already registered")
-        if email_q.exists():
+
+        username_q = User.objects.filter(username=username)
+        email_q = User.objects.filter(username=email)
+        if username_q.exists():
+            raise forms.ValidationError("Username already registered")
+        elif email_q.exists():
             raise forms.ValidationError("Email already registered")
 
         return super(UserRegisterForm, self).clean(*args, **kwargs)
