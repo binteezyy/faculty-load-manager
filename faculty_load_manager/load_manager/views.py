@@ -282,7 +282,7 @@ def curriculum_upload(request):
         myfile = request.FILES['myfile']
         fs = FileSystemStorage()
         filename = fs.save(myfile.name, myfile)
-        uploaded_file_url = (str(settings.BASE_DIR) + str(fs.url(filename).replace('/', '\\')))
+        uploaded_file_url = (str(settings.BASE_DIR) + str(fs.url(filename))) #.replace('/', '\\')
         # return HttpResponse(uploaded_file_url)
         # PARSE
 
@@ -347,7 +347,7 @@ def curriculum_upload(request):
 
         return redirect('settings-curriculum')
 
-    
+
 from bs4 import BeautifulSoup
 import re
 from pprint import pprint
