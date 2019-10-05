@@ -25,7 +25,7 @@ SECRET_KEY = 'vo&n($tt44@i$nx7=bh!9f2d6y*s1=n!z#*-ddj9d)_4*3s-zh'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*',]
+ALLOWED_HOSTS = ['*', ]
 
 LOGIN_REDIRECT_URL = 'home'
 LOGIN_URL = 'home'
@@ -131,3 +131,6 @@ STATICFILES_DIRS = [
 ]
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 #AUTHENTICATION_BACKENDS = ['path.to.auth.module.EmailBackend']
+
+MEDIA_URL = '/curriculum_files/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'curriculum_files')

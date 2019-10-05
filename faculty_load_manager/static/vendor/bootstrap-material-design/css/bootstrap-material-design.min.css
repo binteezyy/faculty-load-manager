@@ -1811,7 +1811,7 @@ pre code {
 	background-color: transparent;
 	border-color: #17ffe9;
 	outline: 0;
-	box-shadow: none, 0 0 0 .2rem rgba(0, 150, 136, .25)
+	box-shadow: none, 0 0 0 .2rem rgba(0, 150, 136, .25);
 }
 
 .custom-file-control::placeholder,

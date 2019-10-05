@@ -28,7 +28,7 @@ def user_pool_mangement_table(request):
 
     data = []
     for user in users:
-        profile = FacultyProfile.objects.get(id=user.id)
+        profile = FacultyProfile.objects.get(faculty=user.id)
         x = {"fields":{"user-fname":user.first_name,
                        "user-lname":user.last_name,
                        "user-email":user.email,
@@ -39,14 +39,28 @@ def user_pool_mangement_table(request):
         }
         data.append(x)
     data = json.dumps(data)
-    pprint(data)
     return HttpResponse(data, content_type='application/json')
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def user_pool_management_create(request):
-    context = {}
-    return render(request, 'load_manager/components/chairperson/users-management/add-users.html', context)
+    if request.method == 'POST':
+        fname = request.POST.get('fname')
+        lname = request.POST.get('lname')
+        email = request.POST.get('email')
+        type = request.POST.get('type')
+        import os
+        os.system('cls')
+        print(fname,lname)
+        print(email,type)
+        return redirect('chairperson-upm')
+    else:
+        x = FacultyProfile.F_TYPE
+        print(x)
+        context = {
+            'faculty_type': x,
+        }
+        return render(request, 'load_manager/components/chairperson/users-management/add-users.html', context)
 
 @login_required
 def register_view(request):

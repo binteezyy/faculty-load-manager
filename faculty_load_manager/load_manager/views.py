@@ -264,6 +264,90 @@ def curriculum_settings_subject(request,pk):
     return HttpResponse(data, content_type='application/json')
 
     return HttpResponse(subjects)
+
+from bs4 import BeautifulSoup
+import re
+from pprint import pprint
+
+from django.core.files.storage import FileSystemStorage
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def curriculum_upload(request):
+
+    if request.method == 'GET':
+        context = {}
+        return render(request, 'load_manager/components/chairperson/curriculum-upload.html', context)
+
+    elif request.method == 'POST' and request.FILES['myfile']:
+        myfile = request.FILES['myfile']
+        fs = FileSystemStorage()
+        filename = fs.save(myfile.name, myfile)
+        uploaded_file_url = (str(settings.BASE_DIR) + str(fs.url(filename))) #.replace('/', '\\')
+        # return HttpResponse(uploaded_file_url)
+        # PARSE
+
+        semester = 0
+        year_level = 1
+        url = uploaded_file_url
+        curriculum = (((url.split('/')[-1]).split('.')[0]).split('\\')[-1]).split('_')[0]
+        # return HttpResponse(curriculum)
+        page = open(url)
+        soup = BeautifulSoup(page.read(), "html.parser")
+        tables = soup.findAll('table') #get tables
+
+        try:
+            curriculum_get = Curriculum.objects.get(curriculum=str(curriculum))
+        except Curriculum.DoesNotExist:
+            new_curriculum = Curriculum(curriculum=str(curriculum))
+            new_curriculum.save()
+
+        curriculum_get = Curriculum.objects.get(curriculum=str(curriculum))
+
+        for x in range(2,int(len(tables))): #run through tables from tables[2]
+            table = tables[x]
+            trs = table.findAll('tr')       #get table rows
+
+            for y in range(1, int(len(trs))): #run through table rows from rows[1]
+                try:
+                    code = trs[y].findAll('td')[0].contents #get course code
+                    strcode = ''.join(code)
+                except:
+                    code = 'None'
+                try:
+                    description = trs[y].findAll('td')[3].contents #get course description
+                    strdesc = ''.join(description)
+                except:
+                    description = 'None'
+                try:
+                    lec_hours = trs[y].findAll('td')[4].contents #get lecture hours
+                    strlec = ''.join(lec_hours)
+                except:
+                    lec_hours = 'None'
+                try:
+                    lab_hours = trs[y].findAll('td')[5].contents #get lab hours
+                    strlab = ''.join(lab_hours)
+                except:
+                    lab_hours = 'None'
+
+                if strcode == 'TOTAL UNITS':
+                    if semester == 2:
+                        semester = 0
+                        year_level += 1
+                    else:
+                        semester += 1
+                else:
+                    try:
+                        get_subj = Subject.objects.get(subject_code=strcode, subject_name=strdesc)
+                    except Subject.DoesNotExist:
+                        new_subj = Subject(year_level=year_level, semester=semester, curriculum=curriculum_get,
+                        subject_code=strcode, subject_name=strdesc, lab_hours=int(strlab), lec_hours=int(strlec))
+                        new_subj.save()
+
+                    print(f'{strcode} - {strdesc} - {strlab} - {strlec}')
+
+        return redirect('settings-curriculum')
+
+
 from bs4 import BeautifulSoup
 import re
 from pprint import pprint
@@ -271,7 +355,7 @@ from pprint import pprint
 def parse_view(request):
     semester = 0
     year_level = 1
-    url = '/home/binpngnbn/Downloads/1112.html'
+    url = 'C:/Users/Bin/Downloads/1112.html'
     curriculum = ((url.split('/')[-1]).split('.')[0])
     page = open(url)
     soup = BeautifulSoup(page.read(), "html.parser")
