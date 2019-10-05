@@ -7,6 +7,7 @@
 {% endblock %}
 {% block extra_js %}
 <!-- SELECT2 -->
+<script src="{% static "js/ploadscript.js" %}"></script>
 <script src="{% static "vendor/select2/js/select2.min.js" %}"></script>
 
 <script type="text/javascript">
@@ -45,8 +46,22 @@
         </select>
       </div>
       <div class="ptime">
-        <h5>Preffered Time</h5>
+        <h5>Preferred Time</h5>
         <div class="container">
+            <table>
+                <tr>
+                    {% for val,day in days %}
+                    <th>{{ day }}</th>
+                    {% endfor %}
+                </tr>
+                {% for val,day in days %}    
+                {% for v,time in times %}
+                <tr>
+                    <td><input type="checkbox" name="timedays" value="{{val}}-{{v}}">{{ time }}</td>
+                </tr>
+                {% endfor %}
+                {% endfor %}
+            </table>
           <div class="row">
             <div class="row p-2">
               <br>
@@ -74,6 +89,5 @@
     </form>
   </div>
   </div>
-</div>
-
+</div>    
 {% endblock content %}
