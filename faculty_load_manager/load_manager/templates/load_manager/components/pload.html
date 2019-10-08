@@ -48,37 +48,20 @@
       <div class="ptime">
         <h5>Preferred Time</h5>
         <div class="container">
-            <table>
+            <table class="table table-bordered" style="text-align: center">
+                <th>TIME</th>
+                {% for v, time in times %}
+                <td>{{ time }}</td>
+                {%endfor%}
+                {% for val,day in days %}
                 <tr>
-                    {% for val,day in days %}
                     <th>{{ day }}</th>
+                    {% for v,time in times %}
+                    <td><input type="checkbox" name="timedays" value="{{val}}-{{v}}" style="display:none"></td>
                     {% endfor %}
                 </tr>
-                {% for val,day in days %}    
-                {% for v,time in times %}
-                <tr>
-                    <td><input type="checkbox" name="timedays" value="{{val}}-{{v}}">{{ time }}</td>
-                </tr>
-                {% endfor %}
                 {% endfor %}
             </table>
-          <div class="row">
-            <div class="row p-2">
-              <br>
-              {% for val,day in days %}
-              <div class="col-sm">
-                {{ day }}<br>
-                {% for v,time in times %}
-                <div class="checkbox p">
-                  <label><input type="checkbox" name="timedays" value="{{val}}-{{v}}">{{ time }}</label>
-                </div>
-                {% endfor %}
-
-              </div>
-              {% endfor %}
-
-            </div>
-          </div>
         </div>
         <hr>
 
