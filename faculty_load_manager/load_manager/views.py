@@ -211,29 +211,29 @@ def site_settings(request):
         'semester': SEMESTERS(),
         'curriculum': curriculum,
     }
-    settings = Setting.objects.get_or_create()
+    # settings = Setting.objects.get_or_create()
 
-    return render(request, 'load_manager/components/chairperson/settings.html', context)
+    return render(request, 'load_manager/components/chairperson/settings/settings.html', context)
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def change_settings(request):
-    if request.is_ajax():
-        attr = request.POST.get('data-attr')
-        data = request.POST.get('data')
-        print(attr + '\t' + data)
-        settings = Setting.objects.get(id=1)
-        if attr == 'SchoolYear':
-            settings.school_year = SchoolYear.objects.get(pk=data)
-        elif attr == 'Semester':
-            settings.semester = data
-        elif attr == 'Curriculum':
-            settings.curriculum = Curriculum.objects.get(pk=data)
-        settings.save()
-    else:
-        print("NO AJAX")
+def site_settings_table(request):
+    import json
+    from pprint import pprint
+    settings = Setting.objects.all()
+    data = []
+    for setting in settings:
+        x = {"fields":{"id":setting.pk,
+                       "sy":str(setting.school_year),
+                       "semester":setting.get_semester_display(),
+             }
+        }
+        data.append(x)
+    pprint(data)
+    data = json.dumps(data)
+    return HttpResponse(data, content_type='application/json')
 
-    return HttpResponse("POSTED")
+
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
@@ -245,6 +245,8 @@ def curriculum_settings(request):
     }
 
     return render(request, 'load_manager/components/chairperson/curriculum.html', context)
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
 def curriculum_settings_subject(request,pk):
     import json
     from pprint import pprint
@@ -264,6 +266,26 @@ def curriculum_settings_subject(request,pk):
     return HttpResponse(data, content_type='application/json')
 
     return HttpResponse(subjects)
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def curriculum_settings_table(request):
+    if request.method == 'POST':
+        fname = request.POST.get('fname')
+        lname = request.POST.get('lname')
+        email = request.POST.get('email')
+        type = request.POST.get('type')
+        import os
+        os.system('cls')
+        print(fname,lname)
+        print(email,type)
+        return redirect('chairperson-upm')
+    else:
+        x = FacultyProfile.F_TYPE
+        print(x)
+        context = {
+            'faculty_type': x,
+        }
+        return render(request, 'load_manager/components/chairperson/users-management/add-users.html', context)
 
 from bs4 import BeautifulSoup
 import re

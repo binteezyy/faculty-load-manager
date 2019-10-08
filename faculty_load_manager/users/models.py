@@ -38,19 +38,22 @@ class Setting(models.Model):
     fifth_curriculum = models.ForeignKey(
         Curriculum, on_delete=models.CASCADE, null=True, related_name='fifth_year_curriculum')
 
+    class Meta:
+        unique_together = ('school_year','semester')
+        
     def __str__(self):
-        return f'SETTINGS'
+        return f'[{self.school_year}] {self.get_semester_display()}'
 
-    def save(self, *args, **kwargs):
-        save_permission = Setting.has_add_permission(self)
-        self.id = 1
-        if Setting.objects.all().count() < 1:
-            super(Setting, self).save()
-        elif save_permission:
-            super(Setting, self).save()
-
-    def has_add_permission(self):
-        return Setting.objects.filter(id=self.id).exists()
+    # def save(self, *args, **kwargs):
+    #     save_permission = Setting.has_add_permission(self)
+    #     self.id = 1
+    #     if Setting.objects.all().count() < 1:
+    #         super(Setting, self).save()
+    #     elif save_permission:
+    #         super(Setting, self).save()
+    #
+    # def has_add_permission(self):
+    #     return Setting.objects.filter(id=self.id).exists()
 
 
 class FacultyProfile(models.Model):
