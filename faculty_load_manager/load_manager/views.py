@@ -282,7 +282,8 @@ def curriculum_upload(request):
         myfile = request.FILES['myfile']
         fs = FileSystemStorage()
         filename = fs.save(myfile.name, myfile)
-        uploaded_file_url = (str(settings.BASE_DIR) + str(fs.url(filename))) #.replace('/', '\\')
+        uploaded_file_url = (str(settings.BASE_DIR) + str(fs.url(filename))).replace('/', '\\') #if deployed on windows
+        # uploaded_file_url = (str(settings.BASE_DIR) + str(fs.url(filename))) #.replace('/', '\\') #if deployed on linux
         # return HttpResponse(uploaded_file_url)
         # PARSE
 
@@ -417,14 +418,15 @@ def parse_view(request):
 from django.db.models import Q
 
 def generate_semester_offering(request):
-    first_c = Curriculum.objects.get(curriculum='1112')
-    second_c = Curriculum.objects.get(curriculum='1112')
-    third_c = Curriculum.objects.get(curriculum='1112')
-    fourth_c = Curriculum.objects.get(curriculum='1112')
-    fifth_c = Curriculum.objects.get(curriculum='1112')
-    semester = 0
-    start_year = 2020
-    end_year = 2021
+    settings = Setting.objects.all()[0]
+    first_c = Curriculum.objects.get(curriculum=settings.first_curriculum.curriculum)
+    second_c = Curriculum.objects.get(curriculum=settings.second_curriculum.curriculum)
+    third_c = Curriculum.objects.get(curriculum=settings.third_curriculum.curriculum)
+    fourth_c = Curriculum.objects.get(curriculum=settings.fourth_curriculum.curriculum)
+    fifth_c = Curriculum.objects.get(curriculum=settings.fifth_curriculum.curriculum)
+    semester = str(settings.semester)
+    start_year = str(settings.school_year.start_year)
+    end_year = str(settings.school_year.end_year)
 
     try:
         start = Year.objects.get(year=start_year)
