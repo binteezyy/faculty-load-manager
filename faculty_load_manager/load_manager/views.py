@@ -207,6 +207,7 @@ def site_settings(request):
     curriculum = Curriculum.objects.all()
     current_settings = Setting.objects.get(current=True)
     context = {
+        'title': 'Settings',
         'viewtype': 'settings',
         'csetting': current_settings,
         'sem_status': SEMESTER_STATUS(),
