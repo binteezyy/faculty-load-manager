@@ -208,7 +208,7 @@ def site_settings(request):
     context = {
         'viewtype': 'settings',
         'school_year': SchoolYear.objects.all(),
-        'semester': SEMESTERS(),
+        'semesters': SEMESTERS(),
         'curriculum': curriculum,
     }
     # settings = Setting.objects.get_or_create()
@@ -224,7 +224,7 @@ def site_settings_table(request):
     data = []
     for setting in settings:
         x = {"fields":{"id":setting.pk,
-                       "sy":str(setting.school_year),
+                       "sy":[setting.pk,str(setting.school_year)],
                        "semester":setting.get_semester_display(),
              }
         }
