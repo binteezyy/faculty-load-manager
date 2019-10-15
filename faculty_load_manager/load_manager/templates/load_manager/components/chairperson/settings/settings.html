@@ -10,7 +10,24 @@
 {% block content %}
 <div class="card animated fadeInDown">
   <div class="card-header">
-        <h5>Settings List</h5>
+    <h5>Current Setting</h5>
+  </div>
+  <div class="card-content">
+    <p>{{ csetting.get_status_display }}</p>
+    {% if csetting.status == 0 %}
+
+    {% elif csetting.status == 1 %}
+
+    {% elif csetting.status == 2 %}
+
+    {% elif csetting.status == 3 %}
+    {% endif %}
+  </div>
+</div>
+<br>
+<div class="card animated fadeInDown">
+  <div class="card-header">
+    <h5>Settings List</h5>
   </div>
   <div class="card-content">
     <div class="table-responsive p-4">
@@ -55,7 +72,7 @@
         "data": "fields.sy",
         render:function(data, type, row)
           {
-            return '<a href="/settings/sys/'+data[0]+'">'+data[1]+'</a>'
+            return '<a href="/settings/'+data[0]+'">'+data[1]+'</a>'
           },
         },
       { "className": 'col-semester text-center',

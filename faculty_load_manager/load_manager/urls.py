@@ -17,7 +17,9 @@ urlpatterns = [
     path('ss', views.ss, name='ss'),
 
     # CHAIRPERSON VIEW
+    ## SETTINGS
     path('settings/', views.site_settings, name='settings'),
+    path('settings/<int:pk>', views.site_settings_view, name='settings'),
     path('settings/table', views.site_settings_table, name='settings-table'),
     path('settings/curriculum/', views.curriculum_settings,
          name='settings-curriculum'),
