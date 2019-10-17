@@ -47,7 +47,7 @@ def home_view(request):
 
 @login_required
 def load_manager_list(request):
-    settings = Setting.objects.get(pk=1)
+    settings = Setting.objects.get(current=True)
     if PreferredSchedule.objects.filter(user=request.user,school_year=settings.school_year,semester=settings.semester).exists():
         cs = True
         psched = PreferredSchedule.objects.get(user=request.user,school_year=settings.school_year,semester=settings.semester)
@@ -86,7 +86,7 @@ def load_manager_tables(request):
     return HttpResponse(data, content_type='application/json')
 @login_required
 def load_manager_create(request):
-    settings = Setting.objects.get(pk=1)
+    settings = Setting.objects.get(current=True)
     time_schedules = PreferredTime.objects.all()
     current_user = request.user
     subjs = SemesterOffering.objects.get(school_year=settings.school_year,semester=settings.semester).subject.all()
@@ -104,7 +104,7 @@ def load_manager_create(request):
         selected = request.POST.getlist('timedays')
         subjects = request.POST.getlist('psubjects')
         print(subjects)
-        setting = Setting.objects.get(pk=1)
+        setting = Setting.objects.get(current=True)
         current_user = request.user
         preferred_sched =  PreferredSchedule(user = current_user,
                                             semester = setting.semester,
@@ -706,3 +706,53 @@ def generate_section_offering(request):
 
 
     return HttpResponse("generated section offering")
+
+def generate_load(request):
+    settings = Setting.objects.get(current=True)
+    semester = str(settings.semester)
+    start_year = str(settings.school_year.start_year)
+    end_year = str(settings.school_year.end_year)
+
+    try:
+        start = Year.objects.get(year=start_year)
+    except Year.DoesNotExist:
+        new_year = Year(year=start_year)
+        new_year.save()
+        start = Year.objects.get(year=start_year)
+
+    try:
+        end = Year.objects.get(year=end_year)
+    except Year.DoesNotExist:
+        new_year = Year(year=end_year)
+        new_year.save()
+        end  = Year.objects.get(year=end_year)
+
+    try:
+        sy = SchoolYear.objects.get(start_year=start, end_year=end)
+    except SchoolYear.DoesNotExist:
+        new_sy = SchoolYear(start_year=start, end_year=end)
+        new_sy.save()
+        sy = SchoolYear.objects.get(start_year=start, end_year=end)
+
+    # Loop through subjects from section offering; based on settings' 
+    #   semester and sy; descending by year level; ascending subject code.
+    secOff_qs = SectionOffering.objects.filter(school_year=sy, semester=semester).exclude(professor__isnull=False).order_by('-subject__year_level', 'subject__subject_code')
+
+    # Query all prof; filtered by preferred subject (this subject); 
+    #   first come first serve on list maximum section count of this.subject.year_level
+    prefScheds = PreferredSchedule.objects.filter(school_year=sy, semester=semester).filter(preferred_subject=secOff_qs[0].subject)
+    
+    user_list = []
+    for prefSched in prefScheds:
+        user_list.append(prefSched.user)
+    # Loop through filtered prof; descending based on Faculty Priority Rule
+    prof = FacultyProfile.objects.filter(faculty__in=user_list).order_by('-faculty_type')
+    
+    # If prof already allocated to this.subject, next. 
+    secOff_prof_exists = SectionOffering.objects.filter(school_year=sy, semester=semester, professor=prof[0].faculty, subject=secOff_qs[0].subject)
+
+    # If prof has no remaining hours, next.
+    # secOff_allocated = SectionOffering.objects.filter(school_year=sy, semester=semester, professor=prof[0].faculty)
+
+    # Allocation subject to prof; first come, first serve.
+    return HttpResponse(secOff_prof_exists)

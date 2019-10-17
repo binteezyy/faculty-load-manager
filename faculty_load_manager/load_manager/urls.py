@@ -42,4 +42,7 @@ urlpatterns = [
          name='generate_semester_offering'),
     path('so/', views.generate_section_offering,
          name='generate_section_offering'),
+
+     #ALGO
+     path('chairperson/generate-load', views.generate_load, name='generate_load')
 ]
