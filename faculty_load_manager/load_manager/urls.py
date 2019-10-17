@@ -29,8 +29,6 @@ urlpatterns = [
          name='settings-curriculum'),
     path('chairperson/curriculum/<int:name>',
          views.curriculum_edit, name='curriculum-edit'),
-    path('chairperson/curriculum/<int:pk>/subjects/',
-         views.curriculum_settings_subject, name='settings-curriculum-subjects'),
     path('chairperson/curriculum/upload', views.curriculum_upload,
          name='settings-curriculum-upload'),
     path('chairperson/curriculum/table', views.curriculum_settings_subject,
@@ -48,4 +46,7 @@ urlpatterns = [
          name='generate_semester_offering'),
     path('so/', views.generate_section_offering,
          name='generate_section_offering'),
+
+     #ALGO
+     path('chairperson/generate-load', views.generate_load, name='generate_load')
 ]

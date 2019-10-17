@@ -58,6 +58,14 @@ class Subject(models.Model):
     lab_hours = models.PositiveIntegerField(default=0)
     lec_hours = models.PositiveIntegerField(default=0)
 
+    ROOM_CAT = [
+        (0, 'Lab'),
+        (1, 'Lecture'),
+        (2, 'Electronics Lab'),
+    ]
+    
+    room_category = models.IntegerField(choices = ROOM_CAT, default=1)
+
     def __str__(self):
         return f'{self.subject_name}'
 
@@ -219,4 +227,4 @@ class PreferredSchedule(models.Model):
         unique_together = ('user', 'school_year', 'semester')
 
     def __str__(self):
-        return f'PROF{self.user.pk}PLOAD{self.pk}'
+        return f'{self.user.username} PLOAD{self.pk}'
