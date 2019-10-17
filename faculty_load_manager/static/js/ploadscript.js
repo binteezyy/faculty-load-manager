@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    $("table").each(function() {
+    $("table").each(function() { // invert tr and td
         var $this = $(this);
         var newrows = [];
         $this.find("tr").each(function(){
@@ -18,22 +18,36 @@ $(document).ready(function() {
             $this.append(this);
         });
     });
+
+    var isMouseDown = false,
+        isHighlighted;
+
+    $("#schedule-table input:checkbox").click(function() {
+        return false;
+    });
+    $("#schedule-table td:not(:first-child)")
+        .mousedown(function() {
+            isMouseDown = true;
+            $(this).toggleClass("highlighted");
+            isHighlighted = $(this).hasClass("highlighted");
+            $(this).find("input:checkbox").prop("checked", isHighlighted);
+            // console.log($(this).find("input:checkbox").prop("checked"));
+            // console.log($(this).find("input:checkbox").prop("value"));
+            return false;
+        })
+        .mouseover(function() {
+            if(isMouseDown) {
+                $(this).toggleClass("highlighted", isHighlighted);
+                $(this).find("input:checkbox").prop("checked", isHighlighted);
+                // console.log($(this).find("input:checkbox").prop("checked"));
+                // console.log($(this).find("input:checkbox").prop("value"));
+            }
+        })
+        .bind("selectstart", function() {
+            return false;
+        })
     
-    $("td").click(function(e) {
-        var chk = $(this).closest("td").find("input:checkbox").get(0);
-        if(e.target != chk)
-        {
-            chk.checked = !chk.checked;
-            if ($(this).closest("td").find("input:checkbox").prop("checked") == true) {
-                $(this).closest("td").css("background-color","red");
-                console.log($(this).closest("td").find("input:checkbox").prop("checked"));
-                console.log($(this).closest("td").find("input:checkbox").prop("value"));
-            }
-            else {
-                $(this).closest("td").css("background-color","white");
-                console.log($(this).closest("td").find("input:checkbox").prop("checked"));
-                console.log($(this).closest("td").find("input:checkbox").prop("value"));
-            }
-        }
+    $(document).mouseup(function() {
+        isMouseDown = false;
     });
 });

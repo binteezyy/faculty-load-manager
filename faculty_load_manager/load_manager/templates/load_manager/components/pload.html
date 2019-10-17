@@ -3,6 +3,7 @@
 {% block extra_css %}
 <!-- SELECT2 -->
 <link href="{% static "vendor/select2/css/select2.min.css" %}" rel="stylesheet" />
+<link href="{%static "js/ploadcss.css" %}" rel="stylesheet" />
 
 {% endblock %}
 {% block extra_js %}
@@ -48,7 +49,7 @@
       <div class="ptime">
         <h5>Preferred Time</h5>
         <div class="container">
-            <table class="table table-bordered" style="text-align: center">
+            <table class="table table-bordered" id="schedule-table" style="text-align: center">
                 <th>TIME</th>
                 {% for v, time in times %}
                 <td>{{ time }}</td>
