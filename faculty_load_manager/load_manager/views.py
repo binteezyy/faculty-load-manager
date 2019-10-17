@@ -245,6 +245,20 @@ def curriculum_settings(request):
     }
 
     return render(request, 'load_manager/components/chairperson/curriculum.html', context)
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def curriculum_edit(request, name):
+    curriculum = Curriculum.objects.get(curriculum=str(name))
+    subjects = Subject.objects.filter(curriculum=curriculum).order_by('subject_code', 'minor_flag')
+    context = {
+        'curriculum': curriculum,
+        'subjects': subjects,
+    }
+
+    return render(request, 'load_manager/components/chairperson/curriculum-edit.html', context)
+    
+
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def curriculum_settings_subject(request,pk):
@@ -364,6 +378,8 @@ def curriculum_upload(request):
                     except Subject.DoesNotExist:
                         new_subj = Subject(year_level=year_level, semester=semester, curriculum=curriculum_get,
                         subject_code=strcode, subject_name=strdesc, lab_hours=int(strlab), lec_hours=int(strlec))
+                        if strcode.startswith('BSCOE') or strcode.startswith('COEN'):
+                            new_subj.minor_flag= True
                         new_subj.save()
 
                     print(f'{strcode} - {strdesc} - {strlab} - {strlec}')
