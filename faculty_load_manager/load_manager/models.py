@@ -92,19 +92,12 @@ class BlockSection(models.Model):
         return f'{self.year_level} - {self.section}'
 
 class SemesterOffering(models.Model):
-    ROOM_CAT = [
-        (0, 'Lab'),
-        (1, 'Lecture'),
-        (2, 'Electronics Lab'),
-    ]
-
     school_year = models.ForeignKey(SchoolYear, on_delete=models.CASCADE)
     semester = models.IntegerField(choices = SEMESTERS(), default = 0, validators=[
         MaxValueValidator(2),
         MinValueValidator(0)
     ])
     subject = models.ManyToManyField(Subject)
-    pref_room = models.IntegerField(choices = ROOM_CAT, default=1)
 
     class Meta:
         unique_together = ('school_year','semester')
