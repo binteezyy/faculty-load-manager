@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect, reverse
-from django.http import HttpResponse, HttpResponseRedirect
-
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required,user_passes_test
 from .models import *
 # Create your views here.
@@ -16,6 +15,10 @@ from users.models import *
 from django.contrib.auth import login
 from .forms import UserLoginForm, UserRegisterForm
 
+import os
+import json
+import re
+from bs4 import BeautifulSoup
 def home_view(request):
     next = request.GET.get('next')
 
@@ -63,11 +66,75 @@ def load_manager_list(request):
     return render(request, 'load_manager/components/faculty-load/list.html', context)
 
 #===================================================
+#                   AJAX_COMPONENTS
+#===================================================
+@login_required
+def ajax_save(request):
+    if request.is_ajax() and request.method == 'POST':
+        viewtype = request.POST.get('viewtype')
+        dict = request.POST.dict()
+        pprint(dict)
+        data = {}
+        data['state'] = ''
+        data['data'] = []
+
+        # try:
+        if viewtype == 'settings': # site_settings_save for querying
+            school_year = dict['data[school_year]']
+            sem = dict['data[sem]']
+
+            current = Setting.objects.get(school_year=school_year,semester=sem)
+            if int(dict['data[firstSection]']) != 0:
+                current.first_sections = int(dict['data[firstSection]'])
+                current.first_curriculum = Curriculum.objects.get(pk=dict['data[firstCurriculum]'])
+            else:
+                current.first_sections = 0
+                current.first_curriculum = None
+
+            if int(dict['data[secondSection]']) != 0:
+                current.second_sections = int(dict['data[secondSection]'])
+                current.second_curriculum = Curriculum.objects.get(pk=dict['data[secondCurriculum]'])
+            else:
+                current.second_sections = 0
+                current.second_curriculum = None
+
+            if int(dict['data[thirdSection]']) != 0:
+                current.third_sections = int(dict['data[thirdSection]'])
+                current.third_curriculum = Curriculum.objects.get(pk=dict['data[thirdCurriculum]'])
+            else:
+                current.third_sections = 0
+                current.third_curriculum = None
+
+
+            if int(dict['data[fourthSection]']) != 0:
+                current.fourth_sections = int(dict['data[fourthSection]'])
+                current.fourth_curriculum = Curriculum.objects.get(pk=dict['data[fourthCurriculum]'])
+            else:
+                current.fourth_sections = 0
+                current.fourth_curriculum = None
+
+            if int(dict['data[fifthSection]']) != 0:
+                current.fifth_sections = int(dict['data[fifthSection]'])
+                current.fifth_curriculum = Curriculum.objects.get(pk=dict['data[fifthCurriculum]'])
+            else:
+                current.fifth_sections = 0
+                current.fifth_curriculum = None
+
+            current.save()
+            data['state'] = 'SUCCESS'
+        # except Exception as e:
+        #     print(e)
+        #     data['state'] = str(e)
+
+        data = json.dumps(data)
+        return HttpResponse(data, content_type='application/json')
+    else:
+        return HttpResponse({}, content_type='application/json')
+#===================================================
 #                   LOAD MANAGER
 #===================================================
 @login_required
 def load_manager_tables(request):
-    import json
     loads = PreferredSchedule.objects.filter(user=request.user)
 
     data = []
@@ -201,6 +268,8 @@ def ss(request):
 #===================================================
 #               CHAIRPERSON VIEW
 #===================================================
+
+# ====== SITE SETTINGS
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def site_settings(request):
@@ -237,7 +306,6 @@ def site_settings_view(request,pk):
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def site_settings_table(request):
-    import json
     settings = Setting.objects.all()
     data = []
     for setting in settings:
@@ -250,8 +318,67 @@ def site_settings_table(request):
     data = json.dumps(data)
     return HttpResponse(data, content_type='application/json')
 
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def site_settings_save(request,viewtype,sy,sem):
+    context = {
+        'viewtype': 'settings',
+        'title': 'Semester Settings',
+        'message': f'Do you want to save setting for SY[<b>{SchoolYear.objects.get(pk=sy)}</b>] <b>{Setting.objects.get(current=True).get_semester_display()}</b>',
+        'query':"""{
+                    "school_year": """+str(sy)+""",
+                    "sem":  """+str(sem)+""",
+                    // FIRST YEAR
+                     "firstSection" : $('input[name= "first-section"]').val(),
+                     "firstCurriculum": function(data){
+                         if($('select[name= "first-select"]').is(':disabled')){
+                             return 'disabled'
+                         } else {
+                           return $('select[name= "first-select"] :selected').val()
+                         }
+                     },
+                     // SECOND YEAR
+                     "secondSection": $('input[name= "second-section"]').val(),
+                     "secondCurriculum": function(data){
+                         if($('select[name= "second-select"]').is(':disabled')){
+                             return 'disabled'
+                         } else {
+                           return $('select[name= "second-select"] :selected').val()
+                         }
+                     },
+                     // THIRD YEAR
+                     "thirdSection": $('input[name= "third-section"]').val(),
+                     "thirdCurriculum": function(data){
+                         if($('select[name= "third-select"]').is(':disabled')){
+                             return 'disabled'
+                         } else {
+                           return $('select[name= "third-select"] :selected').val()
+                         }
+                     },
+                     // FOURTH YEAR
+                     "fourthSection": $('input[name= "fourth-section"]').val(),
+                     "fourthCurriculum": function(data){
+                         if($('select[name= "fourth-select"]').is(':disabled')){
+                             return 'disabled'
+                         } else {
+                           return $('select[name= "fourth-select"] :selected').val()
+                         }
+                     },
 
+                     // fifth YEAR
+                     "fifthSection": $('input[name= "fifth-section"]').val(),
+                     "fifthCurriculum": function(data){
+                         if($('select[name= "fifth-select"]').is(':disabled')){
+                             return 'disabled'
+                         } else {
+                           return $('select[name= "fifth-select"] :selected').val()
+                         }
+                     },
 
+                 }
+                 """
+    }
+    return render(request, 'load_manager/components/modals/save.html', context)
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def curriculum_settings(request):
@@ -294,10 +421,10 @@ def curriculum_edit(request, name):
             print(a)
             subject.save()
         return redirect('settings-curriculum')
-    
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
+
 def curriculum_settings_subject(request):
     import json
     from pprint import pprint
@@ -323,7 +450,6 @@ def curriculum_settings_table(request):
         lname = request.POST.get('lname')
         email = request.POST.get('email')
         type = request.POST.get('type')
-        import os
         os.system('cls')
         print(fname,lname)
         print(email,type)
@@ -335,10 +461,6 @@ def curriculum_settings_table(request):
             'faculty_type': x,
         }
         return render(request, 'load_manager/components/chairperson/users-management/add-users.html', context)
-
-from bs4 import BeautifulSoup
-import re
-from pprint import pprint
 
 from django.core.files.storage import FileSystemStorage
 @login_required
@@ -421,11 +543,6 @@ def curriculum_upload(request):
                     print(f'{strcode} - {strdesc} - {strlab} - {strlec}')
 
         return redirect('settings-curriculum')
-
-
-from bs4 import BeautifulSoup
-import re
-from pprint import pprint
 
 def parse_view(request):
     semester = 0

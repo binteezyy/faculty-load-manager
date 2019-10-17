@@ -4,6 +4,8 @@ from users.views import *
 urlpatterns = [
     path('', views.home_view, name='home'),
 
+    # AJAX MODULES
+    path('ajax/save', views.ajax_save, name='ajax-save'),
     # LOAD MANAGER
     path('my/load-manager/', views.load_manager_list, name='load-manager-list'),
     path('my/load-manager/create/', views.load_manager_create,
@@ -21,6 +23,8 @@ urlpatterns = [
     path('chairperson/settings/', views.site_settings, name='settings'),
     path('chairperson/settings/<int:pk>', views.site_settings_view, name='settings'),
     path('chairperson/settings/table', views.site_settings_table, name='settings-table'),
+    path('chairperson/settings/save/<str:viewtype>/<int:sy>/<int:sem>', views.site_settings_save,
+        name='chairperson-settings-save'),
     path('chairperson/curriculum/', views.curriculum_settings,
          name='settings-curriculum'),
     path('chairperson/curriculum/<int:name>',
