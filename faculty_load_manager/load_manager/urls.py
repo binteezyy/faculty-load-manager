@@ -18,19 +18,21 @@ urlpatterns = [
 
     # CHAIRPERSON VIEW
     path('settings/', views.site_settings, name='settings'),
-    path('settings/change/', views.change_settings, name='settings-change'),
+    path('settings/table', views.site_settings_table, name='settings-table'),
     path('settings/curriculum/', views.curriculum_settings,
          name='settings-curriculum'),
     path('settings/curriculum/<int:pk>/subjects/',
          views.curriculum_settings_subject, name='settings-curriculum-subjects'),
     path('settings/curriculum/upload', views.curriculum_upload,
          name='settings-curriculum-upload'),
+    path('chairperson/curriculum/table',views.curriculum_settings_subject, name='chairperson-curriculum-table'),
     path('chairperson/user-management/',
          user_pool_management, name='chairperson-upm'),
     path('chairperson/user-management/users/table',
          user_pool_mangement_table, name='chairperson-upm-user-table'),
     path('chairperson/user-management/users/create',
          user_pool_management_create, name='chairperson-upm-user-create'),
+
     # AJAX
     path('parse/', views.parse_view, name='parse_view'),
     path('generate/', views.generate_semester_offering,

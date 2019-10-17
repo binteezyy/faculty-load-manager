@@ -1,0 +1,76 @@
+{% extends 'load_manager/container/container.html' %}
+{% load staticfiles %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static "vendor/font-awesome/css/all.min.css" %}">
+<link rel="stylesheet" href="{% static "vendor/DataTables/datatables.min.css" %}">
+<link href="{% static "vendor/select2/css/select2.min.css" %}" rel="stylesheet" />
+{% endblock %}
+
+{% block content %}
+<div class="card animated fadeInDown">
+  <div class="card-header">
+        <h5>Settings List</h5>
+  </div>
+  <div class="card-content">
+    <div class="table-responsive p-4">
+      <button type="button" class="btn btn-success active">Create <i class="fas fa-plus"></i> </button>
+      <table id="settings-table" class="table table-hover" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info">
+        <thead>
+          <tr role="row" class="text-center">
+            <th class="" style="width:5%">ID</th>
+            <th class="" style="width:10%">School Year</th>
+            <th class="" class=""style="width:10%">Semester</th>
+            <th class="" style="width:10%">Action(s)</th>
+          </tr>
+        </thead>
+      </table>
+      </div>
+    </div>
+
+</div>
+{% endblock content %}
+
+{% block extra_js %}
+  <script src="{% static "vendor/select2/js/select2.min.js" %}"></script>
+  <script type="text/javascript" src="{% static "vendor/DataTables/datatables.min.js" %}"></script>
+
+  <script type="text/javascript">
+  $('#settings-table').DataTable( {
+    // "select": true,
+    // "buttons": true,
+    "dataType":'json',
+    "ajax": {
+     "processing": true,
+     "dataSrc":'',
+     "url": "{% url 'settings-table' %}",
+    },
+    "columnDefs": [
+      { "className": 'col-id text-center',
+        "targets":   0,
+        "data": "fields.id",
+        },
+      { "className": 'col-setting-sy text-center',
+        "targets":   1,
+        "data": "fields.sy",
+        render:function(data, type, row)
+          {
+            return '<a href="/settings/sys/'+data[0]+'">'+data[1]+'</a>'
+          },
+        },
+      { "className": 'col-semester text-center',
+        "targets":   2,
+        "data": 'fields.semester',
+      },
+      { "className": 'col-details text-center',
+        "targets":   3,
+        "data": 'fields.setting-action',
+        render:function(data, type, row)
+          {
+            return '<button type="button" class="read btn btn-sm btn-primary m-1" data-id="">'+
+              '<span class="fa fa-eye"></span> View</button>'
+          },
+      },
+  ]});
+  </script>
+{% endblock %}
