@@ -21,10 +21,27 @@
       <div class="form-row">
         <div class="col-md-2">
           <label for="first-section">Sections</label>
-          <input id="first-section" class="form-control" type="number" min="0" value="0" style="padding: .28125rem .28125rem !important"/>
+          <input id="first-section" class="form-control" type="number" min="0" value="{{csetting.first_sections}}" style="padding: .28125rem .28125rem !important"/>
         </div>
         <div class="col-md">
           <label for="first-section">Curriculum</label>
+          <select class="custom-select" {% if csetting.first_sections == 0 %}disabled{% endif %}>
+            {% for option in curriculum %}
+            <option value="{{ option.pk }}">{{ option }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <br>
+
+      <h5>Second Year</h5>
+      <div class="form-row">
+        <div class="col-md-2">
+          <label for="second-section">Sections</label>
+          <input id="second-section" class="form-control" type="number" min="0" value="{{csetting.second_sections}}" style="padding: .28125rem .28125rem !important"/>
+        </div>
+        <div class="col-md">
+          <label for="second-section">Curriculum</label>
           <select class="custom-select">
             {% for option in curriculum %}
             <option value="{{ option.pk }}">{{ option }}</option>
@@ -34,7 +51,7 @@
       </div>
       <br>
 
-      <h5>Second Year Curriculum</h5>
+      <h5>Third Year</h5>
       <div class="form-row">
         <div class="col-md-2">
           <label for="first-section">Sections</label>
@@ -51,7 +68,7 @@
       </div>
       <br>
 
-      <h5>Third Year Curriculum</h5>
+      <h5>Fourth Year</h5>
       <div class="form-row">
         <div class="col-md-2">
           <label for="first-section">Sections</label>
@@ -68,24 +85,7 @@
       </div>
       <br>
 
-      <h5>Fourth Year Curriculum</h5>
-      <div class="form-row">
-        <div class="col-md-2">
-          <label for="first-section">Sections</label>
-          <input id="first-section" class="form-control" type="number" min="0" value="0" style="padding: .28125rem .28125rem !important"/>
-        </div>
-        <div class="col-md">
-          <label for="first-section">Curriculum</label>
-          <select class="custom-select">
-            {% for option in curriculum %}
-            <option value="{{ option.pk }}">{{ option }}</option>
-            {% endfor %}
-          </select>
-        </div>
-      </div>
-      <br>
-
-      <h5>Fifth Year Curriculum</h5>
+      <h5>Fifth Year</h5>
       <div class="form-row">
         <div class="col-md-2">
           <label for="first-section">Sections</label>
@@ -112,8 +112,8 @@
   <div class="card-footer">
     <div class="float-right">
       {% if csetting.status == 0 %}
-      <button id="encoding-open" type="button" name="button" class="btn btn-lg btn-raised btn-primary">OPEN</button>
-
+      <button id="opening-save" type="button" name="button" class="btn btn-m btn-raised btn-success">SAVE</button>
+      <button id="encoding-open" type="button" name="button" class="btn btn-m btn-raised btn-primary">OPEN</button>
       {% endif %}
     </div>
   </div>
