@@ -1,4 +1,5 @@
 $(document).ready(function() {
+    $('[data-toggle="tooltip"]').tooltip();
     $("table").each(function() { // invert tr and td
         var $this = $(this);
         var newrows = [];

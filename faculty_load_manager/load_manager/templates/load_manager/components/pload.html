@@ -10,6 +10,7 @@
 <!-- SELECT2 -->
 <script src="{% static "js/ploadscript.js" %}"></script>
 <script src="{% static "vendor/select2/js/select2.min.js" %}"></script>
+<script src='https://kit.fontawesome.com/a076d05399.js'></script>
 
 <script type="text/javascript">
   $(document).ready(function() {
@@ -47,7 +48,11 @@
         </select>
       </div>
       <div class="ptime">
-        <h5>Preferred Time</h5>
+        <h5>Preferred Time <a href="#" data-toggle="tooltip" data-placement="right" title="Click and drag to select multiple preferred time">
+            <!-- <span class="glyphicon glyphicon-question-sign"></span> -->
+            <i class="far fa-question-circle" style="color:black"></i>
+        </a></h5>
+        
         <div class="container">
             <table class="table table-bordered" id="schedule-table" style="text-align: center">
                 <th>TIME</th>
