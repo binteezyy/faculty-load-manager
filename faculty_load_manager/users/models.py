@@ -32,15 +32,15 @@ class Setting(models.Model):
     ],
         null=True)
     first_curriculum = models.ForeignKey(
-        Curriculum, on_delete=models.CASCADE, null=True, related_name='first_year_curriculum')
+        Curriculum, on_delete=models.CASCADE, null=True,blank=True, related_name='first_year_curriculum')
     second_curriculum = models.ForeignKey(
-        Curriculum, on_delete=models.CASCADE, null=True, related_name='second_year_curriculum')
+        Curriculum, on_delete=models.CASCADE, null=True, blank=True, related_name='second_year_curriculum')
     third_curriculum = models.ForeignKey(
-        Curriculum, on_delete=models.CASCADE, null=True, related_name='third_year_curriculum')
+        Curriculum, on_delete=models.CASCADE, null=True, blank=True, related_name='third_year_curriculum')
     fourth_curriculum = models.ForeignKey(
-        Curriculum, on_delete=models.CASCADE, null=True, related_name='fourth_year_curriculum')
+        Curriculum, on_delete=models.CASCADE, null=True, blank=True, related_name='fourth_year_curriculum')
     fifth_curriculum = models.ForeignKey(
-        Curriculum, on_delete=models.CASCADE, null=True, related_name='fifth_year_curriculum')
+        Curriculum, on_delete=models.CASCADE, null=True, blank=True, related_name='fifth_year_curriculum')
     first_sections = models.PositiveIntegerField(default=0)
     second_sections = models.PositiveIntegerField(default=0)
     third_sections = models.PositiveIntegerField(default=0)
