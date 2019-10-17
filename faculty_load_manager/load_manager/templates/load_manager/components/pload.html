@@ -3,11 +3,14 @@
 {% block extra_css %}
 <!-- SELECT2 -->
 <link href="{% static "vendor/select2/css/select2.min.css" %}" rel="stylesheet" />
+<link href="{%static "js/ploadcss.css" %}" rel="stylesheet" />
 
 {% endblock %}
 {% block extra_js %}
 <!-- SELECT2 -->
+<script src="{% static "js/ploadscript.js" %}"></script>
 <script src="{% static "vendor/select2/js/select2.min.js" %}"></script>
+<script src='https://kit.fontawesome.com/a076d05399.js'></script>
 
 <script type="text/javascript">
   $(document).ready(function() {
@@ -45,25 +48,26 @@
         </select>
       </div>
       <div class="ptime">
-        <h5>Preffered Time</h5>
+        <h5>Preferred Time <a href="#" data-toggle="tooltip" data-placement="right" title="Click and drag to select multiple preferred time">
+            <!-- <span class="glyphicon glyphicon-question-sign"></span> -->
+            <i class="far fa-question-circle" style="color:black"></i>
+        </a></h5>
+        
         <div class="container">
-          <div class="row">
-            <div class="row p-2">
-              <br>
-              {% for val,day in days %}
-              <div class="col-sm">
-                {{ day }}<br>
-                {% for v,time in times %}
-                <div class="checkbox p">
-                  <label><input type="checkbox" name="timedays" value="{{val}}-{{v}}">{{ time }}</label>
-                </div>
+            <table class="table table-bordered" id="schedule-table" style="text-align: center">
+                <th>TIME</th>
+                {% for v, time in times %}
+                <td>{{ time }}</td>
+                {%endfor%}
+                {% for val,day in days %}
+                <tr>
+                    <th>{{ day }}</th>
+                    {% for v,time in times %}
+                    <td><input type="checkbox" name="timedays" value="{{val}}-{{v}}" style="display:none"></td>
+                    {% endfor %}
+                </tr>
                 {% endfor %}
-
-              </div>
-              {% endfor %}
-
-            </div>
-          </div>
+            </table>
         </div>
         <hr>
 
@@ -74,6 +78,5 @@
     </form>
   </div>
   </div>
-</div>
-
+</div>    
 {% endblock content %}
