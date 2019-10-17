@@ -491,7 +491,7 @@ def parse_view(request):
 from django.db.models import Q
 
 def generate_semester_offering(request):
-    settings = Setting.objects.all()[0]
+    settings = Setting.objects.get(current=True)
     first_c = Curriculum.objects.get(curriculum=settings.first_curriculum.curriculum)
     second_c = Curriculum.objects.get(curriculum=settings.second_curriculum.curriculum)
     third_c = Curriculum.objects.get(curriculum=settings.third_curriculum.curriculum)
@@ -531,16 +531,13 @@ def generate_semester_offering(request):
 
         semOff = SemesterOffering.objects.get(school_year=sy, semester=semester)
 
-        first_s = Subject.objects.filter(year_level=1, semester=semester, curriculum=first_c).filter(
-            Q(subject_code__startswith='COEN')|Q(subject_code__startswith='BSCOE'))
-        second_s = Subject.objects.filter(year_level=2, semester=semester, curriculum=second_c).filter(
-            Q(subject_code__startswith='COEN')|Q(subject_code__startswith='BSCOE'))
-        third_s = Subject.objects.filter(year_level=3, semester=semester, curriculum=third_c).filter(
-            Q(subject_code__startswith='COEN')|Q(subject_code__startswith='BSCOE'))
-        fourth_s = Subject.objects.filter(year_level=4, semester=semester, curriculum=fourth_c).filter(
-            Q(subject_code__startswith='COEN')|Q(subject_code__startswith='BSCOE'))
-        fifth_s = Subject.objects.filter(year_level=5, semester=semester, curriculum=fifth_c).filter(
-            Q(subject_code__startswith='COEN')|Q(subject_code__startswith='BSCOE'))
+        # first_s = Subject.objects.filter(year_level=1, semester=semester, curriculum=first_c).filter(
+        #     Q(subject_code__startswith='COEN')|Q(subject_code__startswith='BSCOE'))
+        first_s = Subject.objects.filter(year_level=1, semester=semester, curriculum=first_c, minor_flag=True, thesis_flag=False)
+        second_s = Subject.objects.filter(year_level=2, semester=semester, curriculum=first_c, minor_flag=True, thesis_flag=False)
+        third_s = Subject.objects.filter(year_level=3, semester=semester, curriculum=first_c, minor_flag=True, thesis_flag=False)
+        fourth_s = Subject.objects.filter(year_level=4, semester=semester, curriculum=first_c, minor_flag=True, thesis_flag=False)
+        fifth_s = Subject.objects.filter(year_level=5, semester=semester, curriculum=first_c, minor_flag=True, thesis_flag=False)
 
         first_s = list(first_s)
         second_s = list(second_s)
@@ -593,27 +590,32 @@ def generate_section_offering(request):
         sy = SchoolYear.objects.get(start_year=start, end_year=end)
 
     try:
-        fifth_count = BlockSection.objects.filter(school_year=sy, semester=semester, year_level=5).count()
+        # fifth_count = BlockSection.objects.filter(school_year=sy, semester=semester, year_level=5).count()
+        fifth_count = int(settings.fifth_sections)
     except:
         fifth_count = 0
     print(f'fifth year - {fifth_count}')
     try:
-        fourth_count = BlockSection.objects.filter(school_year=sy, semester=semester, year_level=4).count()
+        #fourth_count = BlockSection.objects.filter(school_year=sy, semester=semester, year_level=4).count()
+        fourth_count = int(settings.fourth_sections)
     except:
         fourth_count = 0
     print(f'fourth year - {fourth_count}')
     try:
-        third_count = BlockSection.objects.filter(school_year=sy, semester=semester, year_level=3).count()
+        #third_count = BlockSection.objects.filter(school_year=sy, semester=semester, year_level=3).count()
+        third_count = int(settings.third_sections)
     except:
         third_count = 0
     print(f'third year - {third_count}')
     try:
-        second_count = BlockSection.objects.filter(school_year=sy, semester=semester, year_level=2).count()
+        #second_count = BlockSection.objects.filter(school_year=sy, semester=semester, year_level=2).count()
+        second_count = int(settings.second_sections)
     except:
         second_count = 0
     print(f'second year - {second_count}')
     try:
-        first_count = BlockSection.objects.filter(school_year=sy, semester=semester, year_level=1).count()
+        #first_count = BlockSection.objects.filter(school_year=sy, semester=semester, year_level=1).count()
+        first_count = int(settings.first_sections)
     except:
         first_count = 0
     print(f'first year - {first_count}')
