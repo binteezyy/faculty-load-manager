@@ -290,6 +290,8 @@ def curriculum_edit(request, name):
                 print('%s Thesis' % (subject.subject_code))
             else:
                 subject.thesis_flag = False
+            a = request.POST.get('room-BSCOE-ELEC1')
+            print(a)
             subject.save()
 
         return redirect('settings-curriculum')

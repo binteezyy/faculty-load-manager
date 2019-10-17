@@ -27,6 +27,7 @@
                                     <th style="width:10%">Semester</th>
                                     <th style="width:10%">Major Flag</th>
                                     <th style="width:10%">Thesis Flag</th>
+                                    <th style="width:10%">Room Type</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -44,6 +45,13 @@
                                         <td>
                                             <label><input type="checkbox" name="{{subject.subject_code}}-thesis-flag" value="{{subject.thesis_flag}}" {% if subject.thesis_flag %} check {%endif%}>
                                             </label>
+                                        </td>
+                                        <td>
+                                            <select name="room-{{subject.subject_code}}" id="room-{{subject.subject_code}}">
+                                                {% for v,cat in subject.ROOM_CAT %}
+                                                <option value="{{v}}" {% if subject.room_category == v  %} selected="selected" {%endif%}> {{cat}}</option>
+                                                {% endfor %}
+                                            </select>
                                         </td>
                                     </tr>
                                     {% endfor %}

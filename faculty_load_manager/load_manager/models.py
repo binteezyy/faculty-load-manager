@@ -58,6 +58,14 @@ class Subject(models.Model):
     lab_hours = models.PositiveIntegerField(default=0)
     lec_hours = models.PositiveIntegerField(default=0)
 
+    ROOM_CAT = [
+        (0, 'Lab'),
+        (1, 'Lecture'),
+        (2, 'Electronics Lab'),
+    ]
+    
+    room_category = models.IntegerField(choices = ROOM_CAT, default=1)
+
     def __str__(self):
         return f'{self.subject_name}'
 
