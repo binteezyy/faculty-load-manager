@@ -297,17 +297,15 @@ def curriculum_edit(request, name):
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def curriculum_settings_subject(request,pk):
+def curriculum_settings_subject(request):
     import json
     from pprint import pprint
-    subjects = Subject.objects.filter(curriculum=pk)
+    # subjects = Subject.objects.filter(curriculum=pk)
+    curriculums = Curriculum.objects.all()
     data = []
-    for subject in subjects:
-        x = {"fields":{"subject-name":subject.subject_name,
-                       "subject-code":subject.subject_code,
-                       "year-level":subject.year_level,
-                       "semester":subject.get_semester_display()
-
+    for curriculum in curriculums:
+        x = {"fields":{"curriculum-name":curriculum.curriculum,
+                       "curriculum-description":curriculum.description,
              }
         }
         data.append(x)
@@ -355,8 +353,8 @@ def curriculum_upload(request):
         fs = FileSystemStorage()
         filename = fs.save(myfile.name, myfile)
 
-        uploaded_file_url = (str(settings.BASE_DIR) + str(fs.url(filename))).replace('/', '\\') #if deployed on windows
-        #uploaded_file_url = (str(settings.BASE_DIR) + str(fs.url(filename))) #.replace('/', '\\') #if deployed on linux
+        #uploaded_file_url = (str(settings.BASE_DIR) + str(fs.url(filename))).replace('/', '\\') #if deployed on windows
+        uploaded_file_url = (str(settings.BASE_DIR) + str(fs.url(filename))) #.replace('/', '\\') #if deployed on linux
         # return HttpResponse(uploaded_file_url)
         # PARSE
 
@@ -568,7 +566,7 @@ def generate_semester_offering(request):
     return HttpResponse(semOff.subject.all())
 
 def generate_section_offering(request):
-    settings = Setting.objects.all()[0]
+    settings = Setting.objects.get(current=True)
     semester = str(settings.semester)
     start_year = str(settings.school_year.start_year)
     end_year = str(settings.school_year.end_year)

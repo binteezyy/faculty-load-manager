@@ -3,7 +3,8 @@
 
 {% block extra_css %}
 <!-- SELECT2 -->
-<link rel="stylesheet" href="{% static "vendor/DataTables/datatables.min.css" %}">
+<link rel="stylesheet" href="{% static "vendor/font-awesome/css/all.min.css" %}">
+<link rel="stylesheet" href="{% static "vendor/DataTables/DataTables-1.10.18/css/dataTables.bootstrap4.min.css" %}">
 <link href="{% static "vendor/select2/css/select2.min.css" %}" rel="stylesheet" />
 <!-- DATATABLES-->
 {% endblock %}
@@ -11,30 +12,27 @@
 {% include "_modal.html" %}
 <div class="card animated fadeInDown settings-card">
   <div class="card-header">
-    <h5>Curriculum</h5> <button type="button" id="curriculum-upload" class="btn btn-success btn-outline-success"
-      name="button">Upload Curriculum</button>
+    <h5>Curriculum</h5> <button type="button" id="curriculum-upload" class="btn btn-success btn-outline-success" name="button">Upload Curriculum</button>
 
   </div>
   <div class="card-content">
     <div class="container-fluid">
       <div class="row">
-        <select class="form-control" id="curriculum-select" name="curriculum" style="width:150px;">
+        <!-- <select class="form-control" id="curriculum-select" name="curriculum" style="width:150px;">
           {% for curriculum in curriculums %}
           <option value="{{ curriculum.pk }}">{{ curriculum }}</option>
           {% endfor %}
-        </select>
+        </select> -->
       </div>
       <div class="row p-3">
         <div class="col">
           <div class="table-responsive">
-            <table id="curriculum-table" class="table table-bordered table-hover" width="100%" cellspacing="0"
-              role="grid" aria-describedby="dataTable_info">
+            <table id="curriculum-table" class="table table-bordered table-hover" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info">
               <thead>
                 <tr role="row" class="text-center">
                   <th style="width:10%">Curriculum</th>
                   <th style="width:10%">Description</th>
-                  <th>Details</th>
-                  <th style="width:10%">Status</th>
+                  <th style="width:10%">Actions</th>
                 </tr>
               </thead>
               <tbody></tbody>
@@ -67,13 +65,33 @@
 
     var tables = '/' + $('#curriculum-select').val() + '/subjects/';
     $('#curriculum-table').DataTable({
+      "dataType": 'json',
       "ajax": {
         "processing": true,
         "dataSrc": '',
-        "url": '/settings/curriculum/1/subjects/',
+        "url": "{% url 'chairperson-curriculum-table'  %}",
       },
       "columnDefs": [
-        { "className": 'col-subject' }
+        {
+          "className": 'col-curriculum-name text-center',
+          "targets": 0,
+          "data": "fields.curriculum-name",
+        },
+        {
+          "className": 'col-curriculum-description text-center',
+          "targets": 1,
+          "data": "fields.curriculum-description",
+        },
+        {
+          "className": 'col-curriculum-edit text-center',
+          "targets": 2,
+          "data": "fields.curriculum-name",
+          render: function (data, type, row) {
+            return '<button type="button" class="read btn btn-sm btn-primary m-1" data-id="' + data + '">' +
+              '<span class="fa fa-edit"></span><a href="/chairperson/curriculum/' + data + '"> Edit Curriculum Subjects </a> </button>'
+          }
+
+        },
       ]
     })
   });

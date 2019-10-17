@@ -25,8 +25,6 @@ urlpatterns = [
          name='settings-curriculum'),
     path('chairperson/curriculum/<int:name>',
          views.curriculum_edit, name='curriculum-edit'),
-    path('chairperson/curriculum/<int:pk>/subjects/',
-         views.curriculum_settings_subject, name='settings-curriculum-subjects'),
     path('chairperson/curriculum/upload', views.curriculum_upload,
          name='settings-curriculum-upload'),
     path('chairperson/curriculum/table', views.curriculum_settings_subject,
