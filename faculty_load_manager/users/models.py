@@ -55,7 +55,7 @@ class Setting(models.Model):
     ])
 
     class Meta:
-        unique_together = ('school_year','semester')
+        unique_together = ('school_year', 'semester')
 
     def __str__(self):
         return f'[{self.school_year}] {self.get_semester_display()}'
@@ -70,7 +70,6 @@ class Setting(models.Model):
             except Setting.DoesNotExist:
                 pass
         super(Setting, self).save(*args, **kwargs)
-
 
 
 class FacultyProfile(models.Model):
