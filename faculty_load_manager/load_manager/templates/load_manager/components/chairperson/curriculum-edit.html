@@ -4,7 +4,6 @@
 {% block extra_css %}
 <!-- SELECT2 -->
 <link rel="stylesheet" href="{% static "vendor/DataTables/datatables.min.css" %}">
-<link href="{% static "vendor/select2/css/select2.min.css" %}" rel="stylesheet" />
 <!-- DATATABLES-->
 {% endblock %}
 
@@ -49,13 +48,13 @@
                                         <td>
                                             <select name="room-{{subject.subject_code}}" id="room-{{subject.subject_code}}">
                                                 {% for v,cat in subject.ROOM_CAT %}
-                                                <option value="{{v}}" {% if subject.room_category == v  %} selected="selected" {%endif%}> {{cat}}</option>
+                                                <option value="{{v}}" {% if subject.room_category == v  %} selected {%endif%}> {{cat}}</option>
                                                 {% endfor %}
                                             </select>
                                         </td>
                                     </tr>
                                     {% endfor %}
-                                    <td colspan="6" class="text-center"><input type="submit" class="btn btn-raised btn-success" value="Submit Edit"></td>
+                                    <td colspan="7" class="text-center"><input type="submit" class="btn btn-raised btn-success" value="Submit Edit"></td>
                                 </form>
                             </tbody>
                         </table>
