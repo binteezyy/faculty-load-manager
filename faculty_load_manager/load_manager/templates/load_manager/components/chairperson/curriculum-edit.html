@@ -18,8 +18,7 @@
             <div class="row p-3">
                 <div class="col">
                     <div class="table-responsive">
-                        <table id="curriculum-table" class="table table-bordered table-hover" width="100%"
-                            cellspacing="0" role="grid" aria-describedby="dataTable_info">
+                        <table id="curriculum-table" class="table table-bordered table-hover" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info">
                             <thead>
                                 <tr role="row" class="text-center">
                                     <th style="width:10%">Subject Code</th>
@@ -31,23 +30,25 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for subject in subjects %}
-                                <tr role="row" class="text-center">
-                                    <td> {{subject.subject_code}} </td>
-                                    <td> {{subject.subject_name}} </td>
-                                    <td> {{subject.year_level}} </td>
-                                    <td> {{subject.get_semester_display}} </td>
-                                    <td>
-                                        <label><input type="checkbox" name="minor-flag" value='{{subject.minor_flag}}'
-                                                {% if subject.minor_flag %} checked {%endif%}></label>
-                                    </td>
-                                    <td>
-                                        <label><input type="checkbox" name="thesis-flag"
-                                                value='{{subject.thesis_flag}}'>
-                                        </label>
-                                    </td>
-                                </tr>
-                                {% endfor %}
+                                <form method="POST">
+                                    {% csrf_token %}
+                                    {% for subject in subjects %}
+                                    <tr role="row" class="text-center">
+                                        <td> <input type="text" value="{{subject.subject_code}}" disabled /> </td>
+                                        <td> {{subject.subject_name}} </td>
+                                        <td> {{subject.year_level}} </td>
+                                        <td> {{subject.get_semester_display}} </td>
+                                        <td>
+                                            <label><input type="checkbox" name="{{subject.subject_code}}-minor-flag" value="{{subject.minor_flag}}" {% if subject.minor_flag %} checked {%endif%}></label>
+                                        </td>
+                                        <td>
+                                            <label><input type="checkbox" name="{{subject.subject_code}}-thesis-flag" value="{{subject.thesis_flag}}" {% if subject.thesis_flag %} check {%endif%}>
+                                            </label>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    <td colspan="6" class="text-center"><input type="submit" class="btn btn-raised btn-success" value="Submit Edit"></td>
+                                </form>
                             </tbody>
                         </table>
                     </div>

@@ -250,13 +250,32 @@ def curriculum_settings(request):
 @user_passes_test(lambda u: u.is_superuser)
 def curriculum_edit(request, name):
     curriculum = Curriculum.objects.get(curriculum=str(name))
-    subjects = Subject.objects.filter(curriculum=curriculum).order_by('subject_code', 'minor_flag')
-    context = {
-        'curriculum': curriculum,
-        'subjects': subjects,
-    }
+    subjects = Subject.objects.filter(curriculum=curriculum).order_by('-minor_flag', 'subject_code')
 
-    return render(request, 'load_manager/components/chairperson/curriculum-edit.html', context)
+    if request.method == 'GET':
+        context = {
+            'curriculum': curriculum,
+            'subjects': subjects,
+        }
+        return render(request, 'load_manager/components/chairperson/curriculum-edit.html', context)
+    if request.method == 'POST':
+        for subject in subjects:
+            # subject.minor_flag = request.POST.get('%s-minor-flag' % (subject.subject_code))
+            # subject.thesis_flag = request.POST.get('%s-thesis-flag' % (subject.subject_code))
+            # subject.save()
+            if request.POST.get('%s-minor-flag' % (subject.subject_code)):
+                subject.minor_flag = True
+                print('%s Major' % (subject.subject_code))
+            else:
+                subject.minor_flag = False
+            if request.POST.get('%s-thesis-flag' % (subject.subject_code)):
+                subject.thesis_flag = True
+                print('%s Thesis' % (subject.subject_code))
+            else:
+                subject.thesis_flag = False
+            subject.save()
+
+        return redirect('settings-curriculum')
     
 
 @login_required
@@ -318,8 +337,8 @@ def curriculum_upload(request):
         myfile = request.FILES['myfile']
         fs = FileSystemStorage()
         filename = fs.save(myfile.name, myfile)
-        uploaded_file_url = (str(settings.BASE_DIR) + str(fs.url(filename))).replace('/', '\\') #if deployed on windows
-        # uploaded_file_url = (str(settings.BASE_DIR) + str(fs.url(filename))) #.replace('/', '\\') #if deployed on linux
+        # uploaded_file_url = (str(settings.BASE_DIR) + str(fs.url(filename))).replace('/', '\\') #if deployed on windows
+        uploaded_file_url = (str(settings.BASE_DIR) + str(fs.url(filename))) #.replace('/', '\\') #if deployed on linux
         # return HttpResponse(uploaded_file_url)
         # PARSE
 
