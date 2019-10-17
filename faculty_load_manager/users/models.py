@@ -5,7 +5,11 @@ from django.conf import settings
 
 from load_manager.models import *
 
-
+def SEMESTER_STATUS():
+    return [(0, 'Not Opened'),
+              (1, 'Open'),
+              (2, 'Closed'),
+              (3, 'Locked')]
 class EmailBackend(ModelBackend):
     def authenticate(self, username=None, password=None, **kwargs):
         UserModel = get_user_model()
@@ -44,6 +48,11 @@ class Setting(models.Model):
     fifth_sections = models.PositiveIntegerField(default=0)
 
     current = models.BooleanField(default=False)
+
+    status = models.IntegerField(choices = SEMESTER_STATUS(), default = 0, validators=[
+        MaxValueValidator(3),
+        MinValueValidator(0)
+    ])
 
     class Meta:
         unique_together = ('school_year', 'semester')

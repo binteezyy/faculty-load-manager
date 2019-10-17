@@ -3,14 +3,125 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static "vendor/font-awesome/css/all.min.css" %}">
-<link rel="stylesheet" href="{% static "vendor/DataTables/datatables.min.css" %}">
+<link rel="stylesheet" href="{% static "vendor/DataTables/DataTables-1.10.18/css/dataTables.bootstrap4.min.css" %}">
 <link href="{% static "vendor/select2/css/select2.min.css" %}" rel="stylesheet" />
 {% endblock %}
 
 {% block content %}
+{% include "_modal.html" %}
 <div class="card animated fadeInDown">
   <div class="card-header">
-        <h5>Settings List</h5>
+    <h5>Current Setting</h5>
+  </div>
+  <div class="card-content">
+    <p>{{ csetting.get_status_display }}</p>
+    {% if csetting.status == 0 %}
+    <form class="p-3" method="post">
+      <h5>First Year</h5>
+      <div class="form-row">
+        <div class="col-md-2">
+          <label for="first-section">Sections</label>
+          <input id="first-section" class="form-control" type="number" min="0" value="{{csetting.first_sections}}" style="padding: .28125rem .28125rem !important"/>
+        </div>
+        <div class="col-md">
+          <label for="first-section">Curriculum</label>
+          <select class="custom-select" {% if csetting.first_sections == 0 %}disabled{% endif %}>
+            {% for option in curriculum %}
+            <option value="{{ option.pk }}">{{ option }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <br>
+
+      <h5>Second Year</h5>
+      <div class="form-row">
+        <div class="col-md-2">
+          <label for="second-section">Sections</label>
+          <input id="second-section" class="form-control" type="number" min="0" value="{{csetting.second_sections}}" style="padding: .28125rem .28125rem !important"/>
+        </div>
+        <div class="col-md">
+          <label for="second-section">Curriculum</label>
+          <select class="custom-select">
+            {% for option in curriculum %}
+            <option value="{{ option.pk }}">{{ option }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <br>
+
+      <h5>Third Year</h5>
+      <div class="form-row">
+        <div class="col-md-2">
+          <label for="first-section">Sections</label>
+          <input id="first-section" class="form-control" type="number" min="0" value="0" style="padding: .28125rem .28125rem !important"/>
+        </div>
+        <div class="col-md">
+          <label for="first-section">Curriculum</label>
+          <select class="custom-select">
+            {% for option in curriculum %}
+            <option value="{{ option.pk }}">{{ option }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <br>
+
+      <h5>Fourth Year</h5>
+      <div class="form-row">
+        <div class="col-md-2">
+          <label for="first-section">Sections</label>
+          <input id="first-section" class="form-control" type="number" min="0" value="0" style="padding: .28125rem .28125rem !important"/>
+        </div>
+        <div class="col-md">
+          <label for="first-section">Curriculum</label>
+          <select class="custom-select">
+            {% for option in curriculum %}
+            <option value="{{ option.pk }}">{{ option }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <br>
+
+      <h5>Fifth Year</h5>
+      <div class="form-row">
+        <div class="col-md-2">
+          <label for="first-section">Sections</label>
+          <input id="first-section" class="form-control" type="number" min="0" value="0" style="padding: .28125rem .28125rem !important"/>
+        </div>
+        <div class="col-md">
+          <label for="first-section">Curriculum</label>
+          <select class="custom-select">
+            {% for option in curriculum %}
+            <option value="{{ option.pk }}">{{ option }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      </form>
+    {% elif csetting.status == 1 %}
+
+    {% elif csetting.status == 2 %}
+
+    {% elif csetting.status == 3 %}
+    {% endif %}
+  </div>
+
+  <div class="card-footer">
+    <div class="float-right">
+      {% if csetting.status == 0 %}
+      <button id="opening-save" type="button" name="button" class="btn btn-m btn-raised btn-success">SAVE</button>
+      <button id="encoding-open" type="button" name="button" class="btn btn-m btn-raised btn-primary">OPEN</button>
+      {% endif %}
+    </div>
+  </div>
+</div>
+<br>
+<div class="card animated fadeInDown">
+  <div class="card-header">
+    <h5>Settings List</h5>
   </div>
   <div class="card-content">
     <div class="table-responsive p-4">
@@ -34,8 +145,12 @@
 {% block extra_js %}
   <script src="{% static "vendor/select2/js/select2.min.js" %}"></script>
   <script type="text/javascript" src="{% static "vendor/DataTables/datatables.min.js" %}"></script>
+  <script type="text/javascript" src="{% static "vendor/DataTables/DataTables-1.10.18/js/dataTables.bootstrap4.min.js" %}"></script>
 
   <script type="text/javascript">
+    $("#encoding-open").modalForm({
+       formURL: "{% url 'chairperson-upm-user-create' %}"
+   });
   $('#settings-table').DataTable( {
     // "select": true,
     // "buttons": true,
@@ -55,7 +170,7 @@
         "data": "fields.sy",
         render:function(data, type, row)
           {
-            return '<a href="/settings/sys/'+data[0]+'">'+data[1]+'</a>'
+            return '<a href="/settings/'+data[0]+'">'+data[1]+'</a>'
           },
         },
       { "className": 'col-semester text-center',

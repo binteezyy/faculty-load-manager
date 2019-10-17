@@ -205,8 +205,12 @@ def ss(request):
 @user_passes_test(lambda u: u.is_superuser)
 def site_settings(request):
     curriculum = Curriculum.objects.all()
+    current_settings = Setting.objects.get(current=True)
     context = {
+        'title': 'Settings',
         'viewtype': 'settings',
+        'csetting': current_settings,
+        'sem_status': SEMESTER_STATUS(),
         'school_year': SchoolYear.objects.all(),
         'semesters': SEMESTERS(),
         'curriculum': curriculum,
@@ -217,9 +221,23 @@ def site_settings(request):
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
+def site_settings_view(request,pk):
+    curriculum = Curriculum.objects.all()
+
+    context = {
+        'viewtype': 'settings',
+        'school_year': SchoolYear.objects.all(),
+        'semesters': SEMESTERS(),
+        'curriculum': curriculum,
+    }
+    # settings = Setting.objects.get_or_create()
+
+    # return render(request, , context)
+    return HttpResponse(pk, content_type='application/json')
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
 def site_settings_table(request):
     import json
-    from pprint import pprint
     settings = Setting.objects.all()
     data = []
     for setting in settings:
@@ -229,7 +247,6 @@ def site_settings_table(request):
              }
         }
         data.append(x)
-    pprint(data)
     data = json.dumps(data)
     return HttpResponse(data, content_type='application/json')
 
@@ -337,8 +354,9 @@ def curriculum_upload(request):
         myfile = request.FILES['myfile']
         fs = FileSystemStorage()
         filename = fs.save(myfile.name, myfile)
-        # uploaded_file_url = (str(settings.BASE_DIR) + str(fs.url(filename))).replace('/', '\\') #if deployed on windows
-        uploaded_file_url = (str(settings.BASE_DIR) + str(fs.url(filename))) #.replace('/', '\\') #if deployed on linux
+
+        uploaded_file_url = (str(settings.BASE_DIR) + str(fs.url(filename))).replace('/', '\\') #if deployed on windows
+        #uploaded_file_url = (str(settings.BASE_DIR) + str(fs.url(filename))) #.replace('/', '\\') #if deployed on linux
         # return HttpResponse(uploaded_file_url)
         # PARSE
 

@@ -17,15 +17,17 @@ urlpatterns = [
     path('ss', views.ss, name='ss'),
 
     # CHAIRPERSON VIEW
-    path('settings/', views.site_settings, name='settings'),
-    path('settings/table', views.site_settings_table, name='settings-table'),
-    path('settings/curriculum/', views.curriculum_settings,
+    ## SETTINGS
+    path('chairperson/settings/', views.site_settings, name='settings'),
+    path('chairperson/settings/<int:pk>', views.site_settings_view, name='settings'),
+    path('chairperson/settings/table', views.site_settings_table, name='settings-table'),
+    path('chairperson/curriculum/', views.curriculum_settings,
          name='settings-curriculum'),
-    path('settings/curriculum/<int:name>',
+    path('chairperson/curriculum/<int:name>',
          views.curriculum_edit, name='curriculum-edit'),
-    path('settings/curriculum/<int:pk>/subjects/',
+    path('chairperson/curriculum/<int:pk>/subjects/',
          views.curriculum_settings_subject, name='settings-curriculum-subjects'),
-    path('settings/curriculum/upload', views.curriculum_upload,
+    path('chairperson/curriculum/upload', views.curriculum_upload,
          name='settings-curriculum-upload'),
     path('chairperson/curriculum/table', views.curriculum_settings_subject,
          name='chairperson-curriculum-table'),
