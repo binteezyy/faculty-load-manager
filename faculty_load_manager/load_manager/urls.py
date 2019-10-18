@@ -45,6 +45,7 @@ urlpatterns = [
         name='chairperson-settings-open'),
     ## SECTION OFFERING
     path('chairperson/section-offering/', views.section_offering, name='section-offering'),
+    path('chairperson/section-offering/table', views.section_offering_table, name='chairperson-section-offering-table'),
 
     ## USER MANAGEMENT
     path('chairperson/user-management/',

@@ -320,11 +320,15 @@ def curriculum_subject_table(request, pk):
     subjects = Subject.objects.filter(curriculum__pk=pk)
     data = []
     for subject in subjects:
+        if subject.offered:
+            offered = "Offered"
+        else:
+            offered = "Not offered"
         x = {"fields":{"subject-code": subject.subject_code,
                        "subject-name": subject.subject_name,
                        "subject-yl": subject.year_level,
                        "subject-sem": subject.get_semester_display(),
-                       "subject-offered": subject.offered,
+                       "subject-offered": offered,
                        "subject-room": subject.get_room_category_display(),
              }
         }
@@ -504,16 +508,66 @@ def site_settings_open(request,sy,sem):
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def section_offering(request):
-    curriculum = Curriculum.objects.all()
     current_settings = Setting.objects.get(current=True)
+
     context = {
         'title': 'Section Offering',
         'viewtype': 'section-offering',
+        'settings': current_settings,
     }
     # settings = Setting.objects.get_or_create()
 
     return render(request, 'load_manager/components/chairperson/section-offering/index.html', context)
 
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def section_offering_table(request):
+    import json
+    from pprint import pprint
+    settings = Setting.objects.get(current=True)
+    semester = str(settings.semester)
+    start_year = str(settings.school_year.start_year)
+    end_year = str(settings.school_year.end_year)
+
+    try:
+        start = Year.objects.get(year=start_year)
+    except Year.DoesNotExist:
+        new_year = Year(year=start_year)
+        new_year.save()
+        start = Year.objects.get(year=start_year)
+
+    try:
+        end = Year.objects.get(year=end_year)
+    except Year.DoesNotExist:
+        new_year = Year(year=end_year)
+        new_year.save()
+        end  = Year.objects.get(year=end_year)
+
+    try:
+        sy = SchoolYear.objects.get(start_year=start, end_year=end)
+    except SchoolYear.DoesNotExist:
+        new_sy = SchoolYear(start_year=start, end_year=end)
+        new_sy.save()
+        sy = SchoolYear.objects.get(start_year=start, end_year=end)
+
+    secOffs = SectionOffering.objects.filter(school_year=sy, semester=semester)
+
+    data = []
+    for secOff in secOffs:
+        if secOff.professor:
+            prof = str(secOff.professor.first_name + ' ' + secOff.professor.last_name)
+        else:
+            prof = "Empty"
+        x = {"fields":{"secOff-subject": str(secOff.subject.subject_name),
+                       "secOff-section": str(secOff.block_section),
+                       "secOff-type": secOff.get_service_flag_display(),
+                       "secOff-prof": prof,
+             }
+        }
+        data.append(x)
+    data = json.dumps(data)
+    pprint(data)
+    return HttpResponse(data, content_type='application/json')
 
 from django.core.files.storage import FileSystemStorage
 @login_required
