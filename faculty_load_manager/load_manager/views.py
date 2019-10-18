@@ -287,7 +287,7 @@ def curriculum_settings(request):
 @user_passes_test(lambda u: u.is_superuser or u.is_staff)
 def curriculum_subject_edit(request, pk):
     curriculum = Curriculum.objects.get(pk=pk)
-    subjects = Subject.objects.filter(curriculum=curriculum).order_by('-offered', 'subject_code')S
+    subjects = Subject.objects.filter(curriculum=curriculum).order_by('-offered', 'subject_code')
 
     if request.method == 'GET':
         context = {
@@ -306,7 +306,7 @@ def curriculum_subject_edit(request, pk):
     #             print('%s Offered' % (subject.subject_code))
     #         else:
     #             subject.minor_flag = False
-                
+
     #         a = request.POST.get('room-STAT 2053')
     #         print(a)
     #         subject.save()
@@ -1009,7 +1009,7 @@ def allocate_section_offering(request):
         user_list = []
         prefScheds = PreferredSchedule.objects.filter(school_year=sy, semester=semester, preferred_subject=secOff.subject)
         for prefSched in prefScheds:
-            user_list.append(prefSched.user)        
+            user_list.append(prefSched.user)
         # print(user_list)
     # Loop through filtered prof; descending based on Faculty Priority Rule
         profs = FacultyProfile.objects.filter(faculty__in=user_list).order_by('-faculty_type')
@@ -1025,12 +1025,12 @@ def allocate_section_offering(request):
                 subject_hours = secOff.subject.lab_hours + secOff.subject.lec_hours
                 for secOff_prof in secOff_prof_qs:
                     allocated_hours = secOff_prof.subject.lec_hours + secOff_prof.subject.lec_hours
-                
+
                 print(f'{prof.faculty} total of {allocated_hours} allocated hours')
                 print(f'{prof.faculty} total of {allowed_hours} allowed hours')
 
                 if secOff_prof_exists:
-                    print(f'{prof.faculty} already assigned to subject {secOff.subject} - {subject_hours}hrs')   
+                    print(f'{prof.faculty} already assigned to subject {secOff.subject} - {subject_hours}hrs')
                 else:
                     print(f'{prof.faculty} not assigned to subject {secOff.subject} - {subject_hours}hrs')
                     if allocated_hours + subject_hours <= allowed_hours:
@@ -1041,7 +1041,7 @@ def allocate_section_offering(request):
                         break
                     else:
                         print(f'{prof.faculty} not allocated to {secOff.subject}')
-                    
+
 
 
     # Allocation subject to prof; first come, first serve.
@@ -1074,7 +1074,7 @@ def generate_faculty_load(request):
         new_sy.save()
         sy = SchoolYear.objects.get(start_year=start, end_year=end)
 
-    # Loop through section offering 
+    # Loop through section offering
     secOffs = SectionOffering.objects.filter(school_year=sy, semester=semester)
     # Check secOff.subject lab hours, lec hours
     for secOff in secOffs:
@@ -1083,7 +1083,7 @@ def generate_faculty_load(request):
         print(f'{secOff.subject} {lab_hours} + {lec_hours}')
     # If > 0 lab hours and >= 5 lab hrs - lab1 labhrs//2+1 lab2 lab//hrs+2 - lab1
     # elif >0 lab hours < 5 lab1 - labhrs
-    # create FL 
+    # create FL
         if lab_hours > 0 and lab_hours >= 5:
             try:
                 facload = FacultyLoad.objects.get(subject=secOff, load_category=0)
@@ -1126,7 +1126,7 @@ def generate_faculty_load(request):
                 facload = FacultyLoad(subject=secOff, load_category=2)
                 facload.save()
             print(facload)
-    # create FL 
+    # create FL
     settings.status = 1
     settings.save()
     return redirect('settings')
