@@ -285,9 +285,9 @@ def curriculum_settings(request):
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def curriculum_subject_edit(request, name):
-    curriculum = Curriculum.objects.get(curriculum=str(name))
-    subjects = Subject.objects.filter(curriculum=curriculum).order_by('-minor_flag', 'subject_code')
+def curriculum_subject_edit(request, pk):
+    curriculum = Curriculum.objects.get(pk=pk)
+    subjects = Subject.objects.filter(curriculum=curriculum).order_by('-offered', 'subject_code')
 
     if request.method == 'GET':
         context = {
@@ -314,17 +314,17 @@ def curriculum_subject_edit(request, name):
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def curriculum_subject_table(request, id):
+def curriculum_subject_table(request, pk):
     import json
     from pprint import pprint
-    subjects = Subject.objects.filter(curriculum__curriculum=str(id))
+    subjects = Subject.objects.filter(curriculum__pk=pk)
     data = []
     for subject in subjects:
         x = {"fields":{"subject-code": subject.subject_code,
                        "subject-name": subject.subject_name,
                        "subject-yl": subject.year_level,
                        "subject-sem": subject.get_semester_display(),
-                       "subject-offered": subject.minor_flag,
+                       "subject-offered": subject.offered,
                        "subject-room": subject.get_room_category_display(),
              }
         }
@@ -346,6 +346,7 @@ def curriculum_settings_subject(request):
     for curriculum in curriculums:
         x = {"fields":{"curriculum-name":curriculum.curriculum,
                        "curriculum-description":curriculum.description,
+                       "curriculum-pk":curriculum.pk,
              }
         }
         data.append(x)
@@ -589,7 +590,7 @@ def curriculum_upload(request):
                         new_subj = Subject(year_level=year_level, semester=semester, curriculum=curriculum_get,
                         subject_code=strcode, subject_name=strdesc, lab_hours=int(strlab), lec_hours=int(strlec))
                         if strcode.startswith('BSCOE') or strcode.startswith('COEN'):
-                            new_subj.minor_flag= True
+                            new_subj.offered= True
                         new_subj.save()
 
                     print(f'{strcode} - {strdesc} - {strlab} - {strlec}')
@@ -703,11 +704,11 @@ def generate_semester_offering(request):
 
         # first_s = Subject.objects.filter(year_level=1, semester=semester, curriculum=first_c).filter(
         #     Q(subject_code__startswith='COEN')|Q(subject_code__startswith='BSCOE'))
-        first_s = Subject.objects.filter(year_level=1, semester=semester, curriculum=first_c, minor_flag=True, thesis_flag=False)
-        second_s = Subject.objects.filter(year_level=2, semester=semester, curriculum=first_c, minor_flag=True, thesis_flag=False)
-        third_s = Subject.objects.filter(year_level=3, semester=semester, curriculum=first_c, minor_flag=True, thesis_flag=False)
-        fourth_s = Subject.objects.filter(year_level=4, semester=semester, curriculum=first_c, minor_flag=True, thesis_flag=False)
-        fifth_s = Subject.objects.filter(year_level=5, semester=semester, curriculum=first_c, minor_flag=True, thesis_flag=False)
+        first_s = Subject.objects.filter(year_level=1, semester=semester, curriculum=first_c, offered=True)
+        second_s = Subject.objects.filter(year_level=2, semester=semester, curriculum=first_c, offered=True)
+        third_s = Subject.objects.filter(year_level=3, semester=semester, curriculum=first_c, offered=True)
+        fourth_s = Subject.objects.filter(year_level=4, semester=semester, curriculum=first_c, offered=True)
+        fifth_s = Subject.objects.filter(year_level=5, semester=semester, curriculum=first_c, offered=True)
 
         first_s = list(first_s)
         second_s = list(second_s)
