@@ -385,7 +385,10 @@ def curriculum_settings_table(request):
 @user_passes_test(lambda u: u.is_superuser or u.is_staff )
 def site_settings(request):
     curriculum = Curriculum.objects.all()
-    current_settings = Setting.objects.get(current=True)
+    try:
+        current_settings = Setting.objects.get(current=True)
+    except:
+        current_settings = None
     context = {
         'title': 'Settings',
         'viewtype': 'settings',
