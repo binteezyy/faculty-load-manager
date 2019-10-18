@@ -11,6 +11,10 @@ urlpatterns = [
     #### MODEL CRUDS
     ##SETTINGS
     path('create/settings', model_views.SettingsCreateView.as_view(), name='create-settings'),
+    path('read/settings/<int:pk>', model_views.SettingsReadView.as_view(), name='read-settings'),
+    path('update/settings/<int:pk>', model_views.SettingsUpdateView.as_view(), name='update-settings'),
+    path('delete/settings/<int:pk>', model_views.SettingsDeleteView.as_view(), name='delete-settings'),
+
     # LOAD MANAGER
     path('load-manager/', views.load_manager_list, name='load-manager-list'),
     path('load-manager/create/', views.load_manager_create,

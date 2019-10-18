@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from .models import *
 from users.models import *
+
 from bootstrap_modal_forms.forms import BSModalForm
 class UserLoginForm(forms.Form):
     username = forms.CharField(label='Username')
@@ -54,9 +55,3 @@ class UserRegisterForm(forms.ModelForm):
             raise forms.ValidationError("Email already registered")
 
         return super(UserRegisterForm, self).clean(*args, **kwargs)
-
-
-class SettingsForm(BSModalForm):
-    class Meta:
-        model = Setting
-        fields = ['school_year','semester','current']

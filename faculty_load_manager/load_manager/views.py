@@ -273,7 +273,7 @@ def ss(request):
 #===================================================
 ## ============= CURRICULUM
 @login_required
-@user_passes_test(lambda u: u.is_superuser)
+@user_passes_test(lambda u: u.is_superuser or u.is_staff )
 def curriculum_settings(request):
     curriculums = Curriculum.objects.all()
     context = {
@@ -284,7 +284,7 @@ def curriculum_settings(request):
     return render(request, 'load_manager/components/chairperson/curriculum.html', context)
 
 @login_required
-@user_passes_test(lambda u: u.is_superuser)
+@user_passes_test(lambda u: u.is_superuser or u.is_staff )
 def curriculum_edit(request, name):
     curriculum = Curriculum.objects.get(curriculum=str(name))
     subjects = Subject.objects.filter(curriculum=curriculum).order_by('-minor_flag', 'subject_code')
@@ -316,7 +316,7 @@ def curriculum_edit(request, name):
         return redirect('settings-curriculum')
 
 @login_required
-@user_passes_test(lambda u: u.is_superuser)
+@user_passes_test(lambda u: u.is_superuser or u.is_staff )
 def curriculum_settings_subject(request):
     import json
     from pprint import pprint
@@ -336,7 +336,7 @@ def curriculum_settings_subject(request):
     return HttpResponse(subjects)
 
 @login_required
-@user_passes_test(lambda u: u.is_superuser)
+@user_passes_test(lambda u: u.is_superuser or u.is_staff )
 def curriculum_settings_table(request):
     if request.method == 'POST':
         fname = request.POST.get('fname')
@@ -357,7 +357,7 @@ def curriculum_settings_table(request):
 
 #  ============= SITE SETTINGS
 @login_required
-@user_passes_test(lambda u: u.is_superuser)
+@user_passes_test(lambda u: u.is_superuser or u.is_staff )
 def site_settings(request):
     curriculum = Curriculum.objects.all()
     current_settings = Setting.objects.get(current=True)
@@ -375,7 +375,7 @@ def site_settings(request):
     return render(request, 'load_manager/components/chairperson/settings/index.html', context)
 
 @login_required
-@user_passes_test(lambda u: u.is_superuser)
+@user_passes_test(lambda u: u.is_superuser or u.is_staff )
 def site_settings_view(request,pk):
     curriculum = Curriculum.objects.all()
 
@@ -390,7 +390,7 @@ def site_settings_view(request,pk):
     # return render(request, , context)
     return HttpResponse(pk, content_type='application/json')
 @login_required
-@user_passes_test(lambda u: u.is_superuser)
+@user_passes_test(lambda u: u.is_superuser or u.is_staff )
 def site_settings_table(request):
     settings = Setting.objects.all()
     data = []
@@ -398,6 +398,7 @@ def site_settings_table(request):
         x = {"fields":{"id":setting.pk,
                        "sy":[setting.pk,str(setting.school_year)],
                        "semester":setting.get_semester_display(),
+                       "status":setting.current
              }
         }
         data.append(x)
@@ -405,7 +406,7 @@ def site_settings_table(request):
     return HttpResponse(data, content_type='application/json')
 
 @login_required
-@user_passes_test(lambda u: u.is_superuser)
+@user_passes_test(lambda u: u.is_superuser or u.is_staff )
 def site_settings_save(request,viewtype,sy,sem):
     context = {
         'viewtype': 'settings',
@@ -467,7 +468,7 @@ def site_settings_save(request,viewtype,sy,sem):
     return render(request, 'load_manager/components/modals/save.html', context)
 
 @login_required
-@user_passes_test(lambda u: u.is_superuser)
+@user_passes_test(lambda u: u.is_superuser or u.is_staff )
 def site_settings_open(request,sy,sem):
     csettings = Setting.objects.get(current=True)
     context = {
@@ -481,7 +482,7 @@ def site_settings_open(request,sy,sem):
 
 # ============= SECTION OFFERING
 @login_required
-@user_passes_test(lambda u: u.is_superuser)
+@user_passes_test(lambda u: u.is_superuser or u.is_staff )
 def section_offering(request):
     curriculum = Curriculum.objects.all()
     current_settings = Setting.objects.get(current=True)
@@ -496,7 +497,7 @@ def section_offering(request):
 
 from django.core.files.storage import FileSystemStorage
 @login_required
-@user_passes_test(lambda u: u.is_superuser)
+@user_passes_test(lambda u: u.is_superuser or u.is_staff )
 def curriculum_upload(request):
 
     if request.method == 'GET':
@@ -810,7 +811,7 @@ def generate_section_offering(request):
             bs = BlockSection(school_year=sy, semester=semester, year_level=1, section=str(int(i+1)))
             bs.save()
         print(bs)
-    
+
     semOff = SemesterOffering.objects.get(school_year=sy, semester=semester)
     # first_s = Subject.objects.filter(year_level=1, semester=semester, curriculum=first_c).filter(
     #         Q(subject_code__startswith='COEN')|Q(subject_code__startswith='BSCOE'), thesis_flag=False)
