@@ -35,7 +35,8 @@ urlpatterns = [
     path('chairperson/settings/table', views.site_settings_table, name='settings-table'),
     path('chairperson/settings/save/<str:viewtype>/<int:sy>/<int:sem>', views.site_settings_save,
         name='chairperson-settings-save'),
-
+    path('chairperson/settings/open-sem/<int:sy>/<int:sem>/',views.site_settings_open,
+        name='chairperson-settings-open'),
     ## SECTION OFFERING
     path('chairperson/section-offering/', views.section_offering, name='section-offering'),
 
