@@ -34,6 +34,9 @@ class PostBlockSection(admin.ModelAdmin):
 class PostSectionOffering(admin.ModelAdmin):
     list_display = ('professor', 'subject', 'block_section')
 
+class PostFacultyLoad(admin.ModelAdmin):
+    list_display = ('subject', 'load_category', 'room')
+
 
 admin.site.register(Room)
 admin.site.register(Year)
@@ -45,5 +48,5 @@ admin.site.register(PreferredTime, PostPreferredTime)
 admin.site.register(PreferredSchedule, PostPreferredSchedule)
 admin.site.register(BlockSection, PostBlockSection)
 admin.site.register(Curriculum)
-admin.site.register(FacultyLoad)
+admin.site.register(FacultyLoad, PostFacultyLoad)
 # Register your models here.
