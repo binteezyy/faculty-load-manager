@@ -61,7 +61,7 @@
 {% endblock %}
 {% block content %}
 
-
+{% if csetting != None %}
 <div class="card animated fadeInDown lm-current">
   <div class="card-header">
     <h5>Current Submission</h5>
@@ -85,6 +85,7 @@
     </div>
 
 </div>
+{% endif %}
 
 <div class="card animated fadeInDown lm-list">
   <div class="card-header">

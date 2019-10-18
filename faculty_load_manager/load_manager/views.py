@@ -49,23 +49,6 @@ def home_view(request):
         }
         return render(request, 'users/components/login.html', context)
 
-@login_required
-def load_manager_list(request):
-    settings = Setting.objects.get(current=True)
-    if PreferredSchedule.objects.filter(user=request.user,school_year=settings.school_year,semester=settings.semester).exists():
-        cs = True
-        psched = PreferredSchedule.objects.get(user=request.user,school_year=settings.school_year,semester=settings.semester)
-    else:
-        cs = False
-        psched = ""
-    context = {
-        'title': 'LOAD MANAGER',
-        'status': settings.get_status_display,
-        'viewtype': 'load-manager',
-        'submission': cs,
-        'psubj': psched,
-    }
-    return render(request, 'load_manager/components/faculty-load/list.html', context)
 
 #===================================================
 #                   AJAX_COMPONENTS
@@ -136,6 +119,35 @@ def ajax_save(request):
 #===================================================
 #                   LOAD MANAGER
 #===================================================
+@login_required
+def load_manager_list(request):
+    status = ""
+    cs = None
+    psched = None
+    try:
+        settings = Setting.objects.get(current=True)
+        if PreferredSchedule.objects.filter(user=request.user,school_year=settings.school_year,semester=settings.semester).exists():
+            cs = True
+            psched = PreferredSchedule.objects.get(user=request.user,school_year=settings.school_year,semester=settings.semester)
+            status = settings.get_status_display
+        else:
+            status = "NO STATUS"
+            cs = False
+            psched = ""
+    except:
+        settings = None
+
+
+    context = {
+        'csetting': settings,
+        'title': 'LOAD MANAGER',
+        'status': status,
+        'viewtype': 'load-manager',
+        'submission': cs,
+        'psubj': psched,
+    }
+    return render(request, 'load_manager/components/faculty-load/list.html', context)
+
 @login_required
 def load_manager_tables(request):
     loads = PreferredSchedule.objects.filter(user=request.user)
