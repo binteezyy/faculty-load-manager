@@ -31,8 +31,9 @@ urlpatterns = [
     ## CURRICULUM
     path('chairperson/curriculum/', views.curriculum_settings,
          name='settings-curriculum'),
-    path('chairperson/curriculum/<int:name>',
-         views.curriculum_edit, name='curriculum-edit'),
+    path('chairperson/curriculum/<int:pk>',
+         views.curriculum_subject_edit, name='curriculum-edit'),
+     path('chairperson/curriculum/subject-table/<int:pk>', views.curriculum_subject_table, name='chairperson-curriculum-subject-table'),
     path('chairperson/curriculum/upload', views.curriculum_upload,
          name='settings-curriculum-upload'),
     path('chairperson/curriculum/table', views.curriculum_settings_subject,
@@ -48,6 +49,7 @@ urlpatterns = [
         name='chairperson-settings-open'),
     ## SECTION OFFERING
     path('chairperson/section-offering/', views.section_offering, name='section-offering'),
+    path('chairperson/section-offering/table', views.section_offering_table, name='chairperson-section-offering-table'),
 
     ## USER MANAGEMENT
     path('chairperson/user-management/',
@@ -65,5 +67,5 @@ urlpatterns = [
          name='generate_section_offering'),
 
      #ALGO
-     path('chairperson/generate-load', views.generate_load, name='generate_load')
+     path('chairperson/allocate-so', views.allocate_section_offering, name='allocate_section_offering')
 ]

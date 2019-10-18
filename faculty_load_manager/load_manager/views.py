@@ -284,10 +284,10 @@ def curriculum_settings(request):
     return render(request, 'load_manager/components/chairperson/curriculum.html', context)
 
 @login_required
-@user_passes_test(lambda u: u.is_superuser or u.is_staff )
-def curriculum_edit(request, name):
-    curriculum = Curriculum.objects.get(curriculum=str(name))
-    subjects = Subject.objects.filter(curriculum=curriculum).order_by('-minor_flag', 'subject_code')
+@user_passes_test(lambda u: u.is_superuser or u.is_staff)
+def curriculum_subject_edit(request, pk):
+    curriculum = Curriculum.objects.get(pk=pk)
+    subjects = Subject.objects.filter(curriculum=curriculum).order_by('-offered', 'subject_code')S
 
     if request.method == 'GET':
         context = {
@@ -295,25 +295,49 @@ def curriculum_edit(request, name):
             'subjects': subjects,
         }
         return render(request, 'load_manager/components/chairperson/curriculum-edit.html', context)
-    if request.method == 'POST':
-        for subject in subjects:
-            # subject.minor_flag = request.POST.get('%s-minor-flag' % (subject.subject_code))
-            # subject.thesis_flag = request.POST.get('%s-thesis-flag' % (subject.subject_code))
-            # subject.save()
-            if request.POST.get('%s-minor-flag' % (subject.subject_code)):
-                subject.minor_flag = True
-                print('%s Major' % (subject.subject_code))
-            else:
-                subject.minor_flag = False
-            if request.POST.get('%s-thesis-flag' % (subject.subject_code)):
-                subject.thesis_flag = True
-                print('%s Thesis' % (subject.subject_code))
-            else:
-                subject.thesis_flag = False
-            a = request.POST.get('room-STAT 2053')
-            print(a)
-            subject.save()
-        return redirect('settings-curriculum')
+    # if request.method == 'POST':
+    #     for subject in subjects:
+    #         # subject.minor_flag = request.POST.get('%s-minor-flag' % (subject.subject_code))
+    #         # subject.thesis_flag = request.POST.get('%s-thesis-flag' % (subject.subject_code))
+    #         # subject.save()
+    #         if request.POST.get('%s-minor-flag' % (subject.subject_code)):
+    #             subject.minor_flag = True
+    #             subject.thesis_flag = False
+    #             print('%s Offered' % (subject.subject_code))
+    #         else:
+    #             subject.minor_flag = False
+                
+    #         a = request.POST.get('room-STAT 2053')
+    #         print(a)
+    #         subject.save()
+    #     return redirect('settings-curriculum')
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def curriculum_subject_table(request, pk):
+    import json
+    from pprint import pprint
+    subjects = Subject.objects.filter(curriculum__pk=pk)
+    data = []
+    for subject in subjects:
+        if subject.offered:
+            offered = "Offered"
+        else:
+            offered = "Not offered"
+        x = {"fields":{"subject-code": subject.subject_code,
+                       "subject-name": subject.subject_name,
+                       "subject-yl": subject.year_level,
+                       "subject-sem": subject.get_semester_display(),
+                       "subject-offered": offered,
+                       "subject-room": subject.get_room_category_display(),
+             }
+        }
+        data.append(x)
+    data = json.dumps(data)
+    pprint(data)
+    return HttpResponse(data, content_type='application/json')
+
+    return HttpResponse(subjects)
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser or u.is_staff )
@@ -326,6 +350,7 @@ def curriculum_settings_subject(request):
     for curriculum in curriculums:
         x = {"fields":{"curriculum-name":curriculum.curriculum,
                        "curriculum-description":curriculum.description,
+                       "curriculum-pk":curriculum.pk,
              }
         }
         data.append(x)
@@ -484,16 +509,66 @@ def site_settings_open(request,sy,sem):
 @login_required
 @user_passes_test(lambda u: u.is_superuser or u.is_staff )
 def section_offering(request):
-    curriculum = Curriculum.objects.all()
     current_settings = Setting.objects.get(current=True)
+
     context = {
         'title': 'Section Offering',
         'viewtype': 'section-offering',
+        'settings': current_settings,
     }
     # settings = Setting.objects.get_or_create()
 
     return render(request, 'load_manager/components/chairperson/section-offering/index.html', context)
 
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def section_offering_table(request):
+    import json
+    from pprint import pprint
+    settings = Setting.objects.get(current=True)
+    semester = str(settings.semester)
+    start_year = str(settings.school_year.start_year)
+    end_year = str(settings.school_year.end_year)
+
+    try:
+        start = Year.objects.get(year=start_year)
+    except Year.DoesNotExist:
+        new_year = Year(year=start_year)
+        new_year.save()
+        start = Year.objects.get(year=start_year)
+
+    try:
+        end = Year.objects.get(year=end_year)
+    except Year.DoesNotExist:
+        new_year = Year(year=end_year)
+        new_year.save()
+        end  = Year.objects.get(year=end_year)
+
+    try:
+        sy = SchoolYear.objects.get(start_year=start, end_year=end)
+    except SchoolYear.DoesNotExist:
+        new_sy = SchoolYear(start_year=start, end_year=end)
+        new_sy.save()
+        sy = SchoolYear.objects.get(start_year=start, end_year=end)
+
+    secOffs = SectionOffering.objects.filter(school_year=sy, semester=semester)
+
+    data = []
+    for secOff in secOffs:
+        if secOff.professor:
+            prof = str(secOff.professor.first_name + ' ' + secOff.professor.last_name)
+        else:
+            prof = "Empty"
+        x = {"fields":{"secOff-subject": str(secOff.subject.subject_name),
+                       "secOff-section": str(secOff.block_section),
+                       "secOff-type": secOff.get_service_flag_display(),
+                       "secOff-prof": prof,
+             }
+        }
+        data.append(x)
+    data = json.dumps(data)
+    pprint(data)
+    return HttpResponse(data, content_type='application/json')
 
 from django.core.files.storage import FileSystemStorage
 @login_required
@@ -570,7 +645,7 @@ def curriculum_upload(request):
                         new_subj = Subject(year_level=year_level, semester=semester, curriculum=curriculum_get,
                         subject_code=strcode, subject_name=strdesc, lab_hours=int(strlab), lec_hours=int(strlec))
                         if strcode.startswith('BSCOE') or strcode.startswith('COEN'):
-                            new_subj.minor_flag= True
+                            new_subj.offered= True
                         new_subj.save()
 
                     print(f'{strcode} - {strdesc} - {strlab} - {strlec}')
@@ -684,11 +759,11 @@ def generate_semester_offering(request):
 
         # first_s = Subject.objects.filter(year_level=1, semester=semester, curriculum=first_c).filter(
         #     Q(subject_code__startswith='COEN')|Q(subject_code__startswith='BSCOE'))
-        first_s = Subject.objects.filter(year_level=1, semester=semester, curriculum=first_c, minor_flag=True, thesis_flag=False)
-        second_s = Subject.objects.filter(year_level=2, semester=semester, curriculum=first_c, minor_flag=True, thesis_flag=False)
-        third_s = Subject.objects.filter(year_level=3, semester=semester, curriculum=first_c, minor_flag=True, thesis_flag=False)
-        fourth_s = Subject.objects.filter(year_level=4, semester=semester, curriculum=first_c, minor_flag=True, thesis_flag=False)
-        fifth_s = Subject.objects.filter(year_level=5, semester=semester, curriculum=first_c, minor_flag=True, thesis_flag=False)
+        first_s = Subject.objects.filter(year_level=1, semester=semester, curriculum=first_c, offered=True)
+        second_s = Subject.objects.filter(year_level=2, semester=semester, curriculum=first_c, offered=True)
+        third_s = Subject.objects.filter(year_level=3, semester=semester, curriculum=first_c, offered=True)
+        fourth_s = Subject.objects.filter(year_level=4, semester=semester, curriculum=first_c, offered=True)
+        fifth_s = Subject.objects.filter(year_level=5, semester=semester, curriculum=first_c, offered=True)
 
         first_s = list(first_s)
         second_s = list(second_s)
@@ -898,7 +973,7 @@ def generate_section_offering(request):
     settings.save()
     return redirect('settings')
 
-def generate_load(request):
+def allocate_section_offering(request):
     settings = Setting.objects.get(current=True)
     semester = str(settings.semester)
     start_year = str(settings.school_year.start_year)
@@ -929,21 +1004,47 @@ def generate_load(request):
     #   semester and sy; descending by year level; ascending subject code.
     secOff_qs = SectionOffering.objects.filter(school_year=sy, semester=semester).exclude(professor__isnull=False).order_by('-subject__year_level', 'subject__subject_code')
 
+    for secOff in secOff_qs:
+        print(secOff)
     # Query all prof; filtered by preferred subject (this subject);
     #   first come first serve on list maximum section count of this.subject.year_level
-    prefScheds = PreferredSchedule.objects.filter(school_year=sy, semester=semester).filter(preferred_subject=secOff_qs[0].subject)
-
-    user_list = []
-    for prefSched in prefScheds:
-        user_list.append(prefSched.user)
+        user_list = []
+        prefScheds = PreferredSchedule.objects.filter(school_year=sy, semester=semester, preferred_subject=secOff.subject)
+        for prefSched in prefScheds:
+            user_list.append(prefSched.user)        
+        # print(user_list)
     # Loop through filtered prof; descending based on Faculty Priority Rule
-    prof = FacultyProfile.objects.filter(faculty__in=user_list).order_by('-faculty_type')
-
+        profs = FacultyProfile.objects.filter(faculty__in=user_list).order_by('-faculty_type')
+        if profs:
+            for prof in profs:
+                print(f'{prof.faculty} prefers {secOff.subject}')
     # If prof already allocated to this.subject, next.
-    secOff_prof_exists = SectionOffering.objects.filter(school_year=sy, semester=semester, professor=prof[0].faculty, subject=secOff_qs[0].subject)
-
+                secOff_prof_exists = SectionOffering.objects.filter(school_year=sy, semester=semester, professor=prof.faculty, subject=secOff.subject)
     # If prof has no remaining hours, next.
-    # secOff_allocated = SectionOffering.objects.filter(school_year=sy, semester=semester, professor=prof[0].faculty)
+                secOff_prof_qs = SectionOffering.objects.filter(school_year=sy, semester=semester, professor=prof.faculty)
+                allowed_hours = prof.regular_hours + prof.part_time_hours
+                allocated_hours = 0
+                subject_hours = secOff.subject.lab_hours + secOff.subject.lec_hours
+                for secOff_prof in secOff_prof_qs:
+                    allocated_hours = secOff_prof.subject.lec_hours + secOff_prof.subject.lec_hours
+                
+                print(f'{prof.faculty} total of {allocated_hours} allocated hours')
+                print(f'{prof.faculty} total of {allowed_hours} allowed hours')
+
+                if secOff_prof_exists:
+                    print(f'{prof.faculty} already assigned to subject {secOff.subject} - {subject_hours}hrs')   
+                else:
+                    print(f'{prof.faculty} not assigned to subject {secOff.subject} - {subject_hours}hrs')
+                    if allocated_hours + subject_hours <= allowed_hours:
+                        print(f'{prof.faculty} allocated to {secOff.subject}')
+                        secOff.professor = prof.faculty
+                        secOff.save()
+                        print(secOff.professor)
+                        break
+                    else:
+                        print(f'{prof.faculty} not allocated to {secOff.subject}')
+                    
+
 
     # Allocation subject to prof; first come, first serve.
-    return HttpResponse(secOff_prof_exists)
+    return HttpResponse("done")

@@ -52,9 +52,7 @@ class Subject(models.Model):
     curriculum = models.ForeignKey(Curriculum, on_delete=models.CASCADE)
     subject_code = models.CharField(max_length=15)
     subject_name = models.CharField(max_length=128)
-    minor_flag = models.BooleanField(default=False)
-    thesis_flag = models.BooleanField(default=False)
-    ojt_flag = models.BooleanField(default=False)
+    offered = models.BooleanField(default=False)
     lab_hours = models.PositiveIntegerField(default=0)
     lec_hours = models.PositiveIntegerField(default=0)
 

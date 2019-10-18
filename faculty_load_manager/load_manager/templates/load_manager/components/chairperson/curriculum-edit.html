@@ -3,7 +3,9 @@
 
 {% block extra_css %}
 <!-- SELECT2 -->
-<link rel="stylesheet" href="{% static "vendor/DataTables/datatables.min.css" %}">
+<link rel="stylesheet" href="{% static "vendor/font-awesome/css/all.min.css" %}">
+<link rel="stylesheet" href="{% static "vendor/DataTables/DataTables-1.10.18/css/dataTables.bootstrap4.min.css" %}">
+<link href="{% static "vendor/select2/css/select2.min.css" %}" rel="stylesheet" />
 <!-- DATATABLES-->
 {% endblock %}
 
@@ -11,52 +13,27 @@
 
 {% block content %}
 <div class="card animated fadeInDown settings-card">
-    <h5>Curriculum {{curriculum}} </h5>
+    <div class="card-header">
+        <h5>Curriculum {{curriculum.curriculum}}</h5>
+    </div>
     <div class="card-content">
         <div class="container-fluid">
             <div class="row p-3">
                 <div class="col">
                     <div class="table-responsive">
-                        <table id="curriculum-table" class="table table-bordered table-hover" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info">
+                        <table id="curriculum-subject-table" class="table table-bordered table-hover" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info">
                             <thead>
                                 <tr role="row" class="text-center">
                                     <th style="width:10%">Subject Code</th>
                                     <th style="width:10%">Subject Name</th>
                                     <th style="width:10%">Year Level</th>
                                     <th style="width:10%">Semester</th>
-                                    <th style="width:10%">Major Flag</th>
-                                    <th style="width:10%">Thesis Flag</th>
+                                    <th style="width:10%">Offered</th>
                                     <th style="width:10%">Room Type</th>
+                                    <th style="width:10%">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <form method="POST">
-                                    {% csrf_token %}
-                                    {% for subject in subjects %}
-                                    <tr role="row" class="text-center">
-                                        <td> <input type="text" value="{{subject.subject_code}}" disabled /> </td>
-                                        <td> {{subject.subject_name}} </td>
-                                        <td> {{subject.year_level}} </td>
-                                        <td> {{subject.get_semester_display}} </td>
-                                        <td>
-                                            <label><input type="checkbox" name="{{subject.subject_code}}-minor-flag" value="{{subject.minor_flag}}" {% if subject.minor_flag %} checked {%endif%}></label>
-                                        </td>
-                                        <td>
-                                            <label><input type="checkbox" name="{{subject.subject_code}}-thesis-flag" value="{{subject.thesis_flag}}" {% if subject.thesis_flag %} check {%endif%}>
-                                            </label>
-                                        </td>
-                                        <td>
-                                            <select name="room-{{subject.subject_code}}" id="room-{{subject.subject_code}}">
-                                                {% for v,cat in subject.ROOM_CAT %}
-                                                <option value="{{v}}" {% if subject.room_category == v  %} selected {%endif%}> {{cat}}</option>
-                                                {% endfor %}
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                    <td colspan="7" class="text-center"><input type="submit" class="btn btn-raised btn-success" value="Submit Edit"></td>
-                                </form>
-                            </tbody>
+                            <tbody></tbody>
                         </table>
                     </div>
                 </div>
@@ -65,3 +42,68 @@
     </div>
 </div>
 {% endblock content %}
+
+{% block extra_js %}
+<!-- SELECT2 -->
+<script src="{% static "vendor/select2/js/select2.min.js" %}"></script>
+<script type="text/javascript" src="{% static "vendor/DataTables/datatables.min.js" %}"></script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        // $("#curriculum-upload").modalForm({
+        //     formURL: "{% url 'settings-curriculum-upload' %}"
+        // });
+        // $('#curriculum-select').select2({
+        //     // maximumSelectionLength: 3,
+        // });
+        // $('#curriculum-select').on('select2:select', function (e) {
+        //     alert('wow');
+        // });
+
+        var tables = '/' + $('#curriculum-select').val() + '/subjects/';
+        $('#curriculum-subject-table').DataTable({
+            "dataType": 'json',
+            "ajax": {
+                "processing": true,
+                "dataSrc": '',
+                "url": "{% url 'chairperson-curriculum-subject-table' curriculum.pk %}",
+            },
+            "columnDefs": [
+                {
+                    "className": 'col-subject-code text-center',
+                    "targets": 0,
+                    "data": "fields.subject-code",
+                },
+                {
+                    "className": 'col-subject-name text-center',
+                    "targets": 1,
+                    "data": "fields.subject-name",
+                },
+                {
+                    "className": 'col-subject-yl text-center',
+                    "targets": 2,
+                    "data": "fields.subject-yl",
+                },
+                {
+                    "className": 'col-subject-sem text-center',
+                    "targets": 3,
+                    "data": "fields.subject-sem",
+                },
+                {
+                    "className": 'col-subject-offered text-center',
+                    "targets": 4,
+                    "data": "fields.subject-offered",
+                },
+                {
+                    "className": 'col-subject-room text-center',
+                    "targets": 5,
+                    "data": "fields.subject-room",
+                },
+            ]
+        })
+    });
+
+
+</script>
+
+{% endblock %}
