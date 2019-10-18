@@ -770,6 +770,47 @@ def generate_section_offering(request):
         first_count = 0
     print(f'first year - {first_count}')
 
+    # generate block sections
+    for i in range(fifth_count):
+        try:
+            bs = BlockSection.objects.get(school_year=sy, semester=semester, year_level=5, section=str(int(i+1)))
+        except BlockSection.DoesNotExist:
+            bs = BlockSection(school_year=sy, semester=semester, year_level=5, section=str(int(i+1)))
+            bs.save()
+        print(bs)
+
+    for i in range(fourth_count):
+        try:
+            bs = BlockSection.objects.get(school_year=sy, semester=semester, year_level=4, section=str(int(i+1)))
+        except BlockSection.DoesNotExist:
+            bs = BlockSection(school_year=sy, semester=semester, year_level=4, section=str(int(i+1)))
+            bs.save()
+        print(bs)
+
+    for i in range(third_count):
+        try:
+            bs = BlockSection.objects.get(school_year=sy, semester=semester, year_level=3, section=str(int(i+1)))
+        except BlockSection.DoesNotExist:
+            bs = BlockSection(school_year=sy, semester=semester, year_level=3, section=str(int(i+1)))
+            bs.save()
+        print(bs)
+
+    for i in range(second_count):
+        try:
+            bs = BlockSection.objects.get(school_year=sy, semester=semester, year_level=2, section=str(int(i+1)))
+        except BlockSection.DoesNotExist:
+            bs = BlockSection(school_year=sy, semester=semester, year_level=2, section=str(int(i+1)))
+            bs.save()
+        print(bs)
+
+    for i in range(first_count):
+        try:
+            bs = BlockSection.objects.get(school_year=sy, semester=semester, year_level=1, section=str(int(i+1)))
+        except BlockSection.DoesNotExist:
+            bs = BlockSection(school_year=sy, semester=semester, year_level=1, section=str(int(i+1)))
+            bs.save()
+        print(bs)
+    
     semOff = SemesterOffering.objects.get(school_year=sy, semester=semester)
     # first_s = Subject.objects.filter(year_level=1, semester=semester, curriculum=first_c).filter(
     #         Q(subject_code__startswith='COEN')|Q(subject_code__startswith='BSCOE'), thesis_flag=False)
