@@ -1,11 +1,16 @@
 from django.urls import path, include
 from . import views
 from users.views import *
+from . import model_views
 urlpatterns = [
     path('', views.home_view, name='home'),
 
     # AJAX MODULES
     path('ajax/save', views.ajax_save, name='ajax-save'),
+
+    #### MODEL CRUDS
+    ##SETTINGS
+    path('create/settings', model_views.SettingsCreateView.as_view(), name='create-settings'),
     # LOAD MANAGER
     path('load-manager/', views.load_manager_list, name='load-manager-list'),
     path('load-manager/create/', views.load_manager_create,
