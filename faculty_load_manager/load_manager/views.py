@@ -285,7 +285,7 @@ def curriculum_settings(request):
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def curriculum_edit(request, name):
+def curriculum_subject_edit(request, name):
     curriculum = Curriculum.objects.get(curriculum=str(name))
     subjects = Subject.objects.filter(curriculum=curriculum).order_by('-minor_flag', 'subject_code')
 
@@ -295,22 +295,45 @@ def curriculum_edit(request, name):
             'subjects': subjects,
         }
         return render(request, 'load_manager/components/chairperson/curriculum-edit.html', context)
-    if request.method == 'POST':
-        for subject in subjects:
-            # subject.minor_flag = request.POST.get('%s-minor-flag' % (subject.subject_code))
-            # subject.thesis_flag = request.POST.get('%s-thesis-flag' % (subject.subject_code))
-            # subject.save()
-            if request.POST.get('%s-minor-flag' % (subject.subject_code)):
-                subject.minor_flag = True
-                subject.thesis_flag = False
-                print('%s Offered' % (subject.subject_code))
-            else:
-                subject.minor_flag = False
+    # if request.method == 'POST':
+    #     for subject in subjects:
+    #         # subject.minor_flag = request.POST.get('%s-minor-flag' % (subject.subject_code))
+    #         # subject.thesis_flag = request.POST.get('%s-thesis-flag' % (subject.subject_code))
+    #         # subject.save()
+    #         if request.POST.get('%s-minor-flag' % (subject.subject_code)):
+    #             subject.minor_flag = True
+    #             subject.thesis_flag = False
+    #             print('%s Offered' % (subject.subject_code))
+    #         else:
+    #             subject.minor_flag = False
                 
-            a = request.POST.get('room-STAT 2053')
-            print(a)
-            subject.save()
-        return redirect('settings-curriculum')
+    #         a = request.POST.get('room-STAT 2053')
+    #         print(a)
+    #         subject.save()
+    #     return redirect('settings-curriculum')
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def curriculum_subject_table(request, id):
+    import json
+    from pprint import pprint
+    subjects = Subject.objects.filter(curriculum__curriculum=str(id))
+    data = []
+    for subject in subjects:
+        x = {"fields":{"subject-code": subject.subject_code,
+                       "subject-name": subject.subject_name,
+                       "subject-yl": subject.year_level,
+                       "subject-sem": subject.get_semester_display(),
+                       "subject-offered": subject.minor_flag,
+                       "subject-room": subject.get_room_category_display(),
+             }
+        }
+        data.append(x)
+    data = json.dumps(data)
+    pprint(data)
+    return HttpResponse(data, content_type='application/json')
+
+    return HttpResponse(subjects)
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
