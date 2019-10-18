@@ -19,12 +19,7 @@ urlpatterns = [
     path('ss', views.ss, name='ss'),
 
     # CHAIRPERSON VIEW
-    ## SETTINGS
-    path('chairperson/settings/', views.site_settings, name='settings'),
-    path('chairperson/settings/<int:pk>', views.site_settings_view, name='settings'),
-    path('chairperson/settings/table', views.site_settings_table, name='settings-table'),
-    path('chairperson/settings/save/<str:viewtype>/<int:sy>/<int:sem>', views.site_settings_save,
-        name='chairperson-settings-save'),
+    ## CURRICULUM
     path('chairperson/curriculum/', views.curriculum_settings,
          name='settings-curriculum'),
     path('chairperson/curriculum/<int:name>',
@@ -33,6 +28,18 @@ urlpatterns = [
          name='settings-curriculum-upload'),
     path('chairperson/curriculum/table', views.curriculum_settings_subject,
          name='chairperson-curriculum-table'),
+
+    ## SETTINGS
+    path('chairperson/settings/', views.site_settings, name='settings'),
+    path('chairperson/settings/<int:pk>', views.site_settings_view, name='settings'),
+    path('chairperson/settings/table', views.site_settings_table, name='settings-table'),
+    path('chairperson/settings/save/<str:viewtype>/<int:sy>/<int:sem>', views.site_settings_save,
+        name='chairperson-settings-save'),
+
+    ## SECTION OFFERING
+    path('chairperson/section-offering/', views.section_offering, name='section-offering'),
+
+    ## USER MANAGEMENT
     path('chairperson/user-management/',
          user_pool_management, name='chairperson-upm'),
     path('chairperson/user-management/users/table',
@@ -40,7 +47,7 @@ urlpatterns = [
     path('chairperson/user-management/users/create',
          user_pool_management_create, name='chairperson-upm-user-create'),
 
-    # AJAX
+    # FUNCTIONS
     path('parse/', views.parse_view, name='parse_view'),
     path('generate/', views.generate_semester_offering,
          name='generate_semester_offering'),
