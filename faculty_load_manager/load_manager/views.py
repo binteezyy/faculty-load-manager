@@ -897,7 +897,7 @@ def generate_section_offering(request):
     settings.save()
     return redirect('settings')
 
-def generate_load(request):
+def allocate_section_offering(request):
     settings = Setting.objects.get(current=True)
     semester = str(settings.semester)
     start_year = str(settings.school_year.start_year)
@@ -928,21 +928,47 @@ def generate_load(request):
     #   semester and sy; descending by year level; ascending subject code.
     secOff_qs = SectionOffering.objects.filter(school_year=sy, semester=semester).exclude(professor__isnull=False).order_by('-subject__year_level', 'subject__subject_code')
 
+    for secOff in secOff_qs:
+        print(secOff)
     # Query all prof; filtered by preferred subject (this subject);
     #   first come first serve on list maximum section count of this.subject.year_level
-    prefScheds = PreferredSchedule.objects.filter(school_year=sy, semester=semester).filter(preferred_subject=secOff_qs[0].subject)
-
-    user_list = []
-    for prefSched in prefScheds:
-        user_list.append(prefSched.user)
+        user_list = []
+        prefScheds = PreferredSchedule.objects.filter(school_year=sy, semester=semester, preferred_subject=secOff.subject)
+        for prefSched in prefScheds:
+            user_list.append(prefSched.user)        
+        # print(user_list)
     # Loop through filtered prof; descending based on Faculty Priority Rule
-    prof = FacultyProfile.objects.filter(faculty__in=user_list).order_by('-faculty_type')
-
+        profs = FacultyProfile.objects.filter(faculty__in=user_list).order_by('-faculty_type')
+        if profs:
+            for prof in profs:
+                print(f'{prof.faculty} prefers {secOff.subject}')
     # If prof already allocated to this.subject, next.
-    secOff_prof_exists = SectionOffering.objects.filter(school_year=sy, semester=semester, professor=prof[0].faculty, subject=secOff_qs[0].subject)
-
+                secOff_prof_exists = SectionOffering.objects.filter(school_year=sy, semester=semester, professor=prof.faculty, subject=secOff.subject)
     # If prof has no remaining hours, next.
-    # secOff_allocated = SectionOffering.objects.filter(school_year=sy, semester=semester, professor=prof[0].faculty)
+                secOff_prof_qs = SectionOffering.objects.filter(school_year=sy, semester=semester, professor=prof.faculty)
+                allowed_hours = prof.regular_hours + prof.part_time_hours
+                allocated_hours = 0
+                subject_hours = secOff.subject.lab_hours + secOff.subject.lec_hours
+                for secOff_prof in secOff_prof_qs:
+                    allocated_hours = secOff_prof.subject.lec_hours + secOff_prof.subject.lec_hours
+                
+                print(f'{prof.faculty} total of {allocated_hours} allocated hours')
+                print(f'{prof.faculty} total of {allowed_hours} allowed hours')
+
+                if secOff_prof_exists:
+                    print(f'{prof.faculty} already assigned to subject {secOff.subject} - {subject_hours}hrs')   
+                else:
+                    print(f'{prof.faculty} not assigned to subject {secOff.subject} - {subject_hours}hrs')
+                    if allocated_hours + subject_hours <= allowed_hours:
+                        print(f'{prof.faculty} allocated to {secOff.subject}')
+                        secOff.professor = prof.faculty
+                        secOff.save()
+                        print(secOff.professor)
+                        break
+                    else:
+                        print(f'{prof.faculty} not allocated to {secOff.subject}')
+                    
+
 
     # Allocation subject to prof; first come, first serve.
-    return HttpResponse(secOff_prof_exists)
+    return HttpResponse("done")
