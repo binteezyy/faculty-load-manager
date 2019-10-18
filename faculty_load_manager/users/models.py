@@ -71,6 +71,11 @@ class Setting(models.Model):
                 pass
         super(Setting, self).save(*args, **kwargs)
 
+    def delete(self):
+        if self.current == True:
+            raise ValueError('You cannot delete current')
+        else:
+            super(Setting, self).delete(*args, **kwargs)
 
 class FacultyProfile(models.Model):
     F_TYPE = [

@@ -154,15 +154,29 @@
      $(selectForm).prop('disabled', false)
    }
   });
-
+  $(".create-settings").modalForm({formURL: "{% url 'create-settings' %}"});
   $('#settings-table').DataTable( {
-    // "select": true,
-    // "buttons": true,
     "dataType":'json',
     "ajax": {
      "processing": true,
      "dataSrc":'',
      "url": "{% url 'settings-table' %}",
+    },
+    "initComplete": function(settings, json) {
+      $(".read-setting").each(function () {
+          $(this).modalForm({formURL: $(this).data('id')});
+        });
+      $(".delete-setting").each(function () {
+        $(this).modalForm({formURL: $(this).data('id')});
+      });
+      $(".update-setting").each(function () {
+        $(this).modalForm({formURL: $(this).data('id')});
+      });
+    },
+    createdRow: function (row, data, dataIndex, cells) {
+      if(data.fields.status){
+        $(row).css({"background-image": "linear-gradient(to right, #ffecd2 0%, #fcb69f 100%)"})
+      }
     },
     "columnDefs": [
       { "className": 'col-id text-center',
@@ -183,16 +197,20 @@
       },
       { "className": 'col-details text-center',
         "targets":   3,
-        "data": 'fields.setting-action',
+        "data": 'fields.id',
         render:function(data, type, row)
           {
-            return '<button type="button" class="read btn btn-sm btn-primary m-1" data-id="">'+
-              '<span class="fa fa-eye"></span> View</button>'
-          },
-      },
-  ]});
+            let render = '<button type="button" class="read-setting btn btn-sm btn-raised btn-primary m-1" data-id="/read/settings/'+data+'">'+
+              '<span class="far fa-eye"></span></button>' +
+              '<button type="button" class="delete-setting btn btn-sm btn-raised btn-warning m-1" data-id="/delete/settings/'+data+'">'+
+                '<span class="fa fa-trash"></span></button>'+
+              '<button type="button" class="update-setting btn btn-sm btn-raised btn-warning m-1" data-id="/update/settings/'+data+'">'+
+                '<span class="fa fa-edit"></span></button>';
 
-  $(".create-settings").modalForm({formURL: "{% url 'create-settings' %}"});
+            return render
+          },
+      }]
+    });
 
   // SAVE
   $("#opening-save").modalForm({
