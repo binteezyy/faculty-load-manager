@@ -1,5 +1,32 @@
 {% extends 'load_manager/container/container.html' %}
 {% load staticfiles %}
 {% block content %}
-Logged in as {{user.username}} <a href="{% url 'logout' %}"> Logout</a>
+<div class="card animated fadeInDown lm-current">
+    <div class="card-header">
+        <h4>Announcements</h4>
+    </div>
+    <div class="card-body">
+        <div class="container-fluid">
+            Logged in as {{user.username}} <a href="{% url 'logout' %}"> Logout</a>
+        </div>
+    </div>
+</div>
+<br/>
+<div class="card animated fadeInDown lm-current">
+    <div class="card-header">
+        <h4>Edit Announcement</h4>
+    </div>
+    <div class="card-body">
+        <div class="container-fluid">
+            <form method="POST">
+                <div class="form-group">
+                    <label class="bmd-label-floating">Edit Announcement</label>
+                    <textarea class="form-control" rows="6"></textarea>
+                    <!-- <small class="form-text text-muted">Markdown styling available. <a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet" target="_blank">Learn more</a></span> -->
+                </div>
+                <button type="submit" class="btn btn-raised btn-success">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock content %}
