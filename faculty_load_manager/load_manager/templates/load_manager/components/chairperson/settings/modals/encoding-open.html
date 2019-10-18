@@ -16,7 +16,7 @@
 
   <div class="modal-footer">
     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-    <button class="btn btn-primary btn-raised" type="submit">Generate offering</button>
+    <a href="{% url 'generate_semester_offering' %}">
+      <button id="generate" class="btn btn-primary btn-raised" type="button">Generate offering</button>
+    </a>
   </div>
-
-</form>
