@@ -24,8 +24,7 @@
                                     <th style="width:10%">Subject Name</th>
                                     <th style="width:10%">Year Level</th>
                                     <th style="width:10%">Semester</th>
-                                    <th style="width:10%">Major Flag</th>
-                                    <th style="width:10%">Thesis Flag</th>
+                                    <th style="width:10%">Offered</th>
                                     <th style="width:10%">Room Type</th>
                                 </tr>
                             </thead>
@@ -42,10 +41,6 @@
                                             <label><input type="checkbox" name="{{subject.subject_code}}-minor-flag" value="{{subject.minor_flag}}" {% if subject.minor_flag %} checked {%endif%}></label>
                                         </td>
                                         <td>
-                                            <label><input type="checkbox" name="{{subject.subject_code}}-thesis-flag" value="{{subject.thesis_flag}}" {% if subject.thesis_flag %} check {%endif%}>
-                                            </label>
-                                        </td>
-                                        <td>
                                             <select name="room-{{subject.subject_code}}" id="room-{{subject.subject_code}}">
                                                 {% for v,cat in subject.ROOM_CAT %}
                                                 <option value="{{v}}" {% if subject.room_category == v  %} selected {%endif%}> {{cat}}</option>
@@ -54,7 +49,7 @@
                                         </td>
                                     </tr>
                                     {% endfor %}
-                                    <td colspan="7" class="text-center"><input type="submit" class="btn btn-raised btn-success" value="Submit Edit"></td>
+                                    <td colspan="6" class="text-center"><input type="submit" class="btn btn-raised btn-success" value="Submit Edit"></td>
                                 </form>
                             </tbody>
                         </table>
