@@ -154,9 +154,7 @@
      $(selectForm).prop('disabled', false)
    }
   });
-  $("#encoding-open").modalForm({
-       formURL: "{% url 'chairperson-upm-user-create' %}"
-  });
+
   $('#settings-table').DataTable( {
     // "select": true,
     // "buttons": true,
@@ -198,7 +196,10 @@
   $("#opening-save").modalForm({
     formURL: "{% url 'chairperson-settings-save' viewtype csetting.school_year.pk csetting.semester%}"
   });
-
+  // OPEN SEM
+  $("#encoding-open").modalForm({
+    formURL: "{% url 'chairperson-settings-open' csetting.school_year.pk csetting.semester %}"
+  });
 
   </script>
 {% endblock %}

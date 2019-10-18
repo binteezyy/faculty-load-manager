@@ -21,10 +21,11 @@ import re
 from bs4 import BeautifulSoup
 def home_view(request):
     next = request.GET.get('next')
-
+    csettings = Setting.objects.get(current=True)
     if request.user.is_authenticated:
         context = {
             'user': request.user,
+            'status': csettings.get_status_display,
             'viewtype': 'home',
             'title': 'Home'
         }
@@ -59,6 +60,7 @@ def load_manager_list(request):
         psched = ""
     context = {
         'title': 'LOAD MANAGER',
+        'status': settings.get_status_display,
         'viewtype': 'load-manager',
         'submission': cs,
         'psubj': psched,
@@ -466,13 +468,17 @@ def site_settings_save(request,viewtype,sy,sem):
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def site_settings_open(request,viewtype,sy,sem):
+def site_settings_open(request,sy,sem):
+    csettings = Setting.objects.get(current=True)
     context = {
-        'viewtype': 'settings',
-        'title': 'Semester Settings',
+        'title': 'Open Encoding',
+        'school_year': csettings.school_year,
+        'semester': csettings.get_semester_display,
         'message': '',
     }
-    return render(request, 'load_manager/components/modals/save.html', context)
+    return render(request, 'load_manager/components/chairperson/settings/modals/encoding-open.html', context)
+
+
 # ============= SECTION OFFERING
 @login_required
 @user_passes_test(lambda u: u.is_superuser)

@@ -58,11 +58,13 @@
 <div id="main-container">
   <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4" style="z-index: 1;">
       <a href="#" class="navbar-brand mb-0 h1o"> Computer Engineering Faculty Load</a>
-
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
-        </ul>
-    </div>
+      {% if status != 'Locked' %}
+        <h3><span class="badge {% if status == 'Not Opened' %}badge-secondary
+          {% elif status == 'Open'%}badge-success
+          {% elif status == 'Closed' %}badge-warning
+          {% endif %}">
+          {{ status }}</span></h3>
+      {% endif %}
   </nav>
 
   <div class="content container-fluid">
