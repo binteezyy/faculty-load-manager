@@ -130,6 +130,7 @@ def ajax_save(request):
         return HttpResponse(data, content_type='application/json')
     else:
         return HttpResponse({}, content_type='application/json')
+
 #===================================================
 #                   LOAD MANAGER
 #===================================================
@@ -268,8 +269,91 @@ def ss(request):
 #===================================================
 #               CHAIRPERSON VIEW
 #===================================================
+## ============= CURRICULUM
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def curriculum_settings(request):
+    curriculums = Curriculum.objects.all()
+    context = {
+        'viewtype': 'curriculum',
+        'curriculums': curriculums,
+    }
 
-# ====== SITE SETTINGS
+    return render(request, 'load_manager/components/chairperson/curriculum.html', context)
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def curriculum_edit(request, name):
+    curriculum = Curriculum.objects.get(curriculum=str(name))
+    subjects = Subject.objects.filter(curriculum=curriculum).order_by('-minor_flag', 'subject_code')
+
+    if request.method == 'GET':
+        context = {
+            'curriculum': curriculum,
+            'subjects': subjects,
+        }
+        return render(request, 'load_manager/components/chairperson/curriculum-edit.html', context)
+    if request.method == 'POST':
+        for subject in subjects:
+            # subject.minor_flag = request.POST.get('%s-minor-flag' % (subject.subject_code))
+            # subject.thesis_flag = request.POST.get('%s-thesis-flag' % (subject.subject_code))
+            # subject.save()
+            if request.POST.get('%s-minor-flag' % (subject.subject_code)):
+                subject.minor_flag = True
+                print('%s Major' % (subject.subject_code))
+            else:
+                subject.minor_flag = False
+            if request.POST.get('%s-thesis-flag' % (subject.subject_code)):
+                subject.thesis_flag = True
+                print('%s Thesis' % (subject.subject_code))
+            else:
+                subject.thesis_flag = False
+            a = request.POST.get('room-STAT 2053')
+            print(a)
+            subject.save()
+        return redirect('settings-curriculum')
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def curriculum_settings_subject(request):
+    import json
+    from pprint import pprint
+    # subjects = Subject.objects.filter(curriculum=pk)
+    curriculums = Curriculum.objects.all()
+    data = []
+    for curriculum in curriculums:
+        x = {"fields":{"curriculum-name":curriculum.curriculum,
+                       "curriculum-description":curriculum.description,
+             }
+        }
+        data.append(x)
+    data = json.dumps(data)
+    pprint(data)
+    return HttpResponse(data, content_type='application/json')
+
+    return HttpResponse(subjects)
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def curriculum_settings_table(request):
+    if request.method == 'POST':
+        fname = request.POST.get('fname')
+        lname = request.POST.get('lname')
+        email = request.POST.get('email')
+        type = request.POST.get('type')
+        os.system('cls')
+        print(fname,lname)
+        print(email,type)
+        return redirect('chairperson-upm')
+    else:
+        x = FacultyProfile.F_TYPE
+        print(x)
+        context = {
+            'faculty_type': x,
+        }
+        return render(request, 'load_manager/components/chairperson/users-management/add-users.html', context)
+
+#  ============= SITE SETTINGS
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def site_settings(request):
@@ -379,88 +463,21 @@ def site_settings_save(request,viewtype,sy,sem):
                  """
     }
     return render(request, 'load_manager/components/modals/save.html', context)
+
+# ============= SECTION OFFERING
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def curriculum_settings(request):
-    curriculums = Curriculum.objects.all()
+def section_offering(request):
+    curriculum = Curriculum.objects.all()
+    current_settings = Setting.objects.get(current=True)
     context = {
-        'viewtype': 'curriculum',
-        'curriculums': curriculums,
+        'title': 'Section Offering',
+        'viewtype': 'section-offering',
     }
+    # settings = Setting.objects.get_or_create()
 
-    return render(request, 'load_manager/components/chairperson/curriculum.html', context)
+    return render(request, 'load_manager/components/chairperson/section-offering/index.html', context)
 
-@login_required
-@user_passes_test(lambda u: u.is_superuser)
-def curriculum_edit(request, name):
-    curriculum = Curriculum.objects.get(curriculum=str(name))
-    subjects = Subject.objects.filter(curriculum=curriculum).order_by('-minor_flag', 'subject_code')
-
-    if request.method == 'GET':
-        context = {
-            'curriculum': curriculum,
-            'subjects': subjects,
-        }
-        return render(request, 'load_manager/components/chairperson/curriculum-edit.html', context)
-    if request.method == 'POST':
-        for subject in subjects:
-            # subject.minor_flag = request.POST.get('%s-minor-flag' % (subject.subject_code))
-            # subject.thesis_flag = request.POST.get('%s-thesis-flag' % (subject.subject_code))
-            # subject.save()
-            if request.POST.get('%s-minor-flag' % (subject.subject_code)):
-                subject.minor_flag = True
-                print('%s Major' % (subject.subject_code))
-            else:
-                subject.minor_flag = False
-            if request.POST.get('%s-thesis-flag' % (subject.subject_code)):
-                subject.thesis_flag = True
-                print('%s Thesis' % (subject.subject_code))
-            else:
-                subject.thesis_flag = False
-            a = request.POST.get('room-STAT 2053')
-            print(a)
-            subject.save()
-        return redirect('settings-curriculum')
-
-@login_required
-@user_passes_test(lambda u: u.is_superuser)
-
-def curriculum_settings_subject(request):
-    import json
-    from pprint import pprint
-    # subjects = Subject.objects.filter(curriculum=pk)
-    curriculums = Curriculum.objects.all()
-    data = []
-    for curriculum in curriculums:
-        x = {"fields":{"curriculum-name":curriculum.curriculum,
-                       "curriculum-description":curriculum.description,
-             }
-        }
-        data.append(x)
-    data = json.dumps(data)
-    pprint(data)
-    return HttpResponse(data, content_type='application/json')
-
-    return HttpResponse(subjects)
-@login_required
-@user_passes_test(lambda u: u.is_superuser)
-def curriculum_settings_table(request):
-    if request.method == 'POST':
-        fname = request.POST.get('fname')
-        lname = request.POST.get('lname')
-        email = request.POST.get('email')
-        type = request.POST.get('type')
-        os.system('cls')
-        print(fname,lname)
-        print(email,type)
-        return redirect('chairperson-upm')
-    else:
-        x = FacultyProfile.F_TYPE
-        print(x)
-        context = {
-            'faculty_type': x,
-        }
-        return render(request, 'load_manager/components/chairperson/users-management/add-users.html', context)
 
 from django.core.files.storage import FileSystemStorage
 @login_required
@@ -850,21 +867,21 @@ def generate_load(request):
         new_sy.save()
         sy = SchoolYear.objects.get(start_year=start, end_year=end)
 
-    # Loop through subjects from section offering; based on settings' 
+    # Loop through subjects from section offering; based on settings'
     #   semester and sy; descending by year level; ascending subject code.
     secOff_qs = SectionOffering.objects.filter(school_year=sy, semester=semester).exclude(professor__isnull=False).order_by('-subject__year_level', 'subject__subject_code')
 
-    # Query all prof; filtered by preferred subject (this subject); 
+    # Query all prof; filtered by preferred subject (this subject);
     #   first come first serve on list maximum section count of this.subject.year_level
     prefScheds = PreferredSchedule.objects.filter(school_year=sy, semester=semester).filter(preferred_subject=secOff_qs[0].subject)
-    
+
     user_list = []
     for prefSched in prefScheds:
         user_list.append(prefSched.user)
     # Loop through filtered prof; descending based on Faculty Priority Rule
     prof = FacultyProfile.objects.filter(faculty__in=user_list).order_by('-faculty_type')
-    
-    # If prof already allocated to this.subject, next. 
+
+    # If prof already allocated to this.subject, next.
     secOff_prof_exists = SectionOffering.objects.filter(school_year=sy, semester=semester, professor=prof[0].faculty, subject=secOff_qs[0].subject)
 
     # If prof has no remaining hours, next.
