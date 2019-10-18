@@ -21,10 +21,11 @@ import re
 from bs4 import BeautifulSoup
 def home_view(request):
     next = request.GET.get('next')
-
+    csettings = Setting.objects.get(current=True)
     if request.user.is_authenticated:
         context = {
             'user': request.user,
+            'status': csettings.get_status_display,
             'viewtype': 'home',
             'title': 'Home'
         }
@@ -59,6 +60,7 @@ def load_manager_list(request):
         psched = ""
     context = {
         'title': 'LOAD MANAGER',
+        'status': settings.get_status_display,
         'viewtype': 'load-manager',
         'submission': cs,
         'psubj': psched,

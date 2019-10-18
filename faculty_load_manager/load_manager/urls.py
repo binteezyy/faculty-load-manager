@@ -7,10 +7,10 @@ urlpatterns = [
     # AJAX MODULES
     path('ajax/save', views.ajax_save, name='ajax-save'),
     # LOAD MANAGER
-    path('my/load-manager/', views.load_manager_list, name='load-manager-list'),
-    path('my/load-manager/create/', views.load_manager_create,
+    path('load-manager/', views.load_manager_list, name='load-manager-list'),
+    path('load-manager/create/', views.load_manager_create,
          name='load-manager-create'),
-    path('my/load-manager/form/', views.load_manager_create,
+    path('load-manager/form/', views.load_manager_create,
          name='load-manager-form'),
     path('load-manager/my-history/', views.load_manager_tables,
          name='load-manager-history-tables'),
