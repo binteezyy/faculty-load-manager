@@ -302,14 +302,11 @@ def curriculum_edit(request, name):
             # subject.save()
             if request.POST.get('%s-minor-flag' % (subject.subject_code)):
                 subject.minor_flag = True
-                print('%s Major' % (subject.subject_code))
+                subject.thesis_flag = False
+                print('%s Offered' % (subject.subject_code))
             else:
                 subject.minor_flag = False
-            if request.POST.get('%s-thesis-flag' % (subject.subject_code)):
-                subject.thesis_flag = True
-                print('%s Thesis' % (subject.subject_code))
-            else:
-                subject.thesis_flag = False
+                
             a = request.POST.get('room-STAT 2053')
             print(a)
             subject.save()
