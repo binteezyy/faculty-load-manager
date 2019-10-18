@@ -187,8 +187,7 @@ class FacultyLoad(models.Model):
 
     load_category = models.IntegerField(choices = LOAD_CAT, default=1)
     preferred_time = models.ManyToManyField(PreferredTime)
-    load_day = models.IntegerField(choices = DAY_OF_THE_WEEK(), default = 0)
-    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, null=True, blank=True)
     subject = models.ForeignKey(SectionOffering, on_delete=models.CASCADE)
 
     def __str__(self):

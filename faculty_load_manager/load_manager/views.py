@@ -968,9 +968,7 @@ def generate_section_offering(request):
                     new_secOff.save()
                 print(new_secOff)
 
-    settings.status = 1
-    settings.save()
-    return redirect('settings')
+    return redirect('generate_faculty_load')
 
 def allocate_section_offering(request):
     settings = Setting.objects.get(current=True)
@@ -1047,3 +1045,87 @@ def allocate_section_offering(request):
 
     # Allocation subject to prof; first come, first serve.
     return HttpResponse("done")
+
+def generate_faculty_load(request):
+    settings = Setting.objects.get(current=True)
+    semester = str(settings.semester)
+    start_year = str(settings.school_year.start_year)
+    end_year = str(settings.school_year.end_year)
+
+    try:
+        start = Year.objects.get(year=start_year)
+    except Year.DoesNotExist:
+        new_year = Year(year=start_year)
+        new_year.save()
+        start = Year.objects.get(year=start_year)
+
+    try:
+        end = Year.objects.get(year=end_year)
+    except Year.DoesNotExist:
+        new_year = Year(year=end_year)
+        new_year.save()
+        end  = Year.objects.get(year=end_year)
+
+    try:
+        sy = SchoolYear.objects.get(start_year=start, end_year=end)
+    except SchoolYear.DoesNotExist:
+        new_sy = SchoolYear(start_year=start, end_year=end)
+        new_sy.save()
+        sy = SchoolYear.objects.get(start_year=start, end_year=end)
+
+    # Loop through section offering 
+    secOffs = SectionOffering.objects.filter(school_year=sy, semester=semester)
+    # Check secOff.subject lab hours, lec hours
+    for secOff in secOffs:
+        lab_hours = secOff.subject.lab_hours
+        lec_hours = secOff.subject.lec_hours
+        print(f'{secOff.subject} {lab_hours} + {lec_hours}')
+    # If > 0 lab hours and >= 5 lab hrs - lab1 labhrs//2+1 lab2 lab//hrs+2 - lab1
+    # elif >0 lab hours < 5 lab1 - labhrs
+    # create FL 
+        if lab_hours > 0 and lab_hours >= 5:
+            try:
+                facload = FacultyLoad.objects.get(subject=secOff, load_category=0)
+            except FacultyLoad.DoesNotExist:
+                facload = FacultyLoad(subject=secOff, load_category=0)
+                facload.save()
+            print(facload)
+            try:
+                facload = FacultyLoad.objects.get(subject=secOff, load_category=1)
+            except FacultyLoad.DoesNotExist:
+                facload = FacultyLoad(subject=secOff, load_category=1)
+                facload.save()
+            print(facload)
+        elif lab_hours > 0 and lab_hours < 5:
+            try:
+                facload = FacultyLoad.objects.get(subject=secOff, load_category=0)
+            except FacultyLoad.DoesNotExist:
+                facload = FacultyLoad(subject=secOff, load_category=0)
+                facload.save()
+            print(facload)
+    # If > 0 lec hours and >= 5 lec hrs - lec1 lechrs//2+1 lec2 lec//hrs+2 - lec1
+    # elif >0 lec hours < 5 lec1 - lechrs
+        if lec_hours > 0 and lec_hours >= 5:
+            try:
+                facload = FacultyLoad.objects.get(subject=secOff, load_category=2)
+            except FacultyLoad.DoesNotExist:
+                facload = FacultyLoad(subject=secOff, load_category=2)
+                facload.save()
+            print(facload)
+            try:
+                facload = FacultyLoad.objects.get(subject=secOff, load_category=3)
+            except FacultyLoad.DoesNotExist:
+                facload = FacultyLoad(subject=secOff, load_category=3)
+                facload.save()
+            print(facload)
+        elif lec_hours > 0 and lec_hours < 5:
+            try:
+                facload = FacultyLoad.objects.get(subject=secOff, load_category=2)
+            except FacultyLoad.DoesNotExist:
+                facload = FacultyLoad(subject=secOff, load_category=2)
+                facload.save()
+            print(facload)
+    # create FL 
+    settings.status = 1
+    settings.save()
+    return redirect('settings')
