@@ -1,0 +1,100 @@
+{% extends 'load_manager/container/container.html' %}
+{% load staticfiles %}
+
+{% block extra_css %}
+<!-- SELECT2 -->
+<link rel="stylesheet" href="{% static "vendor/DataTables/datatables.min.css" %}">
+{% endblock %}
+
+{% block content %}
+{% include "_modal.html" %}
+  <div class="card animated fadeInDown settings-card">
+    <div class="card-header">
+      <h5>User Pool Management</h5>
+        <button type="button" id="create-user" class="btn btn-success btn-outline-success" name="button">Register Faculty +</button>
+    </div>
+    <div class="card-content">
+      <div class="container-fluid">
+
+        <div class="row p-3">
+          <div class="col">
+            <div class="table-responsive">
+              <table id="users-table" class="table table-bordered table-hover" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info">
+                <thead>
+                  <tr role="row" >
+                    <th style="width:10%">Last Name</th>
+                    <th style="width:10%">First Name</th>
+                    <th style="width:10%">Email Address</th>
+                    <th style="width:10%">Staff Type</th>
+                    <th style="width:10%">Regular Hours</th>
+                    <th style="width:10%">Part Time Hours</th>
+                    <th style="width:10%">Action</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+
+  </div>
+{% endblock content %}
+
+{% block extra_js %}
+  <script type="text/javascript" src="{% static "vendor/DataTables/datatables.min.js" %}"></script>
+
+  <script type="text/javascript">
+  $(document).ready(function() {
+    $("#create-user").modalForm({
+       formURL: "{% url 'chairperson-upm-user-create' %}"
+   });
+
+    $('#users-table').DataTable({
+      "ajax":{
+        "processing": true,
+        "dataSrc":'',
+        "url": '{% url 'chairperson-upm-user-table' %}',
+      },
+      "columnDefs": [
+        { "className": 'user-lname',
+          "targets":   0,
+          "data": "fields.user-lname",
+          },
+        { "className": 'user-fname',
+          "targets":   1,
+          "data": "fields.user-fname",
+          },
+        { "className": 'email',
+          "targets":   2,
+          "data": 'fields.user-email',
+          },
+        { "className": 'user-type',
+          "targets":   3,
+          "data": 'fields.user-type',
+          },
+        { "className": 'col-quotation-description text-nowrap',
+          "targets":   4,
+          "data": 'fields.user-rhours',
+          },
+        { "className": 'col-quotation-description text-nowrap',
+          "targets":   5,
+          "data": 'fields.user-pthours',
+          },
+          { "className": 'col-quotation-description text-nowrap',
+            "targets":   6,
+            "data": null,
+            render:function(data, type, row)
+              {
+                var url = 'sys/project/{{ project.id }}/quote-to-invoice/'+data.pk;
+                return '<button type="button" class="read btn btn-sm btn-primary m-1" data-id="">'+
+                  '<span class="fa fa-eye"></span></button>'
+              },
+            },
+      ],
+    })
+  });
+
+  </script>
+{% endblock %}

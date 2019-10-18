@@ -29,16 +29,22 @@
 {% if request.user.is_staff %}
 <hr>
 <h5>Chairperson</h5>
+<li class="sb-item {% if viewtype == 'curriculum' %}active{% endif %} dashboard">
+  <a class="sb-link" href="{% url 'settings-curriculum' %}">
+    <i></i>
+    <span>Curriculum</span>
+  </a>
+</li>
 <li class="sb-item {% if viewtype == 'settings' %}active{% endif %} dashboard">
   <a class="sb-link" href="{% url 'settings' %}">
   <i></i>
   <span>Settings</span>
   </a>
 </li>
-<li class="sb-item {% if viewtype == 'curriculum' %}active{% endif %} dashboard">
-  <a class="sb-link" href="{% url 'settings-curriculum' %}">
-  <i></i>
-  <span>Curriculum</span>
+<li class="sb-item {% if viewtype == 'section-offering' %}active{% endif %} dashboard">
+  <a class="sb-link" href="{% url 'section-offering' %}">
+    <i></i>
+    <span>Section Offering</span>
   </a>
 </li>
 <li class="sb-item {% if viewtype == 'user-pool-management' %}active{% endif %} dashboard">
