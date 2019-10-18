@@ -47,7 +47,7 @@ urlpatterns = [
     path('chairperson/user-management/users/create',
          user_pool_management_create, name='chairperson-upm-user-create'),
 
-    # AJAX
+    # FUNCTIONS
     path('parse/', views.parse_view, name='parse_view'),
     path('generate/', views.generate_semester_offering,
          name='generate_semester_offering'),
