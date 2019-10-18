@@ -718,11 +718,6 @@ from django.db.models import Q
 
 def generate_semester_offering(request):
     settings = Setting.objects.get(current=True)
-    first_c = Curriculum.objects.get(curriculum=settings.first_curriculum.curriculum)
-    second_c = Curriculum.objects.get(curriculum=settings.second_curriculum.curriculum)
-    third_c = Curriculum.objects.get(curriculum=settings.third_curriculum.curriculum)
-    fourth_c = Curriculum.objects.get(curriculum=settings.fourth_curriculum.curriculum)
-    fifth_c = Curriculum.objects.get(curriculum=settings.fifth_curriculum.curriculum)
     semester = str(settings.semester)
     start_year = str(settings.school_year.start_year)
     end_year = str(settings.school_year.end_year)
@@ -759,27 +754,37 @@ def generate_semester_offering(request):
 
         # first_s = Subject.objects.filter(year_level=1, semester=semester, curriculum=first_c).filter(
         #     Q(subject_code__startswith='COEN')|Q(subject_code__startswith='BSCOE'))
-        first_s = Subject.objects.filter(year_level=1, semester=semester, curriculum=first_c, offered=True)
-        second_s = Subject.objects.filter(year_level=2, semester=semester, curriculum=first_c, offered=True)
-        third_s = Subject.objects.filter(year_level=3, semester=semester, curriculum=first_c, offered=True)
-        fourth_s = Subject.objects.filter(year_level=4, semester=semester, curriculum=first_c, offered=True)
-        fifth_s = Subject.objects.filter(year_level=5, semester=semester, curriculum=first_c, offered=True)
+        if settings.first_sections:
+            first_c = Curriculum.objects.get(curriculum=settings.first_curriculum.curriculum)
+            first_s = Subject.objects.filter(year_level=1, semester=semester, curriculum=first_c, offered=True)
+            first_s = list(first_s)
+            print(first_s)
+            semOff.subject.add(*first_s)
+        if settings.second_sections:
+            second_c = Curriculum.objects.get(curriculum=settings.second_curriculum.curriculum)
+            second_s = Subject.objects.filter(year_level=2, semester=semester, curriculum=first_c, offered=True)
+            second_s = list(second_s)
+            print(second_s)
+            semOff.subject.add(*second_s)
+        if settings.third_sections:
+            third_c = Curriculum.objects.get(curriculum=settings.third_curriculum.curriculum)
+            third_s = Subject.objects.filter(year_level=3, semester=semester, curriculum=first_c, offered=True)
+            third_s = list(third_s)
+            print(third_s)
+            semOff.subject.add(*third_s)
+        if settings.fourth_sections:
+            fourth_c = Curriculum.objects.get(curriculum=settings.fourth_curriculum.curriculum)
+            fourth_s = Subject.objects.filter(year_level=4, semester=semester, curriculum=first_c, offered=True)
+            fourth_s = list(fourth_s)
+            print(fourth_s)
+            semOff.subject.add(*fourth_s)
+        if settings.fifth_sections:
+            fifth_c = Curriculum.objects.get(curriculum=settings.fifth_curriculum.curriculum)
+            fifth_s = Subject.objects.filter(year_level=5, semester=semester, curriculum=first_c, offered=True)
+            fifth_s = list(fifth_s)
+            print(fifth_s)
+            semOff.subject.add(*fifth_s)
 
-        first_s = list(first_s)
-        second_s = list(second_s)
-        third_s = list(third_s)
-        fourth_s = list(fourth_s)
-        fifth_s = list(fifth_s)
-        print(first_s)
-        semOff.subject.add(*first_s)
-        print(second_s)
-        semOff.subject.add(*second_s)
-        print(third_s)
-        semOff.subject.add(*third_s)
-        print(fourth_s)
-        semOff.subject.add(*fourth_s)
-        print(fifth_s)
-        semOff.subject.add(*fifth_s)
         semOff.save()
 
     context = {
