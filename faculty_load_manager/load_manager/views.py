@@ -285,8 +285,8 @@ def curriculum_settings(request):
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def curriculum_subject_edit(request, name):
-    curriculum = Curriculum.objects.get(curriculum=str(name))
+def curriculum_subject_edit(request, pk):
+    curriculum = Curriculum.objects.get(pk=pk)
     subjects = Subject.objects.filter(curriculum=curriculum).order_by('-minor_flag', 'subject_code')
 
     if request.method == 'GET':
@@ -314,10 +314,10 @@ def curriculum_subject_edit(request, name):
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def curriculum_subject_table(request, id):
+def curriculum_subject_table(request, pk):
     import json
     from pprint import pprint
-    subjects = Subject.objects.filter(curriculum__curriculum=str(id))
+    subjects = Subject.objects.filter(curriculum__pk=pk)
     data = []
     for subject in subjects:
         x = {"fields":{"subject-code": subject.subject_code,
@@ -346,6 +346,7 @@ def curriculum_settings_subject(request):
     for curriculum in curriculums:
         x = {"fields":{"curriculum-name":curriculum.curriculum,
                        "curriculum-description":curriculum.description,
+                       "curriculum-pk":curriculum.pk,
              }
         }
         data.append(x)
