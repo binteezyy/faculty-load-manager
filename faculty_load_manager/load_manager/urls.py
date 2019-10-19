@@ -15,6 +15,11 @@ urlpatterns = [
     path('update/settings/<int:pk>', model_views.SettingsUpdateView.as_view(), name='update-settings'),
     path('delete/settings/<int:pk>', model_views.SettingsDeleteView.as_view(), name='delete-settings'),
 
+    ##SECTION OFFERING
+    path('create/section-offerings', model_views.SectionOfferingCreateView.as_view(), name='create-section-offering'),
+    path('read/section-offering/<int:pk>', model_views.SectionOfferingReadView.as_view(), name='read-section-offering'),
+    path('update/section-offering/<int:pk>', model_views.SectionOfferingUpdateView.as_view(), name='update-section-offering'),
+    path('delete/section-offering/<int:pk>', model_views.SectionOfferingDeleteView.as_view(), name='delete-section-offering'),
     # LOAD MANAGER
     path('load-manager/', views.load_manager_list, name='load-manager-list'),
     path('load-manager/create/', views.load_manager_create,

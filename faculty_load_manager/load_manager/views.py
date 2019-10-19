@@ -594,7 +594,8 @@ def section_offering_table(request):
             prof = str(secOff.professor.first_name + ' ' + secOff.professor.last_name)
         else:
             prof = "Empty"
-        x = {"fields":{"secOff-subject": str(secOff.subject.subject_name),
+        x = {"fields":{"id": secOff.pk,
+                       "secOff-subject": str(secOff.subject.subject_name),
                        "secOff-section": str(secOff.block_section),
                        "secOff-type": secOff.get_service_flag_display(),
                        "secOff-prof": prof,

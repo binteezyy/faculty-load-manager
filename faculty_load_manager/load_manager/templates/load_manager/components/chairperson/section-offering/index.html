@@ -4,6 +4,7 @@
 {% block extra_css %}
 <!-- SELECT2 -->
 <link rel="stylesheet" href="{% static "vendor/DataTables/datatables.min.css" %}">
+<link rel="stylesheet" href="{% static "vendor/DataTables/DataTables-1.10.18/css/dataTables.bootstrap4.min.css" %}">
 {% endblock %}
 
 {% block content %}
@@ -35,6 +36,9 @@
       </div>
     </div>
   </div>
+  <div class="card-footer text-right">
+
+  </div>
 
 </div>
 {% endblock content %}
@@ -62,6 +66,17 @@
         "dataSrc": '',
         "url": "{% url 'chairperson-section-offering-table'%}",
       },
+      "initComplete": function(settings, json) {
+        $(".read-section-offering").each(function () {
+            $(this).modalForm({formURL: $(this).data('id')});
+          });
+        $(".delete-section-offering").each(function () {
+          $(this).modalForm({formURL: $(this).data('id')});
+        });
+        $(".update-section-offering").each(function () {
+          $(this).modalForm({formURL: $(this).data('id')});
+        });
+      },
       "columnDefs": [
         {
           "className": 'col-secOff-subject text-center',
@@ -83,6 +98,21 @@
           "targets": 3,
           "data": "fields.secOff-prof",
         },
+        { "className": 'col-details text-center',
+          "targets":   -1,
+          "data": 'fields.id',
+          render:function(data, type, row)
+            {
+              let render = '<button type="button" class="read-section-offering btn btn-sm btn-raised btn-primary m-1" data-id="/read/section-offering/'+data+'">'+
+                '<span class="far fa-eye"></span></button>' +
+                '<button type="button" class="delete-section-offering btn btn-sm btn-raised btn-warning m-1" data-id="/delete/section-offering/'+data+'">'+
+                  '<span class="fa fa-trash"></span></button>'+
+                '<button type="button" class="update-section-offering btn btn-sm btn-raised btn-warning m-1" data-id="/update/section-offering/'+data+'">'+
+                  '<span class="fa fa-edit"></span></button>';
+
+              return render
+            }
+          },
       ]
     })
   });
