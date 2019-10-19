@@ -1,4 +1,6 @@
 /* https://fezvrasta.github.io/bootstrap-material-design/docs/4.0/getting-started/download/ */
+@import url('https://fonts.googleapis.com/css?family=Montserrat:900&display=swap');
+
 .wrapper{
   display: flex;
 }
@@ -12,17 +14,25 @@
 }
 .sidebar > hr {
   border-top: 1px solid rgba(255, 255, 255, .15);
-  margin: 0 1rem 1rem;
+  margin: 0 1rem 0.3em;
 }
 .sidebar-header{
   background-color: #23333e;
   padding: 1rem;
 }
-.sidebar-profile{
-  height: 20vh;
+.sidebar-profile {
+  transition: 0.3s;
 }
-.sidebar-header > h3 {
+.sidebar-profile.active {
+  background-color: #384d5b; !important;
+}
+.sidebar-profile:hover {
+  background-color: #384d5b;
+}
+
+.sidebar-header  h3 {
   color: white;
+  font-family: 'Montserrat', sans-serif;
 }
 
 
@@ -33,6 +43,12 @@
   color: white;
   padding: 1rem;
   text-decoration: none;
+  transition: 0.3s;
+}
+
+.sidebar .sb-item .sb-link:hover {
+  border-left: 5px solid red;
+  background-color: #384d5b;
 }
 .sb-item.active {
   background-color: #384d5b; !important;

@@ -34,8 +34,8 @@ LOGIN_URL = 'home'
 
 INSTALLED_APPS = [
     'django_extensions',
-    'django.contrib.admin',
     'django.contrib.auth',
+    'django.contrib.admin',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'widget_tweaks',
     'bootstrap_modal_forms',
-    'users',
+    'users.apps.UsersConfig',
     'load_manager',
 ]
 
@@ -74,6 +74,10 @@ TEMPLATES = [
         },
     },
 ]
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.core.context_processors.request',
+)
 
 WSGI_APPLICATION = 'faculty_load_manager.wsgi.application'
 
@@ -133,5 +137,13 @@ STATICFILES_DIRS = [
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 #AUTHENTICATION_BACKENDS = ['path.to.auth.module.EmailBackend']
 
-MEDIA_URL = '/curriculum_files/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'curriculum_files')
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = "cpe.flm.service@gmail.com"
+EMAIL_HOST_PASSWORD = "^UUMqbf#^o0YZTlMxBe3Oxd2K#FUC%P%Qn%J7JQLsxyy5NIug2&GI0uoM994$Ndo$tRQ32SVkTmZAHcxn2DexB*Dm*ZqDneSu&B"
