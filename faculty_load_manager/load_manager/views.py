@@ -1249,6 +1249,7 @@ def allocate_faculty_load(request):
             # select time
             for i in range(26-divisions):
                 time_filter = []
+                print(time_filter)
                 for k in range(5):
                     for j in range(divisions-1):
                             time_filter.append(PreferredTime.objects.get(select_time=i+j, select_day=k))     
