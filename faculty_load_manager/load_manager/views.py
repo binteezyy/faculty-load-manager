@@ -1193,8 +1193,8 @@ def allocate_faculty_load(request):
     profs = FacultyProfile.objects.all().order_by('-faculty_type')
     for prof in profs:
     # loop through section offerings assigned to faculty
-        fls = FacultyLoad.objects.filter(subject__professor=prof.faculty)
-        print(prof.faculty)
+        fls = FacultyLoad.objects.filter(subject__professor=prof.faculty, preferred_time=None)
+        print(f'FACULTY {prof.faculty}')
         for fl in fls:
             print(fl)
     # check hours
@@ -1247,35 +1247,79 @@ def allocate_faculty_load(request):
             # print(f'Prof {prof.faculty} preferred time: {time}')
             
             # select time
-            for i in range(26-divisions):
-                time_filter = []
-                print(time_filter)
-                for k in range(5):
-                    for j in range(divisions-1):
-                            time_filter.append(PreferredTime.objects.get(select_time=i+j, select_day=k))     
+            # for i in range(26-divisions):
+            #     time_filter = []
+            #     print(time_filter)
+            #     for k in range(5):
+            #         for j in range(divisions-1):
+            #                 time_filter.append(PreferredTime.objects.get(select_time=i+j, select_day=k))     
+
+            #         try:
+            #             time_g = PreferredSchedule.objects.filter(user=prof.faculty, school_year=sy, semester=semester, preferred_time__in=time_filter)
+            #             if time_g.count != divisions-1:
+            #                 print("cant go")
+            #             else:
+            #                 print("go")
+            #                 break
+            #         except PreferredSchedule.DoesNotExist:
+            #             print("cant")
+            fls2 = FacultyLoad.objects.filter(subject__professor__isnull=False)
+            for i in range(5):
+                for j in range(26-divisions):
+                    time_filter = []
+                    for k in range(divisions):
+                        time_filter.append(PreferredTime.objects.get(select_time=j+k, select_day=i))
+                    # print(f'tf{time_filter}')
 
                     try:
-                        time_g = PreferredSchedule.objects.filter(user=prof.faculty, school_year=sy, semester=semester, preferred_time__in=time_filter)
-                        if time_g.count != divisions-1:
+                        time_g = PreferredSchedule.objects.filter(user=prof.faculty, school_year=sy, semester=semester, preferred_time__in=time_filter) #.preferred_time.all()
+                        print(f'time g {time_g}')
+                        time_filter2 = []
+                        if time_g.count() != divisions:
                             print("cant go")
+                        else:
+                            for fl2 in fls2:
+                                # for pt in fl2.preferred_time.all:
+                                print(f'fl2 {fl2.preferred_time.all()}')
+                                time_filter2 += fl2.preferred_time.all()
+                        if time_g.count == 0:
+                            time_filter = []
+                            break
+                        elif bool([item for item in time_filter2 if item in time_filter]):
+                            print("cant")
+                            time_filter = []
                         else:
                             print("go")
                             break
+
                     except PreferredSchedule.DoesNotExist:
-                        print("cant")
+                        print("not existing") 
+                # print(f'time g {time_g.count()}')
+                time_filter2 = []
+                if time_g.count() != divisions:
+                            print("cant go")
+                else:
+                    for fl2 in fls2:
+                        # for pt in fl2.preferred_time.all:
+                        # print(f'fl2 {fl2.preferred_time.all()}')
+                        time_filter2 += fl2.preferred_time.all()
+                    # print(f'tf2 {time_filter2}')
+                if time_g.count() == 0:
+                    time_filter = []
+                    break
+                elif bool([item for item in time_filter2 if item in time_filter]):
+                    print("cant")
+                    time_filter = []
+                else:
+                    print("go")
+                    break
             
             time_list = list(time_filter)
             print('final')
             print(time_list)
-            # try:
-            #     time_filter.append(PreferredTime.objects.get(select_time=0, select_day=0))
-            #     time_filter.append(PreferredTime.objects.get(select_time=0, select_day=1))
-            # except PreferredTime.DoesNotExist:
-            #     print('Does Not Exist')
-            
-            
-            # fl.preferred_time.add(*time_list)
-            # fl.save()
+    
+            fl.preferred_time.add(*time_list)
+            fl.save()
             # print(time_list)
     # check FL if timeslot taken
     return HttpResponse(fls)
