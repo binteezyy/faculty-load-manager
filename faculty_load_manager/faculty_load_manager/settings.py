@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'widget_tweaks',
     'bootstrap_modal_forms',
-    'users',
+    'users.apps.UsersConfig',
     'load_manager',
 ]
 
@@ -135,3 +135,11 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 MEDIA_URL = '/curriculum_files/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'curriculum_files')
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = "cpe.flm.service@gmail.com"
+EMAIL_HOST_PASSWORD = "^UUMqbf#^o0YZTlMxBe3Oxd2K#FUC%P%Qn%J7JQLsxyy5NIug2&GI0uoM994$Ndo$tRQ32SVkTmZAHcxn2DexB*Dm*ZqDneSu&B"

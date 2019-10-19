@@ -21,11 +21,17 @@ import re
 from bs4 import BeautifulSoup
 def home_view(request):
     next = request.GET.get('next')
-    csettings = Setting.objects.get(current=True)
+    status = ''
+    try:
+        csettings = Setting.objects.get(current=True)
+        status = csettings.get_status_display
+    except Exception as e:
+        csettings = None
+        status = ''
     if request.user.is_authenticated:
         context = {
             'user': request.user,
-            'status': csettings.get_status_display,
+            'status': status,
             'viewtype': 'home',
             'title': 'Home'
         }
