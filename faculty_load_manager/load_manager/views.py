@@ -606,6 +606,87 @@ def section_offering_table(request):
     pprint(data)
     return HttpResponse(data, content_type='application/json')
 
+## FACULTY LOAD
+@login_required
+@user_passes_test(lambda u: u.is_superuser or u.is_staff )
+def faculty_load(request):
+    try:
+        current_settings = Setting.objects.get(current=True)
+    except Exception as e:
+        current_settings = None
+
+    context = {
+        'avatar': UserProfile.objects.get(user=request.user).avatar,
+        'user_type': FacultyProfile.objects.get(faculty=request.user).get_faculty_type_display,
+        'title': 'Section Offering',
+        'viewtype': 'section-offering',
+        'settings': current_settings,
+    }
+    # settings = Setting.objects.get_or_create()
+
+    return render(request, 'load_manager/components/chairperson/faculty-load.html', context)
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def faculty_load_table(request):
+    import json
+    from pprint import pprint
+    settings = Setting.objects.get(current=True)
+    semester = str(settings.semester)
+    start_year = str(settings.school_year.start_year)
+    end_year = str(settings.school_year.end_year)
+
+    try:
+        start = Year.objects.get(year=start_year)
+    except Year.DoesNotExist:
+        new_year = Year(year=start_year)
+        new_year.save()
+        start = Year.objects.get(year=start_year)
+
+    try:
+        end = Year.objects.get(year=end_year)
+    except Year.DoesNotExist:
+        new_year = Year(year=end_year)
+        new_year.save()
+        end  = Year.objects.get(year=end_year)
+
+    try:
+        sy = SchoolYear.objects.get(start_year=start, end_year=end)
+    except SchoolYear.DoesNotExist:
+        new_sy = SchoolYear(start_year=start, end_year=end)
+        new_sy.save()
+        sy = SchoolYear.objects.get(start_year=start, end_year=end)
+
+    fls = FacultyLoad.objects.filter(subject__school_year=sy, subject__semester=semester)
+
+    data = []
+    for fl in fls:
+        if fl.subject.professor:
+            prof = str(fl.subject.professor.first_name + ' ' + fl.subject.professor.last_name)
+        else:
+            prof = "Empty"
+        if fl.preferred_time.count() > 0:
+            time = str(fl.preferred_time)
+        else:
+            time = "Empty"
+        if fl.room:
+            room = str(fl.room)
+        else:
+            room = "Empty"
+            
+        x = {"fields":{"fl-subject": str(fl.subject.subject.subject_name),
+                       "fl-section": str(fl.subject.block_section),
+                       "fl-type": fl.get_load_category_display(),
+                       "fl-room": room,
+                       "fl-time": time,
+                       "fl-prof": prof,
+             }
+        }
+        data.append(x)
+    data = json.dumps(data)
+    pprint(data)
+    return HttpResponse(data, content_type='application/json')
+
 from django.core.files.storage import FileSystemStorage
 @login_required
 @user_passes_test(lambda u: u.is_superuser or u.is_staff )

@@ -56,6 +56,9 @@ urlpatterns = [
     path('chairperson/section-offering/', views.section_offering, name='section-offering'),
     path('chairperson/section-offering/table', views.section_offering_table, name='chairperson-section-offering-table'),
 
+     ## FACULTY LOAD
+     path('chairperson/faculty-load/', views.faculty_load, name='faculty-load'),
+     path('chairperson/faculty-load/table', views.faculty_load_table, name='chairperson-faculty-load-table'),
     ## USER MANAGEMENT
     path('chairperson/user-management/',
          user_pool_management, name='chairperson-upm'),
