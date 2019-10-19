@@ -4,17 +4,38 @@ from django.contrib.auth.decorators import login_required,user_passes_test
 from django.contrib.auth import (
     authenticate,
     logout,
-    login
+    login,
+    views as auth_views
 )
 from django.core.mail import send_mail
 from django.conf import settings
 from .forms import UserRegisterForm
 from django.contrib.auth.models import User
-
+from django.urls import reverse_lazy
+from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm, PasswordChangeForm
 from .models import *
 import os
 import random
 import string
+
+class PasswordResetView(auth_views.PasswordResetView):
+    template_name = 'password/password_reset_form.html'
+    form_class = PasswordResetForm
+    success_url = reverse_lazy('password-reset-done')
+    subject_template_name = 'password/password_reset_subject.txt'
+    email_template_name = 'password/password_reset_email.html'
+
+class PasswordResetDoneView(auth_views.PasswordResetDoneView):
+    template_name = 'password/password_reset_done.html'
+
+class PasswordResetConfirmView(auth_views.PasswordResetConfirmView):
+    template_name = 'password/password_reset_confirm.html'
+    success_url = reverse_lazy('home')
+    form_valid_message = ("Your password was changed!")
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
 def randomPassword():
     """Generate a random password """
     randomSource = string.ascii_letters + string.digits + string.punctuation
@@ -33,9 +54,25 @@ def randomPassword():
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
+def user_profile(request,pk):
+    if request.method == 'POST':
+        return redirect('user-profile',pk = request.user.pk )
+    else:
+        context = {
+                'user': request.user,
+                'avatar': UserProfile.objects.get(user=request.user).avatar,
+                'user_type': FacultyProfile.objects.get(faculty=request.user).get_faculty_type_display,
+                'viewtype': 'user-profile',
+                'title': 'USER POOL',
+        }
+        return render(request, 'load_manager/components/chairperson/users-management/profile.html', context)
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
 def user_pool_management(request):
     context = {
             'viewtype': 'user-pool-management',
+            'title': 'USER POOL',
+            'avatar': UserProfile.objects.get(user=request.user).avatar,
     }
     return render(request, 'load_manager/components/chairperson/users-management/index.html', context)
 @login_required

@@ -34,8 +34,8 @@ LOGIN_URL = 'home'
 
 INSTALLED_APPS = [
     'django_extensions',
-    'django.contrib.admin',
     'django.contrib.auth',
+    'django.contrib.admin',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -74,6 +74,10 @@ TEMPLATES = [
         },
     },
 ]
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.core.context_processors.request',
+)
 
 WSGI_APPLICATION = 'faculty_load_manager.wsgi.application'
 
@@ -133,8 +137,8 @@ STATICFILES_DIRS = [
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 #AUTHENTICATION_BACKENDS = ['path.to.auth.module.EmailBackend']
 
-MEDIA_URL = '/curriculum_files/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'curriculum_files')
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

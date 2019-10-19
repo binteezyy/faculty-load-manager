@@ -31,6 +31,8 @@ def home_view(request):
     if request.user.is_authenticated:
         context = {
             'user': request.user,
+            'avatar': UserProfile.objects.get(user=request.user).avatar,
+            'user_type': FacultyProfile.objects.get(faculty=request.user).get_faculty_type_display,
             'status': status,
             'viewtype': 'home',
             'title': 'Home'
@@ -145,6 +147,8 @@ def load_manager_list(request):
 
 
     context = {
+        'avatar': UserProfile.objects.get(user=request.user).avatar,
+        'user_type': FacultyProfile.objects.get(faculty=request.user).get_faculty_type_display,
         'csetting': settings,
         'title': 'LOAD MANAGER',
         'status': status,
@@ -295,6 +299,8 @@ def ss(request):
 def curriculum_settings(request):
     curriculums = Curriculum.objects.all()
     context = {
+        'avatar': UserProfile.objects.get(user=request.user).avatar,
+        'user_type': FacultyProfile.objects.get(faculty=request.user).get_faculty_type_display,
         'viewtype': 'curriculum',
         'curriculums': curriculums,
     }
@@ -304,6 +310,7 @@ def curriculum_settings(request):
 @login_required
 @user_passes_test(lambda u: u.is_superuser or u.is_staff)
 def curriculum_subject_edit(request, pk):
+
     curriculum = Curriculum.objects.get(pk=pk)
     subjects = Subject.objects.filter(curriculum=curriculum).order_by('-offered', 'subject_code')
 
@@ -408,6 +415,8 @@ def site_settings(request):
     except:
         current_settings = None
     context = {
+        'avatar': UserProfile.objects.get(user=request.user).avatar,
+        'user_type': FacultyProfile.objects.get(faculty=request.user).get_faculty_type_display,
         'title': 'Settings',
         'viewtype': 'settings',
         'csetting': current_settings,
@@ -530,9 +539,14 @@ def site_settings_open(request,sy,sem):
 @login_required
 @user_passes_test(lambda u: u.is_superuser or u.is_staff )
 def section_offering(request):
-    current_settings = Setting.objects.get(current=True)
+    try:
+        current_settings = Setting.objects.get(current=True)
+    except Exception as e:
+        current_settings = None
 
     context = {
+        'avatar': UserProfile.objects.get(user=request.user).avatar,
+        'user_type': FacultyProfile.objects.get(faculty=request.user).get_faculty_type_display,
         'title': 'Section Offering',
         'viewtype': 'section-offering',
         'settings': current_settings,
