@@ -6,26 +6,25 @@
   <div class="sidebar-header">
     <div class="container-fluid">
       <div class="row center-block">
-          <img src="https://doc-0c-6g-docs.googleusercontent.com/docs/securesc/1fkgprad1avqf0ga7imsapdgjrkntuo7/sq4vhkshnrkmditjak4gghi51bcep46h/1571450400000/01772302398777697825/01772302398777697825/1bDGuaFuwSGKY8_uAG_vqgpJ2PQ_AJrc5?e=view"
-          class="rounded mx-auto d-block" width="100px" size="100px">
-          <h3>CPE<br> Department</h3>
+        <img src="https://doc-0c-6g-docs.googleusercontent.com/docs/securesc/1fkgprad1avqf0ga7imsapdgjrkntuo7/sq4vhkshnrkmditjak4gghi51bcep46h/1571450400000/01772302398777697825/01772302398777697825/1bDGuaFuwSGKY8_uAG_vqgpJ2PQ_AJrc5?e=view" class="rounded mx-auto d-block" width="100px" size="100px">
+        <h3>CPE<br> Department</h3>
       </div>
     </div>
   </div>
-  <div class="sidebar-profile {% if viewtype == 'user-profile' %}active{% endif %}" >
+  <div class="sidebar-profile {% if viewtype == 'user-profile' %}active{% endif %}">
     <div class="container-fluid">
       <a href="{% url 'user-profile' request.user.id %}" style="text-decoration:none;color: inherit;">
-      <div class="row">
-        <div class="col pt-3 center-block text-center">
-          <img src="/media/{{ avatar }}" class="rounded-circle" width="100px" size="100px">
+        <div class="row">
+          <div class="col pt-3 center-block text-center">
+            <img src="/media/{{ avatar }}" class="rounded-circle" width="100px" size="100px">
+          </div>
         </div>
-      </div>
-      <div class="row">
-        <div class="col center-block text-center">
-          <h4 style="color:white">{{ request.user.first_name }}</h4>
-          <h5 style="color:red">{{ user_type }}</h5>
+        <div class="row">
+          <div class="col center-block text-center">
+            <h4 style="color:white">{{ request.user.first_name }}</h4>
+            <h5 style="color:red">{{ user_type }}</h5>
+          </div>
         </div>
-      </div>
       </a>
       <div class="row">
 
@@ -35,55 +34,61 @@
   <hr>
   <li class="sb-item {% if viewtype == 'home' %}active{% endif %} dashboard">
     <a class="sb-link" href="{% url 'home' %}">
-    <i></i>
-    <span>Home</span>
+      <i></i>
+      <span>Home</span>
     </a>
   </li>
-<li class="sb-item {% if viewtype == 'load-manager' %}active{% endif %} dashboard">
-  <a class="sb-link" href="{% url 'load-manager-list' %}">
-  <i></i>
-  <span>Load Management</span>
-  </a>
-</li>
+  <li class="sb-item {% if viewtype == 'load-manager' %}active{% endif %} dashboard">
+    <a class="sb-link" href="{% url 'load-manager-list' %}">
+      <i></i>
+      <span>Load Management</span>
+    </a>
+  </li>
 
-{% if request.user.is_staff or request.user.is_superuser %}
-<hr>
-<li class="sb-item {% if viewtype == 'curriculum' %}active{% endif %} dashboard">
-  <a class="sb-link" href="{% url 'settings-curriculum' %}">
-    <i></i>
-    <span>Curriculum</span>
-  </a>
-</li>
-<li class="sb-item {% if viewtype == 'settings' %}active{% endif %} dashboard">
-  <a class="sb-link" href="{% url 'settings' %}">
-  <i></i>
-  <span>Settings</span>
-  </a>
-</li>
-<li class="sb-item {% if viewtype == 'section-offering' %}active{% endif %} dashboard">
-  <a class="sb-link" href="{% url 'section-offering' %}">
-    <i></i>
-    <span>Section Offering</span>
-  </a>
-</li>
-<li class="sb-item {% if viewtype == 'user-pool-management' %}active{% endif %} dashboard">
-  <a class="sb-link" href="{% url 'chairperson-upm' %}">
-  <i></i>
-  <span>Users Management</span>
-  </a>
-</li>
-{% endif %}
+  {% if request.user.is_staff or request.user.is_superuser %}
+  <hr>
+  <li class="sb-item {% if viewtype == 'curriculum' %}active{% endif %} dashboard">
+    <a class="sb-link" href="{% url 'settings-curriculum' %}">
+      <i></i>
+      <span>Curriculum</span>
+    </a>
+  </li>
+  <li class="sb-item {% if viewtype == 'settings' %}active{% endif %} dashboard">
+    <a class="sb-link" href="{% url 'settings' %}">
+      <i></i>
+      <span>Settings</span>
+    </a>
+  </li>
+  <li class="sb-item {% if viewtype == 'section-offering' %}active{% endif %} dashboard">
+    <a class="sb-link" href="{% url 'section-offering' %}">
+      <i></i>
+      <span>Section Offering</span>
+    </a>
+  </li>
+  <li class="sb-item {% if viewtype == 'faculty-load' %}active{% endif %} dashboard">
+    <a class="sb-link" href="{% url 'faculty-load' %}">
+      <i></i>
+      <span>Faculty Load</span>
+    </a>
+  </li>
+  <li class="sb-item {% if viewtype == 'user-pool-management' %}active{% endif %} dashboard">
+    <a class="sb-link" href="{% url 'chairperson-upm' %}">
+      <i></i>
+      <span>Users Management</span>
+    </a>
+  </li>
+  {% endif %}
 </ul>
 <div id="main-container">
   <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4" style="z-index: 1;">
-      <a href="#" class="navbar-brand mb-0 h1o"> Computer Engineering Faculty Load</a>
-      {% if status != 'Locked' %}
-        <h3><span class="badge {% if status == 'Not Opened' %}badge-secondary
+    <a href="#" class="navbar-brand mb-0 h1o"> Computer Engineering Faculty Load</a>
+    {% if status != 'Locked' %}
+    <h3><span class="badge {% if status == 'Not Opened' %}badge-secondary
           {% elif status == 'Open'%}badge-success
           {% elif status == 'Closed' %}badge-warning
           {% endif %}">
-          {{ status }}</span></h3>
-      {% endif %}
+        {{ status }}</span></h3>
+    {% endif %}
   </nav>
 
   <div class="content container-fluid">
