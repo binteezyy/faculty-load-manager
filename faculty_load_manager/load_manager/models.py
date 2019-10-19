@@ -186,7 +186,7 @@ class FacultyLoad(models.Model):
     ]
 
     load_category = models.IntegerField(choices = LOAD_CAT, default=1)
-    preferred_time = models.ManyToManyField(PreferredTime)
+    preferred_time = models.ManyToManyField(PreferredTime, blank=True)
     room = models.ForeignKey(Room, on_delete=models.CASCADE, null=True, blank=True)
     subject = models.ForeignKey(SectionOffering, on_delete=models.CASCADE)
 

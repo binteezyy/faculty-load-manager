@@ -68,5 +68,6 @@ urlpatterns = [
      path('fl/', views.generate_faculty_load, name='generate_faculty_load'),
 
      #ALGO
-     path('chairperson/allocate-so', views.allocate_section_offering, name='allocate_section_offering')
+     path('chairperson/allocate-so', views.allocate_section_offering, name='allocate_section_offering'),
+     path('chairperson/allocate-fl', views.allocate_faculty_load, name='allocation_faculty_load'),
 ]
