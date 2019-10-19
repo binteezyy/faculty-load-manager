@@ -1,0 +1,11 @@
+/* https://fezvrasta.github.io/bootstrap-material-design/docs/4.0/getting-started/download/ */
+
+
+.login-card {
+  margin-top: 5vh !important;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  animation-duration: 0.25s;
+  width:500px;
+}

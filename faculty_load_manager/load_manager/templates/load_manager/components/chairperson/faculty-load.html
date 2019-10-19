@@ -1,0 +1,135 @@
+{% extends 'load_manager/container/container.html' %}
+{% load staticfiles %}
+
+{% block extra_css %}
+<!-- SELECT2 -->
+<link rel="stylesheet" href="{% static "vendor/font-awesome/css/all.min.css" %}">
+<link rel="stylesheet" href="{% static "vendor/DataTables/DataTables-1.10.18/css/dataTables.bootstrap4.min.css" %}">
+<link href="{% static "vendor/select2/css/select2.min.css" %}" rel="stylesheet" />
+<!-- DATATABLES-->
+{% endblock %}
+{% block content %}
+{% include "_modal.html" %}
+<div class="card animated fadeInDown settings-card">
+    <div class="card-header">
+        <h5>Faculty Load</h5>
+    </div>
+    <div class="card-content">
+        <div class="container-fluid">
+            <div class="row">
+            </div>
+            <div class="row p-3">
+                <div class="col">
+                    <div class="table-responsive">
+                        <table id="faculty-load-table" class="table table-bordered table-hover" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info">
+                            <thead>
+                                <tr role="row" class="text-center">
+                                    <th style="width:10%">Subject</th>
+                                    <th style="width:10%">Section</th>
+                                    <th style="width:10%">Category</th>
+                                    <th style="width:10%">Room</th>
+                                    <th style="width:10%">Time</th>
+                                    <th style="width:10%">Prof</th>
+                                    <th style="width:10%">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock content %}
+
+{% block extra_js %}
+<!-- SELECT2 -->
+<script src="{% static "vendor/select2/js/select2.min.js" %}"></script>
+<script type="text/javascript" src="{% static "vendor/DataTables/datatables.min.js" %}"></script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        // $("#curriculum-upload").modalForm({
+        //     formURL: "{% url 'settings-curriculum-upload' %}"
+        // });
+        // $('#curriculum-select').select2({
+        //     // maximumSelectionLength: 3,
+        // });
+        // $('#curriculum-select').on('select2:select', function (e) {
+        //     alert('wow');
+        // });
+
+        var tables = '/' + $('#curriculum-select').val() + '/subjects/';
+        $('#faculty-load-table').DataTable({
+            "dataType": 'json',
+            "ajax": {
+                "processing": true,
+                "dataSrc": '',
+                "url": "{% url 'chairperson-faculty-load-table'  %}",
+            },
+            "initComplete": function(settings, json) {
+              $(".read-faculty-load").each(function () {
+                  $(this).modalForm({formURL: $(this).data('id')});
+                });
+              $(".delete-faculty-load").each(function () {
+                $(this).modalForm({formURL: $(this).data('id')});
+              });
+              $(".update-faculty-load").each(function () {
+                $(this).modalForm({formURL: $(this).data('id')});
+              });
+            },
+            "columnDefs": [
+                {
+                    "className": 'col-fl-subject text-center',
+                    "targets": 0,
+                    "data": "fields.fl-subject",
+                },
+                {
+                    "className": 'col-fl-section text-center',
+                    "targets": 1,
+                    "data": "fields.fl-section",
+                },
+                {
+                    "className": 'col-fl-type text-center',
+                    "targets": 2,
+                    "data": "fields.fl-type",
+                },
+                {
+                    "className": 'col-fl-room text-center',
+                    "targets": 3,
+                    "data": "fields.fl-room",
+                },
+                {
+                    "className": 'col-fl-time text-center',
+                    "targets": 4,
+                    "data": "fields.fl-time",
+                },
+                {
+                    "className": 'col-fl-prof text-center',
+                    "targets": 5,
+                    "data": "fields.fl-prof",
+                },
+                { "className": 'col-details text-center',
+                  "targets":   -1,
+                  "data": 'fields.fl-id',
+                  render:function(data, type, row)
+                    {
+                      let render = '<button type="button" class="read-faculty-load btn btn-sm btn-raised btn-primary m-1" data-id="/read/faculty-load/'+data+'">'+
+                        '<span class="far fa-eye"></span></button>' +
+                        '<button type="button" class="delete-faculty-load btn btn-sm btn-raised btn-warning m-1" data-id="/delete/faculty-load/'+data+'">'+
+                          '<span class="fa fa-trash"></span></button>'+
+                        '<button type="button" class="update-faculty-load btn btn-sm btn-raised btn-warning m-1" data-id="/update/faculty-load/'+data+'">'+
+                          '<span class="fa fa-edit"></span></button>';
+                      return render
+                    },
+                },
+            ]
+        })
+    });
+
+
+</script>
+
+{% endblock %}

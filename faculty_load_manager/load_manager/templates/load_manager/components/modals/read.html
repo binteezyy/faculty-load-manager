@@ -1,0 +1,126 @@
+{% load widget_tweaks %}
+
+<div class="modal-header">
+  <h3 class="modal-title">{% if viewtype == 'settings' %}{{ setting }}
+                          {% elif viewtype == 'section-offering' %}{{ section_offering }}
+                          {% elif viewtype == 'subject' %}{{ subject }}
+                          {% elif viewtype == 'faculty-load' %}Faculty Load
+                               {% endif %}</h3>
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body">
+
+  <div class="container-fluid">
+    {% if viewtype == 'settings' %}
+      <h3></h3>
+      <table class="table table-striped">
+        <thead>
+          <th scope="col">Year Level</th>
+          <th scope="col">Sections Allocated</th>
+          <th scope="col">Curriculum</th>
+        </thead>
+        <tbody>
+          {% if first_section != 0 %}
+          <tr>
+            <th scope="row">First Year</th>
+            <td>{{ first_section }}</td>
+            <td>{{ first_curriculum }}</td>
+          </tr>
+          {% endif %}
+          {% if second_section != 0 %}
+          <tr>
+            <th scope="row">Second Year</th>
+            <td>{{ second_section }}</td>
+            <td>{{ second_curriculum }}</td>
+          </tr>
+          {% endif %}
+          {% if third_section != 0 %}
+          <tr>
+            <th scope="row">Third Year</th>
+            <td>{{ third_section }}</td>
+            <td>{{ third_curriculum }}</td>
+          </tr>
+          {% endif %}
+          {% if fourth_section != 0 %}
+          <tr>
+            <th scope="row">Fourth Year</th>
+            <td>{{ fourth_section }}</td>
+            <td>{{ fourth_curriculum }}</td>
+          </tr>
+          {% endif %}
+          {% if fifth_section != 0 %}
+          <tr>
+            <th scope="row">Fifth Year</th>
+            <td>{{ fifth_section }}</td>
+            <td>{{ fifth_curriculum }}</td>
+          </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    {% elif viewtype == 'section-offering' %}
+      <table class="table">
+        <thead>
+          <tr>
+                <th>Professor</th>
+                <td>{{ professor}}</td>
+          </tr>
+        </thead>
+      </table>
+    {% elif viewtype == 'sem-off-subject' %}
+      <h3></h3>
+      <table class="table table-striped">
+        <thead>
+          <th scope="col">Year Level</th>
+          <th scope="col">Sections Allocated</th>
+          <th scope="col">Curriculum</th>
+        </thead>
+        <tbody>
+          {% if first_section != 0 %}
+          <tr>
+            <th scope="row">First Year</th>
+            <td>{{ first_section }}</td>
+            <td>{{ first_curriculum }}</td>
+          </tr>
+          {% endif %}
+          {% if second_section != 0 %}
+          <tr>
+            <th scope="row">Second Year</th>
+            <td>{{ second_section }}</td>
+            <td>{{ second_curriculum }}</td>
+          </tr>
+          {% endif %}
+          {% if third_section != 0 %}
+          <tr>
+            <th scope="row">Third Year</th>
+            <td>{{ third_section }}</td>
+            <td>{{ third_curriculum }}</td>
+          </tr>
+          {% endif %}
+          {% if fourth_section != 0 %}
+          <tr>
+            <th scope="row">Fourth Year</th>
+            <td>{{ fourth_section }}</td>
+            <td>{{ fourth_curriculum }}</td>
+          </tr>
+          {% endif %}
+          {% if fifth_section != 0 %}
+          <tr>
+            <th scope="row">Fifth Year</th>
+            <td>{{ fifth_section }}</td>
+            <td>{{ fifth_curriculum }}</td>
+          </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    {% elif viewtype == 'faculty-load' %}
+    {% endif %}
+  </div>
+
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+</div>

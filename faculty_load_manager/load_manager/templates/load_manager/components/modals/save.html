@@ -1,0 +1,44 @@
+{% load staticfiles %}
+
+<div class="modal-header">
+  <h4 class="modal-title">Save {{ title }}</h4>
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<hr>
+<form method="post" autocomplete="on">
+  {% csrf_token %}
+  <div class="modal-body">
+    <p>{{ message|safe }}</p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+    <button id="modal-save" class="btn btn-success" type="button">Submit</button>
+  </div>
+</form>
+
+<script type="text/javascript">
+$('#modal-save').on('click', function (e) {
+      $.ajax({
+        type: "POST",
+        url: "{% url 'ajax-save' %}",
+        data: {
+          'viewtype': '{{ viewtype }}',
+          'data': {{ query|safe }},
+          'csrfmiddlewaretoken': '{{ csrf_token }}',
+        },
+        datatype: 'json',
+        success: function (data) {
+                    if(data.state === 'SUCCESS'){
+                      alert(data.state);
+                      $('#modal').modal('toggle');
+                    }else {
+                      alert(data.state);
+                    }
+                },
+      });
+      e.preventDefault();
+
+  });
+</script>

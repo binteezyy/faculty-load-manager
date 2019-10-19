@@ -1,0 +1,131 @@
+{% extends 'load_manager/container/container.html' %}
+{% load staticfiles %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static "vendor/font-awesome/css/all.min.css" %}">
+<link rel="stylesheet" href="{% static "vendor/DataTables/DataTables-1.10.18/css/dataTables.bootstrap4.min.css" %}">
+{% endblock %}
+
+
+
+{% block content %}
+<div class="card animated fadeInDown settings-card">
+    <div class="card-header">
+        <h5>Curriculum {{curriculum.curriculum}}</h5>
+    </div>
+    <div class="card-content">
+        <div class="container-fluid">
+            <div class="row p-3">
+                <div class="col">
+                    <div class="table-responsive">
+                        <table id="curriculum-subject-table" class="table table-bordered table-hover" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info">
+                            <thead>
+                                <tr role="row" class="text-center">
+                                    <th style="width:10%">Subject Code</th>
+                                    <th style="width:10%">Subject Name</th>
+                                    <th style="width:10%">Year Level</th>
+                                    <th style="width:10%">Semester</th>
+                                    <th style="width:10%">Offered</th>
+                                    <th style="width:10%">Room Type</th>
+                                    <th style="width:10%">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block extra_js %}
+<!-- SELECT2 -->
+<script src="{% static "vendor/select2/js/select2.min.js" %}"></script>
+<script type="text/javascript" src="{% static "vendor/DataTables/datatables.min.js" %}"></script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        // $("#curriculum-upload").modalForm({
+        //     formURL: "{% url 'settings-curriculum-upload' %}"
+        // });
+        // $('#curriculum-select').select2({
+        //     // maximumSelectionLength: 3,
+        // });
+        // $('#curriculum-select').on('select2:select', function (e) {
+        //     alert('wow');
+        // });
+
+        var tables = '/' + $('#curriculum-select').val() + '/subjects/';
+        $('#curriculum-subject-table').DataTable({
+            "dataType": 'json',
+            "ajax": {
+                "processing": true,
+                "dataSrc": '',
+                "url": "{% url 'chairperson-curriculum-subject-table' curriculum.pk %}",
+            },
+            "initComplete": function(settings, json) {
+              $(".read-curriculum-subject").each(function () {
+                  $(this).modalForm({formURL: $(this).data('id')});
+                });
+              $(".delete-curriculum-subject").each(function () {
+                $(this).modalForm({formURL: $(this).data('id')});
+              });
+              $(".update-curriculum-subject").each(function () {
+                $(this).modalForm({formURL: $(this).data('id')});
+              });
+            },
+            "columnDefs": [
+                {
+                    "className": 'col-subject-code text-center',
+                    "targets": 0,
+                    "data": "fields.subject-code",
+                },
+                {
+                    "className": 'col-subject-name text-center',
+                    "targets": 1,
+                    "data": "fields.subject-name",
+                },
+                {
+                    "className": 'col-subject-yl text-center',
+                    "targets": 2,
+                    "data": "fields.subject-yl",
+                },
+                {
+                    "className": 'col-subject-sem text-center',
+                    "targets": 3,
+                    "data": "fields.subject-sem",
+                },
+                {
+                    "className": 'col-subject-offered text-center',
+                    "targets": 4,
+                    "data": "fields.subject-offered",
+                },
+                {
+                    "className": 'col-subject-room text-center',
+                    "targets": 5,
+                    "data": "fields.subject-room",
+                },
+                { "className": 'col-details text-center',
+                  "targets":   -1,
+                  "data": 'fields.subject-id',
+                  render:function(data, type, row)
+                    {
+                      let render = '<button type="button" class="read-curriculum-subject btn btn-sm btn-raised btn-primary m-1" data-id="/read/curriculum/subject/'+data+'">'+
+                        '<span class="far fa-eye"></span></button>' +
+                        '<button type="button" class="delete-curriculum-subject btn btn-sm btn-raised btn-warning m-1" data-id="/delete/curriculum/subject/'+data+'">'+
+                          '<span class="fa fa-trash"></span></button>'+
+                        '<button type="button" class="update-curriculum-subject btn btn-sm btn-raised btn-warning m-1" data-id="/update/curriculum/subject/'+data+'">'+
+                          '<span class="fa fa-edit"></span></button>';
+                      return render
+                    },
+                }
+            ]
+        })
+    });
+
+
+</script>
+
+{% endblock %}
