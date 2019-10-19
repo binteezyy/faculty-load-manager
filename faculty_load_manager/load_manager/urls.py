@@ -20,7 +20,15 @@ urlpatterns = [
     path('read/section-offering/<int:pk>', model_views.SectionOfferingReadView.as_view(), name='read-section-offering'),
     path('update/section-offering/<int:pk>', model_views.SectionOfferingUpdateView.as_view(), name='update-section-offering'),
     path('delete/section-offering/<int:pk>', model_views.SectionOfferingDeleteView.as_view(), name='delete-section-offering'),
-    # LOAD MANAGER
+
+    ##SEMESTER OFFERING
+    # SUBJECT
+    path('create/curriculum/subjects', model_views.SubjectCreateView.as_view(), name='create-curriculum-subject'),
+    path('read/curriculum/subject/<int:pk>', model_views.SubjectReadView.as_view(), name='read-curriculum-subject'),
+    path('update/curriculum/subject/<int:pk>', model_views.SubjectUpdateView.as_view(), name='update-curriculum-subject'),
+    path('delete/curriculum/subject/<int:pk>', model_views.SubjectDeleteView.as_view(), name='delete-curriculum-subject'),
+
+    #### LOAD MANAGER
     path('load-manager/', views.load_manager_list, name='load-manager-list'),
     path('load-manager/create/', views.load_manager_create,
          name='load-manager-create'),
