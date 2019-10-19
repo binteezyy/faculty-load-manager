@@ -4,107 +4,105 @@
 {% block extra_css %}
 <link rel="stylesheet" href="{% static "vendor/font-awesome/css/all.min.css" %}">
 <link rel="stylesheet" href="{% static "vendor/DataTables/DataTables-1.10.18/css/dataTables.bootstrap4.min.css" %}">
-<link href="{% static "vendor/select2/css/select2.min.css" %}" rel="stylesheet" />
-{% endblock %}
-
+{%endblock%}  
 {% block content %}
-{% if csettings != None %}
-<div class="card animated fadeInDown">
-  <div class="card-header">
-    <h5>Current Setting</h5>
-  </div>
-  <div class="card-content">
-    <p>{{ csetting.get_status_display }}</p>
-    {% if csetting.status == 0 %}
-    <form id="settings" class="p-3" method="post">
-      <h5>First Year</h5>
-      <div id="first-year" class="form-row year-row">
-        <div class="col-md-2">
-          <label for="first-section">Sections</label>
-          <input name="first-section" class="form-control first" type="number" min="0" value="{{csetting.first_sections}}" style="padding: .28125rem .28125rem !important"/>
+{% if csetting != None %}
+  <div class="card animated fadeInDown">
+    <div class="card-header">
+      <h5>Current Setting</h5>
+    </div>
+    <div class="card-content">
+      <p>{{ csetting.get_status_display }}</p>
+      {% if csetting.status == 0 %}
+      <form id="settings" class="p-3" method="post">
+        <h5>First Year</h5>
+        <div id="first-year" class="form-row year-row">
+          <div class="col-md-2">
+            <label for="first-section">Sections</label>
+            <input name="first-section" class="form-control first" type="number" min="0" value="{{csetting.first_sections}}" style="padding: .28125rem .28125rem !important"/>
+          </div>
+          <div class="col-md">
+            <label for="first-select">Curriculum</label>
+            <select name="first-select" class="custom-select first" {% if csetting.first_sections == 0 and c.setting.first_sections == None %}disabled{% endif %}>
+              {% for option in curriculum %}
+              <option value="{{ option.pk }}" {% if csetting.first_curriculum == option %}selected{% endif %}>{{ option }}</option>
+              {% endfor %}
+            </select>
+          </div>
         </div>
-        <div class="col-md">
-          <label for="first-select">Curriculum</label>
-          <select name="first-select" class="custom-select first" {% if csetting.first_sections == 0 and c.setting.first_sections == None %}disabled{% endif %}>
-            {% for option in curriculum %}
-            <option value="{{ option.pk }}" {% if csetting.first_curriculum == option %}selected{% endif %}>{{ option }}</option>
-            {% endfor %}
-          </select>
-        </div>
-      </div>
-      <br>
+        <br>
 
-      <h5>Second Year</h5>
-      <div id="second-year" class="form-row year-row">
-        <div class="col-md-2">
-          <label for="second-section">Sections</label>
-          <input name="second-section" class="form-control first" type="number" min="0" value="{{csetting.second_sections}}" style="padding: .28125rem .28125rem !important"/>
+        <h5>Second Year</h5>
+        <div id="second-year" class="form-row year-row">
+          <div class="col-md-2">
+            <label for="second-section">Sections</label>
+            <input name="second-section" class="form-control first" type="number" min="0" value="{{csetting.second_sections}}" style="padding: .28125rem .28125rem !important"/>
+          </div>
+          <div class="col-md">
+            <label for="second-select">Curriculum</label>
+            <select name="second-select" class="custom-select first" {% if csetting.second_sections == 0 and c.setting.second_sections == None %}disabled{% endif %}>
+              {% for option in curriculum %}
+              <option value="{{ option.pk }}" {% if csetting.second_curriculum == option %}selected{% endif %}>{{ option }}</option>
+              {% endfor %}
+            </select>
+          </div>
         </div>
-        <div class="col-md">
-          <label for="second-select">Curriculum</label>
-          <select name="second-select" class="custom-select first" {% if csetting.second_sections == 0 and c.setting.second_sections == None %}disabled{% endif %}>
-            {% for option in curriculum %}
-            <option value="{{ option.pk }}" {% if csetting.second_curriculum == option %}selected{% endif %}>{{ option }}</option>
-            {% endfor %}
-          </select>
-        </div>
-      </div>
 
-      <h5>Third Year</h5>
-      <div id="third-year" class="form-row year-row">
-        <div class="col-md-2">
-          <label for="third-section">Sections</label>
-          <input name="third-section" class="form-control first" type="number" min="0" value="{{csetting.third_sections}}" style="padding: .28125rem .28125rem !important"/>
+        <h5>Third Year</h5>
+        <div id="third-year" class="form-row year-row">
+          <div class="col-md-2">
+            <label for="third-section">Sections</label>
+            <input name="third-section" class="form-control first" type="number" min="0" value="{{csetting.third_sections}}" style="padding: .28125rem .28125rem !important"/>
+          </div>
+          <div class="col-md">
+            <label for="third-select">Curriculum</label>
+            <select name="third-select" class="custom-select first" {% if csetting.third_sections == 0 and c.setting.third_sections == None %}disabled{% endif %}>
+              {% for option in curriculum %}
+              <option value="{{ option.pk }}" {% if csetting.third_curriculum == option %}selected{% endif %}>{{ option }}</option>
+              {% endfor %}
+            </select>
+          </div>
         </div>
-        <div class="col-md">
-          <label for="third-select">Curriculum</label>
-          <select name="third-select" class="custom-select first" {% if csetting.third_sections == 0 and c.setting.third_sections == None %}disabled{% endif %}>
-            {% for option in curriculum %}
-            <option value="{{ option.pk }}" {% if csetting.third_curriculum == option %}selected{% endif %}>{{ option }}</option>
-            {% endfor %}
-          </select>
-        </div>
-      </div>
 
-      <h5>Fourth Year</h5>
-      <div id="fourth-year" class="form-row year-row">
-        <div class="col-md-2">
-          <label for="fourth-section">Sections</label>
-          <input name="fourth-section" class="form-control fourth" type="number" min="0" value="{{csetting.fourth_sections}}" style="padding: .28125rem .28125rem !important"/>
+        <h5>Fourth Year</h5>
+        <div id="fourth-year" class="form-row year-row">
+          <div class="col-md-2">
+            <label for="fourth-section">Sections</label>
+            <input name="fourth-section" class="form-control fourth" type="number" min="0" value="{{csetting.fourth_sections}}" style="padding: .28125rem .28125rem !important"/>
+          </div>
+          <div class="col-md">
+            <label for="fourth-select">Curriculum</label>
+            <select name="fourth-select" class="custom-select fourth" {% if csetting.fourth_sections == 0 and c.setting.fourth_sections == None %}disabled{% endif %}>
+              {% for option in curriculum %}
+              <option value="{{ option.pk }}" {% if csetting.fourth_curriculum == option %}selected{% endif %}>{{ option }}</option>
+              {% endfor %}
+            </select>
+          </div>
         </div>
-        <div class="col-md">
-          <label for="fourth-select">Curriculum</label>
-          <select name="fourth-select" class="custom-select fourth" {% if csetting.fourth_sections == 0 and c.setting.fourth_sections == None %}disabled{% endif %}>
-            {% for option in curriculum %}
-            <option value="{{ option.pk }}" {% if csetting.fourth_curriculum == option %}selected{% endif %}>{{ option }}</option>
-            {% endfor %}
-          </select>
-        </div>
-      </div>
 
-      <h5>Fifth Year</h5>
-      <div id="fifth-year" class="form-row year-row">
-        <div class="col-md-2">
-          <label for="fifth-section">Sections</label>
-          <input name="fifth-section" class="form-control fifth" type="number" min="0" value="{{csetting.fifth_sections}}" style="padding: .28125rem .28125rem !important"/>
+        <h5>Fifth Year</h5>
+        <div id="fifth-year" class="form-row year-row">
+          <div class="col-md-2">
+            <label for="fifth-section">Sections</label>
+            <input name="fifth-section" class="form-control fifth" type="number" min="0" value="{{csetting.fifth_sections}}" style="padding: .28125rem .28125rem !important"/>
+          </div>
+          <div class="col-md">
+            <label for="fifth-select">Curriculum</label>
+            <select name="fifth-select" class="custom-select fifth" {% if csetting.fifth_sections == 0 and c.setting.fifth_sections == None %}disabled{% endif %}>
+              {% for option in curriculum %}
+              <option value="{{ option.pk }}" {% if csetting.fifth_curriculum == option %}selected{% endif %}>{{ option }}</option>
+              {% endfor %}
+            </select>
+          </div>
         </div>
-        <div class="col-md">
-          <label for="fifth-select">Curriculum</label>
-          <select name="fifth-select" class="custom-select fifth" {% if csetting.fifth_sections == 0 and c.setting.fifth_sections == None %}disabled{% endif %}>
-            {% for option in curriculum %}
-            <option value="{{ option.pk }}" {% if csetting.fifth_curriculum == option %}selected{% endif %}>{{ option }}</option>
-            {% endfor %}
-          </select>
-        </div>
-      </div>
-      <br>
-    </form>
-    {% elif csetting.status == 1 %}
+        <br>
+      </form>
+  {% elif csetting.status == 1 %}
 
-    {% elif csetting.status == 2 %}
+  {% elif csetting.status == 2 %}
 
-    {% elif csetting.status == 3 %}
-    {% endif %}
+  {% elif csetting.status == 3 %}
+  {% endif %}
   </div>
 
   <div class="card-footer">
