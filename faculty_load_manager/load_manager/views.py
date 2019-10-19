@@ -677,7 +677,8 @@ def faculty_load_table(request):
         else:
             room = "Empty"
 
-        x = {"fields":{"fl-subject": str(fl.subject.subject.subject_name),
+        x = {"fields":{"fl-id": fl.pk,
+                       "fl-subject": str(fl.subject.subject.subject_name),
                        "fl-section": str(fl.subject.block_section),
                        "fl-type": fl.get_load_category_display(),
                        "fl-room": room,

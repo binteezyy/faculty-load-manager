@@ -21,6 +21,12 @@ urlpatterns = [
     path('update/section-offering/<int:pk>', model_views.SectionOfferingUpdateView.as_view(), name='update-section-offering'),
     path('delete/section-offering/<int:pk>', model_views.SectionOfferingDeleteView.as_view(), name='delete-section-offering'),
 
+    ##FACULTY LOAD
+    path('create/faculty-loads', model_views.FacultyLoadCreateView.as_view(), name='create-faculty-load'),
+    path('read/faculty-load/<int:pk>', model_views.FacultyLoadReadView.as_view(), name='read-faculty-load'),
+    path('update/faculty-load/<int:pk>', model_views.FacultyLoadUpdateView.as_view(), name='update-faculty-load'),
+    path('delete/faculty-load/<int:pk>', model_views.FacultyLoadDeleteView.as_view(), name='delete-faculty-load'),
+
     ##SEMESTER OFFERING
     # SUBJECT
     path('create/curriculum/subjects', model_views.SubjectCreateView.as_view(), name='create-curriculum-subject'),

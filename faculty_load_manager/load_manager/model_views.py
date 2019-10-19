@@ -102,6 +102,45 @@ class SectionOfferingDeleteView(LoginRequiredMixin, UserPassesTestMixin,BSModalD
     def test_func(self):
         return self.request.user.is_superuser
 
+class FacultyLoadCreateView(LoginRequiredMixin, UserPassesTestMixin,BSModalCreateView):
+    template_name = 'load_manager/components/modals/create.html'
+    form_class = SettingsForm
+    model = Setting
+    model_type = 'settings'
+    success_message = 'Success: Settings was created.'
+    success_url = reverse_lazy('settings')
+
+    def test_func(self):
+        return self.request.user.is_superuser
+class FacultyLoadReadView(LoginRequiredMixin, UserPassesTestMixin,BSModalReadView):
+    model = FacultyLoad
+    context_object_name = 'faculty-load'
+    template_name = 'load_manager/components/modals/read.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['viewtype'] = 'faculty-load'
+        context['faculty_load'] = kwargs['object']
+        context['preferred_time'] = kwargs['object'].preferred_time
+        context['room'] = kwargs['object'].room
+        context['subject'] = kwargs['object'].subject
+        return context
+    def test_func(self):
+        return self.request.user.is_superuser
+class FacultyLoadUpdateView(BSModalUpdateView):
+    model = SectionOffering
+    template_name = 'load_manager/components/modals/update.html'
+    form_class = SectionOfferingProfessorForm
+    success_message = 'Success: Professor was updated.'
+    success_url = reverse_lazy('section-offering')
+class FacultyLoadDeleteView(LoginRequiredMixin, UserPassesTestMixin,BSModalDeleteView):
+    model = SectionOffering
+    template_name = 'load_manager/components/modals/delete.html'
+    context_object_name = 'section-offering'
+    success_message = 'Success: Settings was deleted.'
+    success_url = reverse_lazy('section-offering')
+    def test_func(self):
+        return self.request.user.is_superuser
+
 class SubjectCreateView(LoginRequiredMixin, UserPassesTestMixin,BSModalCreateView):
     template_name = 'load_manager/components/modals/create.html'
     form_class = SettingsForm

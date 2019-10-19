@@ -4,6 +4,7 @@
   <h3 class="modal-title">{% if viewtype == 'settings' %}{{ setting }}
                           {% elif viewtype == 'section-offering' %}{{ section_offering }}
                           {% elif viewtype == 'subject' %}{{ subject }}
+                          {% elif viewtype == 'faculty-load' %}Faculty Load
                                {% endif %}</h3>
   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
     <span aria-hidden="true">&times;</span>
@@ -114,6 +115,7 @@
           {% endif %}
         </tbody>
       </table>
+    {% elif viewtype == 'faculty-load' %}
     {% endif %}
   </div>
 
