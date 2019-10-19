@@ -316,6 +316,8 @@ def curriculum_subject_edit(request, pk):
 
     if request.method == 'GET':
         context = {
+            'avatar': UserProfile.objects.get(user=request.user).avatar,
+            'user_type': FacultyProfile.objects.get(faculty=request.user).get_faculty_type_display,
             'curriculum': curriculum,
             'subjects': subjects,
         }
@@ -349,7 +351,8 @@ def curriculum_subject_table(request, pk):
             offered = "Offered"
         else:
             offered = "Not offered"
-        x = {"fields":{"subject-code": subject.subject_code,
+        x = {"fields":{"subject-id": subject.pk,
+                       "subject-code": subject.subject_code,
                        "subject-name": subject.subject_name,
                        "subject-yl": subject.year_level,
                        "subject-sem": subject.get_semester_display(),
@@ -673,8 +676,9 @@ def faculty_load_table(request):
             room = str(fl.room)
         else:
             room = "Empty"
-            
-        x = {"fields":{"fl-subject": str(fl.subject.subject.subject_name),
+
+        x = {"fields":{"fl-id": fl.pk,
+                       "fl-subject": str(fl.subject.subject.subject_name),
                        "fl-section": str(fl.subject.block_section),
                        "fl-type": fl.get_load_category_display(),
                        "fl-room": room,

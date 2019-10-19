@@ -2,11 +2,8 @@
 {% load staticfiles %}
 
 {% block extra_css %}
-<!-- SELECT2 -->
 <link rel="stylesheet" href="{% static "vendor/font-awesome/css/all.min.css" %}">
 <link rel="stylesheet" href="{% static "vendor/DataTables/DataTables-1.10.18/css/dataTables.bootstrap4.min.css" %}">
-<link href="{% static "vendor/select2/css/select2.min.css" %}" rel="stylesheet" />
-<!-- DATATABLES-->
 {% endblock %}
 
 
@@ -68,6 +65,17 @@
                 "dataSrc": '',
                 "url": "{% url 'chairperson-curriculum-subject-table' curriculum.pk %}",
             },
+            "initComplete": function(settings, json) {
+              $(".read-curriculum-subject").each(function () {
+                  $(this).modalForm({formURL: $(this).data('id')});
+                });
+              $(".delete-curriculum-subject").each(function () {
+                $(this).modalForm({formURL: $(this).data('id')});
+              });
+              $(".update-curriculum-subject").each(function () {
+                $(this).modalForm({formURL: $(this).data('id')});
+              });
+            },
             "columnDefs": [
                 {
                     "className": 'col-subject-code text-center',
@@ -99,6 +107,20 @@
                     "targets": 5,
                     "data": "fields.subject-room",
                 },
+                { "className": 'col-details text-center',
+                  "targets":   -1,
+                  "data": 'fields.subject-id',
+                  render:function(data, type, row)
+                    {
+                      let render = '<button type="button" class="read-curriculum-subject btn btn-sm btn-raised btn-primary m-1" data-id="/read/curriculum/subject/'+data+'">'+
+                        '<span class="far fa-eye"></span></button>' +
+                        '<button type="button" class="delete-curriculum-subject btn btn-sm btn-raised btn-warning m-1" data-id="/delete/curriculum/subject/'+data+'">'+
+                          '<span class="fa fa-trash"></span></button>'+
+                        '<button type="button" class="update-curriculum-subject btn btn-sm btn-raised btn-warning m-1" data-id="/update/curriculum/subject/'+data+'">'+
+                          '<span class="fa fa-edit"></span></button>';
+                      return render
+                    },
+                }
             ]
         })
     });
