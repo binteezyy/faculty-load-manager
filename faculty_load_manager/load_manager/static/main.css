@@ -1,9 +1,27 @@
 /* https://fezvrasta.github.io/bootstrap-material-design/docs/4.0/getting-started/download/ */
 @import url('https://fonts.googleapis.com/css?family=Montserrat:900&display=swap');
 
+.hide {
+  visibility: hidden;
+  display: none;
+}
 .wrapper{
   display: flex;
 }
+
+#schedule-table.table-bordered > thead > tr > th{
+    border:1px solid black;
+}
+#schedule-table.table-bordered > thead > tr > td{
+    border:1px solid black;
+}
+#schedule-table.table-bordered > tbody > tr > th{
+    border:1px solid black;
+}
+#schedule-table.table-bordered > tbody > tr > td{
+    border:1px solid black;
+}
+
 .sidebar{
   width: 20rem;
   min-height: 100vh;
