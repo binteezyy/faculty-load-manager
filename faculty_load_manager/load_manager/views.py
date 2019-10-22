@@ -1155,8 +1155,9 @@ def allocate_section_offering(request):
                 allowed_hours = prof.regular_hours + prof.part_time_hours
                 allocated_hours = 0
                 subject_hours = secOff.subject.lab_hours + secOff.subject.lec_hours
+                print(secOff_prof_qs)
                 for secOff_prof in secOff_prof_qs:
-                    allocated_hours = secOff_prof.subject.lec_hours + secOff_prof.subject.lec_hours
+                    allocated_hours += secOff_prof.subject.lec_hours + secOff_prof.subject.lec_hours
 
                 print(f'{prof.faculty} total of {allocated_hours} allocated hours')
                 print(f'{prof.faculty} total of {allowed_hours} allowed hours')
@@ -1299,8 +1300,8 @@ def allocate_faculty_load(request):
     profs = FacultyProfile.objects.all().order_by('-faculty_type')
     for prof in profs:
     # loop through section offerings assigned to faculty
-        fls = FacultyLoad.objects.filter(subject__professor=prof.faculty, preferred_time=None)
         print(f'FACULTY {prof.faculty}')
+        fls = FacultyLoad.objects.filter(subject__professor=prof.faculty, preferred_time=None)
         for fl in fls:
             print(fl)
     # check hours
