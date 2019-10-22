@@ -19,6 +19,7 @@ import os
 import json
 import re
 from bs4 import BeautifulSoup
+
 def home_view(request):
     next = request.GET.get('next')
     status = ''
@@ -129,17 +130,16 @@ def ajax_save(request):
 #===================================================
 @login_required
 def load_manager_list(request):
-    status = ""
     cs = None
     psched = None
+    status = "No Offering"
     try:
         settings = Setting.objects.get(current=True)
-        if PreferredSchedule.objects.filter(user=request.user,school_year=settings.school_year,semester=settings.semester).exists():
+        status =  settings.get_status_display
+        if PreferredSchedule.objects.filter(user=request.user,school_year=settings.school_year,semester=settings.semester).exists() and status:
             cs = True
             psched = PreferredSchedule.objects.get(user=request.user,school_year=settings.school_year,semester=settings.semester)
-            status = settings.get_status_display
         else:
-            status = "NO STATUS"
             cs = False
             psched = ""
     except:
@@ -193,6 +193,7 @@ def load_manager_create(request):
         'times': PreferredTime.TIME_SELECT,
     }
     if request.method=="POST":
+        os.system('cls')
         selected = request.POST.getlist('timedays')
         subjects = request.POST.getlist('psubjects')
         print(subjects)
@@ -534,7 +535,21 @@ def site_settings_open(request,sy,sem):
     }
     return render(request, 'load_manager/components/chairperson/settings/modals/encoding-open.html', context)
 
-
+@login_required
+@user_passes_test(lambda u: u.is_superuser or u.is_staff )
+def site_settings_opened_table(request):
+    if request.is_ajax():
+        cs = Setting.objects.get(current=True)
+        preferreds = PreferredSchedule.objects.all().filter(school_year=cs.school_year, semester=cs.semester)
+        data = []
+        for pf in preferreds:
+            x = {"fields":{"id":pf.pk,
+                           "faculty":f'{pf.user.first_name} {pf.user.last_name}',
+                 }
+            }
+            data.append(x)
+        data = json.dumps(data)
+        return HttpResponse(data, content_type='application/json')
 # ============= SECTION OFFERING
 @login_required
 @user_passes_test(lambda u: u.is_superuser or u.is_staff )
@@ -673,7 +688,7 @@ def faculty_load_table(request):
             room = str(fl.room)
         else:
             room = "Empty"
-            
+
         x = {"fields":{"fl-subject": str(fl.subject.subject.subject_name),
                        "fl-section": str(fl.subject.block_section),
                        "fl-type": fl.get_load_category_display(),

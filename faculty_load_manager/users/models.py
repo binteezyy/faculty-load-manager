@@ -74,11 +74,11 @@ class Setting(models.Model):
                 pass
         super(Setting, self).save(*args, **kwargs)
 
-    def delete(self):
-        if self.current == True:
-            raise ValueError('You cannot delete current')
-        else:
-            super(Setting, self).delete(*args, **kwargs)
+    # def delete(self):
+    #     if self.current == True:
+    #         raise ValueError('You cannot delete current')
+    #     else:
+    #         super(Setting, self).delete()
 
 class UserProfile(models.Model):
     user   = models.OneToOneField(User,on_delete=models.CASCADE)
