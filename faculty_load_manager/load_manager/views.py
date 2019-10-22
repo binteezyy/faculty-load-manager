@@ -26,6 +26,7 @@ def home_view(request):
     try:
         csettings = Setting.objects.get(current=True)
         status = csettings.get_status_display
+        announcements = Announcements.objects.order_by('-created')[:5]
     except Exception as e:
         csettings = None
         status = ''
@@ -36,7 +37,8 @@ def home_view(request):
             'user_type': FacultyProfile.objects.get(faculty=request.user).get_faculty_type_display,
             'status': status,
             'viewtype': 'home',
-            'title': 'Home'
+            'title': 'Home',
+            'announcements': announcements,
         }
         return render(request, 'load_manager/components/home.html', context)
     else:
@@ -1334,7 +1336,7 @@ def allocate_faculty_load(request):
                 if fl.load_category == 0:
                     labhr = lab1
                 elif fl.load_category == 1:
-                    labhr = lab2           
+                    labhr = lab2
             elif lab_hours < 5:
                 lab1 = lab_hours
                 if fl.load_category == 0:
@@ -1350,31 +1352,31 @@ def allocate_faculty_load(request):
                 if fl.load_category == 2:
                     lechr = lec1
                 elif fl.load_category == 3:
-                    lechr = lec2     
+                    lechr = lec2
             elif lec_hours < 5:
                 lec1 = lec_hours
                 if fl.load_category == 2:
                     lechr = lec1
-            
+
             if fl.load_category == 0 or fl.load_category == 1:
                 subjhr = labhr
             elif fl.load_category == 2 or fl.load_category == 3:
                 subjhr = lechr
             print(f'{subjhr} hrs')
             divisions = int(subjhr/0.5)
-            print(str(divisions) + ' divisions') 
+            print(str(divisions) + ' divisions')
             # check prof preferred time
             ps = PreferredSchedule.objects.get(user=prof.faculty, school_year=sy, semester=semester)
             time = ps.preferred_time.all()
             # print(f'Prof {prof.faculty} preferred time: {time}')
-            
+
             # select time
             # for i in range(26-divisions):
             #     time_filter = []
             #     print(time_filter)
             #     for k in range(5):
             #         for j in range(divisions-1):
-            #                 time_filter.append(PreferredTime.objects.get(select_time=i+j, select_day=k))     
+            #                 time_filter.append(PreferredTime.objects.get(select_time=i+j, select_day=k))
 
             #         try:
             #             time_g = PreferredSchedule.objects.filter(user=prof.faculty, school_year=sy, semester=semester, preferred_time__in=time_filter)
@@ -1415,7 +1417,7 @@ def allocate_faculty_load(request):
                             break
 
                     except PreferredSchedule.DoesNotExist:
-                        print("not existing") 
+                        print("not existing")
                 # print(f'time g {time_g.count()}')
                 time_filter2 = []
                 if time_g.count() != divisions:
@@ -1435,11 +1437,11 @@ def allocate_faculty_load(request):
                 else:
                     print("go")
                     break
-            
+
             time_list = list(time_filter)
             print('final')
             print(time_list)
-    
+
             fl.preferred_time.add(*time_list)
             fl.save()
             # print(time_list)

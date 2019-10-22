@@ -9,5 +9,7 @@ class PostSettings(admin.ModelAdmin):
     list_display = ('school_year','semester','current')
 
 admin.site.register(UserProfile)
+admin.site.register(Announcements)
+admin.site.register(AnnouncementCategory)
 admin.site.register(Setting,PostSettings)
 admin.site.register(FacultyProfile, PostFacultyProfile)
