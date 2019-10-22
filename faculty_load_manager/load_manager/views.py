@@ -317,6 +317,8 @@ def curriculum_subject_edit(request, pk):
 
     if request.method == 'GET':
         context = {
+            'avatar': UserProfile.objects.get(user=request.user).avatar,
+            'user_type': FacultyProfile.objects.get(faculty=request.user).get_faculty_type_display,
             'curriculum': curriculum,
             'subjects': subjects,
         }
@@ -350,7 +352,8 @@ def curriculum_subject_table(request, pk):
             offered = "Offered"
         else:
             offered = "Not offered"
-        x = {"fields":{"subject-code": subject.subject_code,
+        x = {"fields":{"subject-id": subject.pk,
+                       "subject-code": subject.subject_code,
                        "subject-name": subject.subject_name,
                        "subject-yl": subject.year_level,
                        "subject-sem": subject.get_semester_display(),
@@ -689,7 +692,9 @@ def faculty_load_table(request):
         else:
             room = "Empty"
 
-        x = {"fields":{"fl-subject": str(fl.subject.subject.subject_name),
+
+        x = {"fields":{"fl-id": fl.pk,
+                       "fl-subject": str(fl.subject.subject.subject_name),
                        "fl-section": str(fl.subject.block_section),
                        "fl-type": fl.get_load_category_display(),
                        "fl-room": room,
@@ -848,6 +853,8 @@ def parse_view(request):
 
 from django.db.models import Q
 
+@login_required
+@user_passes_test(lambda u: u.is_superuser or u.is_staff )
 def generate_semester_offering(request):
     settings = Setting.objects.get(current=True)
     semester = str(settings.semester)
@@ -925,6 +932,8 @@ def generate_semester_offering(request):
 
     return redirect('generate_section_offering')
 
+@login_required
+@user_passes_test(lambda u: u.is_superuser or u.is_staff )
 def generate_section_offering(request):
     settings = Setting.objects.get(current=True)
     semester = str(settings.semester)
@@ -1108,6 +1117,8 @@ def generate_section_offering(request):
 
     return redirect('generate_faculty_load')
 
+@login_required
+@user_passes_test(lambda u: u.is_superuser or u.is_staff )
 def allocate_section_offering(request):
     settings = Setting.objects.get(current=True)
     semester = str(settings.semester)
@@ -1184,6 +1195,8 @@ def allocate_section_offering(request):
     # Allocation subject to prof; first come, first serve.
     return HttpResponse("done")
 
+@login_required
+@user_passes_test(lambda u: u.is_superuser or u.is_staff )
 def generate_faculty_load(request):
     settings = Setting.objects.get(current=True)
     semester = str(settings.semester)
@@ -1267,3 +1280,168 @@ def generate_faculty_load(request):
     settings.status = 1
     settings.save()
     return redirect('settings')
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser or u.is_staff )
+def allocate_faculty_load(request):
+    settings = Setting.objects.get(current=True)
+    semester = str(settings.semester)
+    start_year = str(settings.school_year.start_year)
+    end_year = str(settings.school_year.end_year)
+
+    try:
+        start = Year.objects.get(year=start_year)
+    except Year.DoesNotExist:
+        new_year = Year(year=start_year)
+        new_year.save()
+        start = Year.objects.get(year=start_year)
+
+    try:
+        end = Year.objects.get(year=end_year)
+    except Year.DoesNotExist:
+        new_year = Year(year=end_year)
+        new_year.save()
+        end  = Year.objects.get(year=end_year)
+
+    try:
+        sy = SchoolYear.objects.get(start_year=start, end_year=end)
+    except SchoolYear.DoesNotExist:
+        new_sy = SchoolYear(start_year=start, end_year=end)
+        new_sy.save()
+        sy = SchoolYear.objects.get(start_year=start, end_year=end)
+    print(sy)
+
+    # loop through prof, descending faculty type
+    profs = FacultyProfile.objects.all().order_by('-faculty_type')
+    for prof in profs:
+    # loop through section offerings assigned to faculty
+        fls = FacultyLoad.objects.filter(subject__professor=prof.faculty, preferred_time=None)
+        print(f'FACULTY {prof.faculty}')
+        for fl in fls:
+            print(fl)
+    # check hours
+    # check if lab or lec
+    # if > 5, split // + 1, if < 5, full. allocate 3 hours first, then 2 hours
+            lab_hours = fl.subject.subject.lab_hours
+            lec_hours = fl.subject.subject.lec_hours
+            if lab_hours >= 5:
+                if lab_hours % 2:
+                    lab1 = lab_hours//2
+                    lab2 = lab_hours//2 - 1
+                else:
+                    lab1 = lab_hours//2
+                    lab2 = lab_hours//2
+                if fl.load_category == 0:
+                    labhr = lab1
+                elif fl.load_category == 1:
+                    labhr = lab2           
+            elif lab_hours < 5:
+                lab1 = lab_hours
+                if fl.load_category == 0:
+                    labhr = lab1
+
+            if lec_hours >= 5:
+                if lec_hours % 2:
+                    lec1 = lec_hours//2
+                    lec2 = lec_hours//2 - 1
+                else:
+                    lec1 = lec_hours//2
+                    lec2 = lec_hours//2
+                if fl.load_category == 2:
+                    lechr = lec1
+                elif fl.load_category == 3:
+                    lechr = lec2     
+            elif lec_hours < 5:
+                lec1 = lec_hours
+                if fl.load_category == 2:
+                    lechr = lec1
+            
+            if fl.load_category == 0 or fl.load_category == 1:
+                subjhr = labhr
+            elif fl.load_category == 2 or fl.load_category == 3:
+                subjhr = lechr
+            print(f'{subjhr} hrs')
+            divisions = int(subjhr/0.5)
+            print(str(divisions) + ' divisions') 
+            # check prof preferred time
+            ps = PreferredSchedule.objects.get(user=prof.faculty, school_year=sy, semester=semester)
+            time = ps.preferred_time.all()
+            # print(f'Prof {prof.faculty} preferred time: {time}')
+            
+            # select time
+            # for i in range(26-divisions):
+            #     time_filter = []
+            #     print(time_filter)
+            #     for k in range(5):
+            #         for j in range(divisions-1):
+            #                 time_filter.append(PreferredTime.objects.get(select_time=i+j, select_day=k))     
+
+            #         try:
+            #             time_g = PreferredSchedule.objects.filter(user=prof.faculty, school_year=sy, semester=semester, preferred_time__in=time_filter)
+            #             if time_g.count != divisions-1:
+            #                 print("cant go")
+            #             else:
+            #                 print("go")
+            #                 break
+            #         except PreferredSchedule.DoesNotExist:
+            #             print("cant")
+            fls2 = FacultyLoad.objects.filter(subject__professor__isnull=False)
+            for i in range(5):
+                for j in range(26-divisions):
+                    time_filter = []
+                    for k in range(divisions):
+                        time_filter.append(PreferredTime.objects.get(select_time=j+k, select_day=i))
+                    # print(f'tf{time_filter}')
+
+                    try:
+                        time_g = PreferredSchedule.objects.filter(user=prof.faculty, school_year=sy, semester=semester, preferred_time__in=time_filter) #.preferred_time.all()
+                        print(f'time g {time_g}')
+                        time_filter2 = []
+                        if time_g.count() != divisions:
+                            print("cant go")
+                        else:
+                            for fl2 in fls2:
+                                # for pt in fl2.preferred_time.all:
+                                print(f'fl2 {fl2.preferred_time.all()}')
+                                time_filter2 += fl2.preferred_time.all()
+                        if time_g.count == 0:
+                            time_filter = []
+                            break
+                        elif bool([item for item in time_filter2 if item in time_filter]):
+                            print("cant")
+                            time_filter = []
+                        else:
+                            print("go")
+                            break
+
+                    except PreferredSchedule.DoesNotExist:
+                        print("not existing") 
+                # print(f'time g {time_g.count()}')
+                time_filter2 = []
+                if time_g.count() != divisions:
+                            print("cant go")
+                else:
+                    for fl2 in fls2:
+                        # for pt in fl2.preferred_time.all:
+                        # print(f'fl2 {fl2.preferred_time.all()}')
+                        time_filter2 += fl2.preferred_time.all()
+                    # print(f'tf2 {time_filter2}')
+                if time_g.count() == 0:
+                    time_filter = []
+                    break
+                elif bool([item for item in time_filter2 if item in time_filter]):
+                    print("cant")
+                    time_filter = []
+                else:
+                    print("go")
+                    break
+            
+            time_list = list(time_filter)
+            print('final')
+            print(time_list)
+    
+            fl.preferred_time.add(*time_list)
+            fl.save()
+            # print(time_list)
+    # check FL if timeslot taken
+    return HttpResponse(fls)

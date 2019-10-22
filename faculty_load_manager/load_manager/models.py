@@ -61,11 +61,11 @@ class Subject(models.Model):
         (1, 'Lecture'),
         (2, 'Electronics Lab'),
     ]
-    
+
     room_category = models.IntegerField(choices = ROOM_CAT, default=1)
 
     def __str__(self):
-        return f'{self.subject_name}'
+        return f'{self.subject_code}: {self.subject_name}'
 
     class Meta:
         ordering=['year_level', 'semester']
@@ -186,7 +186,7 @@ class FacultyLoad(models.Model):
     ]
 
     load_category = models.IntegerField(choices = LOAD_CAT, default=1)
-    preferred_time = models.ManyToManyField(PreferredTime)
+    preferred_time = models.ManyToManyField(PreferredTime, blank=True)
     room = models.ForeignKey(Room, on_delete=models.CASCADE, null=True, blank=True)
     subject = models.ForeignKey(SectionOffering, on_delete=models.CASCADE)
 

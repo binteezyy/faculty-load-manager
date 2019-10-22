@@ -69,6 +69,17 @@
                 "dataSrc": '',
                 "url": "{% url 'chairperson-faculty-load-table'  %}",
             },
+            "initComplete": function(settings, json) {
+              $(".read-faculty-load").each(function () {
+                  $(this).modalForm({formURL: $(this).data('id')});
+                });
+              $(".delete-faculty-load").each(function () {
+                $(this).modalForm({formURL: $(this).data('id')});
+              });
+              $(".update-faculty-load").each(function () {
+                $(this).modalForm({formURL: $(this).data('id')});
+              });
+            },
             "columnDefs": [
                 {
                     "className": 'col-fl-subject text-center',
@@ -100,7 +111,20 @@
                     "targets": 5,
                     "data": "fields.fl-prof",
                 },
-
+                { "className": 'col-details text-center',
+                  "targets":   -1,
+                  "data": 'fields.fl-id',
+                  render:function(data, type, row)
+                    {
+                      let render = '<button type="button" class="read-faculty-load btn btn-sm btn-raised btn-primary m-1" data-id="/read/faculty-load/'+data+'">'+
+                        '<span class="far fa-eye"></span></button>' +
+                        '<button type="button" class="delete-faculty-load btn btn-sm btn-raised btn-warning m-1" data-id="/delete/faculty-load/'+data+'">'+
+                          '<span class="fa fa-trash"></span></button>'+
+                        '<button type="button" class="update-faculty-load btn btn-sm btn-raised btn-warning m-1" data-id="/update/faculty-load/'+data+'">'+
+                          '<span class="fa fa-edit"></span></button>';
+                      return render
+                    },
+                },
             ]
         })
     });

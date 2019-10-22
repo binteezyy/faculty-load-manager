@@ -21,11 +21,24 @@ urlpatterns = [
     path('update/section-offering/<int:pk>', model_views.SectionOfferingUpdateView.as_view(), name='update-section-offering'),
     path('delete/section-offering/<int:pk>', model_views.SectionOfferingDeleteView.as_view(), name='delete-section-offering'),
 
+
     ## MODAL URLS
     path('read/settings/faculty-prefer/<int:pk>', model_views.SettingsFacultyPreferReadView.as_view(), name='read-settings-'),
     path('delete/settings/faculty-prefer/<int:pk>', model_views.SettingsFacultyPreferDeleteView.as_view(), name='delete-settings'),
+    ##FACULTY LOAD
+    path('create/faculty-loads', model_views.FacultyLoadCreateView.as_view(), name='create-faculty-load'),
+    path('read/faculty-load/<int:pk>', model_views.FacultyLoadReadView.as_view(), name='read-faculty-load'),
+    path('update/faculty-load/<int:pk>', model_views.FacultyLoadUpdateView.as_view(), name='update-faculty-load'),
+    path('delete/faculty-load/<int:pk>', model_views.FacultyLoadDeleteView.as_view(), name='delete-faculty-load'),
 
-    # LOAD MANAGER
+    ##SEMESTER OFFERING
+    # SUBJECT
+    path('create/curriculum/subjects', model_views.SubjectCreateView.as_view(), name='create-curriculum-subject'),
+    path('read/curriculum/subject/<int:pk>', model_views.SubjectReadView.as_view(), name='read-curriculum-subject'),
+    path('update/curriculum/subject/<int:pk>', model_views.SubjectUpdateView.as_view(), name='update-curriculum-subject'),
+    path('delete/curriculum/subject/<int:pk>', model_views.SubjectDeleteView.as_view(), name='delete-curriculum-subject'),
+
+    #### LOAD MANAGER
     path('load-manager/', views.load_manager_list, name='load-manager-list'),
     path('load-manager/create/', views.load_manager_create,
          name='load-manager-create'),
@@ -83,5 +96,6 @@ urlpatterns = [
      path('fl/', views.generate_faculty_load, name='generate_faculty_load'),
 
      #ALGO
-     path('chairperson/allocate-so', views.allocate_section_offering, name='allocate_section_offering')
+     path('chairperson/allocate-so', views.allocate_section_offering, name='allocate_section_offering'),
+     path('chairperson/allocate-fl', views.allocate_faculty_load, name='allocation_faculty_load'),
 ]

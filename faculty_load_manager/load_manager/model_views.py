@@ -129,11 +129,86 @@ class SectionOfferingDeleteView(LoginRequiredMixin, UserPassesTestMixin,BSModalD
     success_url = reverse_lazy('section-offering')
     def test_func(self):
         return self.request.user.is_superuser
-    # def dispatch(self, request, *args, **kwargs):
-    #     self.object = self.get_object()
-    #     success_url = reverse_lazy('settings')
-    #     settings = Setting.objects.get(id=kwargs['pk'])
-    #     if settings.current == True:
-    #         pass
-    #     else:
-    #         return super(SettingsDeleteView, self).delete(request, *args, **kwargs)
+
+class FacultyLoadCreateView(LoginRequiredMixin, UserPassesTestMixin,BSModalCreateView):
+    template_name = 'load_manager/components/modals/create.html'
+    form_class = SettingsForm
+    model = Setting
+    model_type = 'settings'
+    success_message = 'Success: Settings was created.'
+    success_url = reverse_lazy('settings')
+
+    def test_func(self):
+        return self.request.user.is_superuser
+class FacultyLoadReadView(LoginRequiredMixin, UserPassesTestMixin,BSModalReadView):
+    model = FacultyLoad
+    context_object_name = 'faculty-load'
+    template_name = 'load_manager/components/modals/read.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['viewtype'] = 'faculty-load'
+        context['faculty_load'] = kwargs['object']
+        context['preferred_time'] = kwargs['object'].preferred_time
+        context['room'] = kwargs['object'].room
+        context['subject'] = kwargs['object'].subject
+        return context
+    def test_func(self):
+        return self.request.user.is_superuser
+class FacultyLoadUpdateView(BSModalUpdateView):
+    model = SectionOffering
+    template_name = 'load_manager/components/modals/update.html'
+    form_class = SectionOfferingProfessorForm
+    success_message = 'Success: Professor was updated.'
+    success_url = reverse_lazy('section-offering')
+class FacultyLoadDeleteView(LoginRequiredMixin, UserPassesTestMixin,BSModalDeleteView):
+    model = SectionOffering
+    template_name = 'load_manager/components/modals/delete.html'
+    context_object_name = 'section-offering'
+    success_message = 'Success: Settings was deleted.'
+    success_url = reverse_lazy('section-offering')
+    def test_func(self):
+        return self.request.user.is_superuser
+
+class SubjectCreateView(LoginRequiredMixin, UserPassesTestMixin,BSModalCreateView):
+    template_name = 'load_manager/components/modals/create.html'
+    form_class = SettingsForm
+    model = Setting
+    model_type = 'settings'
+    success_message = 'Success: Settings was created.'
+    success_url = reverse_lazy('settings')
+
+    def test_func(self):
+        return self.request.user.is_superuser
+class SubjectReadView(LoginRequiredMixin, UserPassesTestMixin,BSModalReadView):
+    model = Subject
+    context_object_name = 'semester-offering-subject'
+    template_name = 'load_manager/components/modals/read.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['viewtype'] = 'subject'
+        context['subject'] = kwargs['object']
+        context['year_level'] = kwargs['object'].year_level
+        context['subject_code'] = kwargs['object'].subject_code
+        context['subject_name'] = kwargs['object'].subject_name
+        context['curriculum'] = kwargs['object'].curriculum
+        context['offered'] = kwargs['object'].offered
+        context['lab_hours'] = kwargs['object'].lab_hours
+        context['lec_hours'] = kwargs['object'].lec_hours
+        context['room_category'] = kwargs['object'].get_room_category_display
+        return context
+    def test_func(self):
+        return self.request.user.is_superuser
+class SubjectUpdateView(BSModalUpdateView):
+    model = SectionOffering
+    template_name = 'load_manager/components/modals/update.html'
+    form_class = SectionOfferingProfessorForm
+    success_message = 'Success: Professor was updated.'
+    success_url = reverse_lazy('section-offering')
+class SubjectDeleteView(LoginRequiredMixin, UserPassesTestMixin,BSModalDeleteView):
+    model = SectionOffering
+    template_name = 'load_manager/components/modals/delete.html'
+    context_object_name = 'section-offering'
+    success_message = 'Success: Settings was deleted.'
+    success_url = reverse_lazy('section-offering')
+    def test_func(self):
+        return self.request.user.is_superuser
