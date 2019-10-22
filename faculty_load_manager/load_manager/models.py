@@ -177,6 +177,13 @@ class PreferredTime(models.Model):
     def __str__(self):
         return f'{self.get_select_day_display()} — {self.get_select_time_display()}'
 
+class LoadSchedule(models.Model):
+    preferred_time = models.ManyToManyField(PreferredTime, blank=True)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, null=True, blank=True)
+
+    def __str__(self):
+        return f'{self.room} - {self.preferred_time.all()[0]}'
+
 class FacultyLoad(models.Model):
     LOAD_CAT = [
         (0, 'Lab 1'),
@@ -185,9 +192,8 @@ class FacultyLoad(models.Model):
         (3, 'Lec 2'),
     ]
 
+    load_schedule = models.ForeignKey(LoadSchedule, on_delete=models.CASCADE, blank=True, null=True)
     load_category = models.IntegerField(choices = LOAD_CAT, default=1)
-    preferred_time = models.ManyToManyField(PreferredTime, blank=True)
-    room = models.ForeignKey(Room, on_delete=models.CASCADE, null=True, blank=True)
     subject = models.ForeignKey(SectionOffering, on_delete=models.CASCADE)
 
     def __str__(self):
