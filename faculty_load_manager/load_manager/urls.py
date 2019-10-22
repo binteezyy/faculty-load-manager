@@ -21,10 +21,10 @@ urlpatterns = [
     path('update/section-offering/<int:pk>', model_views.SectionOfferingUpdateView.as_view(), name='update-section-offering'),
     path('delete/section-offering/<int:pk>', model_views.SectionOfferingDeleteView.as_view(), name='delete-section-offering'),
 
-
     ## MODAL URLS
     path('read/settings/faculty-prefer/<int:pk>', model_views.SettingsFacultyPreferReadView.as_view(), name='read-settings-'),
     path('delete/settings/faculty-prefer/<int:pk>', model_views.SettingsFacultyPreferDeleteView.as_view(), name='delete-settings'),
+    
     ##FACULTY LOAD
     path('create/faculty-loads', model_views.FacultyLoadCreateView.as_view(), name='create-faculty-load'),
     path('read/faculty-load/<int:pk>', model_views.FacultyLoadReadView.as_view(), name='read-faculty-load'),

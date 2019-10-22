@@ -7,7 +7,6 @@
 {% endblock %}
 
 
-
 {% block content %}
 <div class="card animated fadeInDown settings-card">
     <div class="card-header">
@@ -42,21 +41,11 @@
 
 {% block extra_js %}
 <!-- SELECT2 -->
-<script src="{% static "vendor/select2/js/select2.min.js" %}"></script>
 <script type="text/javascript" src="{% static "vendor/DataTables/datatables.min.js" %}"></script>
+<script type="text/javascript" src="{% static "vendor/DataTables/DataTables-1.10.18/js/dataTables.bootstrap4.min.js" %}"></script>
 <script type="text/javascript">
 
     $(document).ready(function () {
-        // $("#curriculum-upload").modalForm({
-        //     formURL: "{% url 'settings-curriculum-upload' %}"
-        // });
-        // $('#curriculum-select').select2({
-        //     // maximumSelectionLength: 3,
-        // });
-        // $('#curriculum-select').on('select2:select', function (e) {
-        //     alert('wow');
-        // });
-
         var tables = '/' + $('#curriculum-select').val() + '/subjects/';
         $('#curriculum-subject-table').DataTable({
             "dataType": 'json',
@@ -67,7 +56,7 @@
             },
             "initComplete": function(settings, json) {
               $(".read-curriculum-subject").each(function () {
-                  $(this).modalForm({formURL: $(this).data('id')});
+                $(this).modalForm({formURL: $(this).data('id')});
                 });
               $(".delete-curriculum-subject").each(function () {
                 $(this).modalForm({formURL: $(this).data('id')});
@@ -124,8 +113,6 @@
             ]
         })
     });
-
-
 </script>
 
 {% endblock %}
