@@ -27,14 +27,14 @@ class EmailBackend(ModelBackend):
                 return user
         return None
 
-class AnnouncementCategory(models.Model):
-    category = models.CharField(max_length=50)
-    def __str__(self):
-        return f'{self.category}'
 
-class Announcements(models.Model):
+class Announcement(models.Model):
+    CAT = [
+        (0, 'Announcement'),
+        (1, 'Notice'),
+    ]
     title = models.CharField(max_length=100)
-    category = models.ForeignKey(AnnouncementCategory, on_delete=models.CASCADE)
+    category = models.PositiveIntegerField(choices=CAT, default=1, validators=[MinValueValidator(0)])
     message = models.TextField()
     author = models.ForeignKey(
             settings.AUTH_USER_MODEL,
@@ -44,7 +44,7 @@ class Announcements(models.Model):
 
     def __str__(self):
         return f'{self.title}'
-    # 
+    #
     # def __init__(self, *args, **kwargs):
     #    self.request = kwargs.pop('request', None)
     #    return super(Announcements, self).__init__(*args, **kwargs)
@@ -136,11 +136,10 @@ class FacultyProfile(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
     )
-    faculty_type = models.IntegerField(choices=F_TYPE, default=1)
+    faculty_type = models.PositiveIntegerField(choices=F_TYPE, default=1, validators=[MinValueValidator(0)])
     regular_hours = models.PositiveIntegerField(
-        default=1, validators=[MinValueValidator(1)])
+        default=1, validators=[MinValueValidator(0)])
     part_time_hours = models.PositiveIntegerField(
-        default=1, validators=[MinValueValidator(1)])
-
+        default=1, validators=[MinValueValidator(0)])
     def __str__(self):
         return f'{self.faculty} {self.get_faculty_type_display()}'

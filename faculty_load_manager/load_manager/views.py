@@ -27,7 +27,7 @@ def home_view(request):
     try:
         csettings = Setting.objects.get(current=True)
         status = csettings.get_status_display
-        announcements = Announcements.objects.order_by('-created')[:5]
+        announcements = Announcement.objects.order_by('-created')[:5]
     except Exception as e:
         csettings = None
         status = ''

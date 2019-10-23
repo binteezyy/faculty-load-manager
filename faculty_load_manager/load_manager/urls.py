@@ -10,7 +10,8 @@ urlpatterns = [
 
     #### MODEL CRUDS
     ##ANNOUCEMENT
-    path('create/annoucement', model_views.AnnoucementCreateView.as_view(), name='create-annoucement'),
+    path('create/annoucement', model_views.AnnouncementCreateView.as_view(), name='create-annoucement'),
+    path('delete/annoucement/<int:pk>', model_views.AnnouncementDeleteView.as_view(), name='delete-annoucement'),
     ##SETTINGS
     path('create/settings', model_views.SettingsCreateView.as_view(), name='create-settings'),
     path('read/settings/<int:pk>', model_views.SettingsReadView.as_view(), name='read-settings'),

@@ -1,4 +1,6 @@
 from django.urls import reverse_lazy,reverse
+from django.shortcuts import render, redirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http import HttpResponseRedirect
@@ -15,10 +17,10 @@ login_url = 'home'
 import os
 from pprint import pprint
 
-class AnnoucementCreateView(LoginRequiredMixin, UserPassesTestMixin,BSModalCreateView):
+class AnnouncementCreateView(LoginRequiredMixin, UserPassesTestMixin,BSModalCreateView):
     template_name = 'load_manager/components/modals/create.html'
     form_class = AnnouncementForm
-    model = Announcements
+    model = Announcement
     model_type = 'annoucement'
     success_message = 'Success: Settings was created.'
     success_url = reverse_lazy('home')
@@ -26,6 +28,19 @@ class AnnoucementCreateView(LoginRequiredMixin, UserPassesTestMixin,BSModalCreat
     def test_func(self):
         return self.request.user.is_superuser
 
+    def form_valid(self, form):
+        obj = form.save(commit=False)
+        obj.author = self.request.user
+        obj.category = 0
+        return super().form_valid(form)
+class AnnouncementDeleteView(LoginRequiredMixin, UserPassesTestMixin,BSModalDeleteView):
+    model = Announcement
+    template_name = 'load_manager/components/modals/delete.html'
+    context_object_name = 'annoucement'
+    success_message = 'Success: Annoucement was deleted.'
+    success_url = reverse_lazy('home')
+    def test_func(self):
+        return self.request.user.is_superuser
 # Settings
 class SettingsCreateView(LoginRequiredMixin, UserPassesTestMixin,BSModalCreateView):
     template_name = 'load_manager/components/modals/create.html'

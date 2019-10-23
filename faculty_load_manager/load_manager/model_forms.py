@@ -1,11 +1,11 @@
 from bootstrap_modal_forms.forms import BSModalForm
+from django.shortcuts import render, redirect
 from users.models import *
 
 class AnnouncementForm(BSModalForm):
     class Meta:
-        model = Announcements
-        fields = ['title','category','message']
-
+        model = Announcement
+        fields = ['title','message']
 
 class SettingsForm(BSModalForm):
     class Meta:
