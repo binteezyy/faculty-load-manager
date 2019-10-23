@@ -639,7 +639,7 @@ def faculty_load(request):
         'avatar': UserProfile.objects.get(user=request.user).avatar,
         'user_type': FacultyProfile.objects.get(faculty=request.user).get_faculty_type_display,
         'title': 'Section Offering',
-        'viewtype': 'section-offering',
+        'viewtype': 'faculty-load',
         'settings': current_settings,
     }
     # settings = Setting.objects.get_or_create()
@@ -685,12 +685,14 @@ def faculty_load_table(request):
             prof = str(fl.subject.professor.first_name + ' ' + fl.subject.professor.last_name)
         else:
             prof = "Empty"
-        if fl.preferred_time.count() > 0:
-            time = str(fl.preferred_time)
+        if fl.load_schedule:
+            time = str(fl.load_schedule.preferred_time)
+            sched = str(fl.load_schedule.preferred_time.all().first()) + ' to ' + str(fl.load_schedule.preferred_time.all().last()) + ' Room ' + str(fl.load_schedule.room.room_name)
         else:
             time = "Empty"
-        if fl.room:
-            room = str(fl.room)
+            sched = "Empty"
+        if fl.load_schedule:
+            room = str(fl.load_schedule.room)
         else:
             room = "Empty"
 
@@ -699,8 +701,7 @@ def faculty_load_table(request):
                        "fl-subject": str(fl.subject.subject.subject_name),
                        "fl-section": str(fl.subject.block_section),
                        "fl-type": fl.get_load_category_display(),
-                       "fl-room": room,
-                       "fl-time": time,
+                       "fl-sched": sched,
                        "fl-prof": prof,
              }
         }
@@ -1196,7 +1197,7 @@ def allocate_section_offering(request):
 
 
     # Allocation subject to prof; first come, first serve.
-    return HttpResponse("done")
+    return redirect('section-offering')
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser or u.is_staff )
@@ -1324,7 +1325,7 @@ def allocate_faculty_load(request):
             print(secOff)
             fls = FacultyLoad.objects.filter(subject__professor=prof.faculty, load_schedule=None, subject=secOff)
             for fl in fls:
-                
+
                 print(fl)
                 #check hours
                 #check if lab or lec
@@ -1341,7 +1342,7 @@ def allocate_faculty_load(request):
                     if fl.load_category == 0:
                         labhr = lab1
                     elif fl.load_category == 1:
-                        labhr = lab2           
+                        labhr = lab2
                 elif lab_hours < 5:
                     lab1 = lab_hours
                     if fl.load_category == 0:
@@ -1357,19 +1358,19 @@ def allocate_faculty_load(request):
                     if fl.load_category == 2:
                         lechr = lec1
                     elif fl.load_category == 3:
-                        lechr = lec2     
+                        lechr = lec2
                 elif lec_hours < 5:
                     lec1 = lec_hours
                     if fl.load_category == 2:
                         lechr = lec1
-                
+
                 if fl.load_category == 0 or fl.load_category == 1:
                     subjhr = labhr
                 elif fl.load_category == 2 or fl.load_category == 3:
                     subjhr = lechr
                 print(f'{subjhr} hrs')
                 divisions = int(subjhr/0.5)
-                print(str(divisions) + ' divisions') 
+                print(str(divisions) + ' divisions')
                 # check prof preferred time
                 prof_preferred_time = PreferredSchedule.objects.get(user=prof.faculty, school_year=sy, semester=semester).preferred_time.all()
                 ppt_list = list(prof_preferred_time)
@@ -1386,7 +1387,7 @@ def allocate_faculty_load(request):
                 print(f'ROOMS {rooms}')
                 for room in rooms:
                     print(f'ROOM {room.room_name}')
-        
+
                     fl_room_occupants = FacultyLoad.objects.filter(load_schedule__room=room)
                     print(f'ROOM OCCUPANTS {fl_room_occupants}')
                     check_sched = []
@@ -1425,7 +1426,7 @@ def allocate_faculty_load(request):
                     print("FL next loop")
                 else:
                     print(f'{bool([item for item in check_time if item in check_sched])} - {not bool(all(item in ppt_list for item in check_time))} - {bool([item for item in check_time if item in pat_list])}')
-         
+
                     fl_preferred_time = PreferredTime.objects.filter(pk__in=check_time_ids)
                     load_schedule = LoadSchedule.objects.filter(room=room, preferred_time__in=fl_preferred_time).first()
                     if not load_schedule:
@@ -1449,7 +1450,7 @@ def allocate_faculty_load(request):
                     #     print('next load is friday')
                     # elif i == 2:
                     #     print('next load is saturday')
-                    
+
                     break #break for fl
 
     return HttpResponse(secOffs)
