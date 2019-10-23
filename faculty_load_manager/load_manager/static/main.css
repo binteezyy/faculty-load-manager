@@ -21,6 +21,25 @@
 #schedule-table.table-bordered > tbody > tr > td{
     border:1px solid black;
 }
+.table-responsive::-webkit-scrollbar-track
+{
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	border-radius: 10px;
+	background-color: #F5F5F5;
+}
+
+.table-responsive::-webkit-scrollbar
+{
+	width: 12px;
+	background-color: #F5F5F5;
+}
+
+.table-responsive::-webkit-scrollbar-thumb
+{
+	border-radius: 10px;
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+	background-color: #555;
+}
 
 .sidebar{
   width: 20rem;
@@ -29,6 +48,7 @@
   background-color: #283847;
   z-index: 2;
   margin-top: 0;
+  line-height:1rem;
 }
 .sidebar > hr {
   border-top: 1px solid rgba(255, 255, 255, .15);
@@ -53,7 +73,6 @@
   font-family: 'Montserrat', sans-serif;
 }
 
-
 .sidebar .sb-item .sb-link {
   display: block;
   text-align: left;
@@ -73,6 +92,11 @@
 }
 .sb-item.active.dashboard{
   border-left: 5px solid red;
+}
+
+img.profile {
+  height: 100px;
+  width: 100px;
 }
 #main-container {
   background-color: #384d5b;
@@ -102,4 +126,28 @@
 }
 .curriculum .bmd-form-group{
   padding-top: 0 !important;
+}
+
+@media only screen and (max-width: 400px) {
+
+}
+
+@media only screen and (max-width: 768px) {
+  #main-container {
+    margin-left: 6.5rem;
+  }
+  .sidebar{
+    width: 6.5rem;
+  }
+  .sidebar-title{
+    font-size: 0.5rem;
+  }
+}
+
+@media (min-width: 992px) {
+
+}
+
+@media (min-width: 1200px) {
+
 }
