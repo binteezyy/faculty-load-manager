@@ -1356,41 +1356,82 @@ def allocate_faculty_load(request):
                 prof_preferred_time = PreferredSchedule.objects.get(user=prof.faculty, school_year=sy, semester=semester).preferred_time.all()
                 ppt_list = list(prof_preferred_time)
                 # print(f'PPT LIST {ppt_list}')
-                
+                prof_assigned_time = FacultyLoad.objects.filter(subject__professor=prof.faculty)
+                pat_list = []
+                for pat in prof_assigned_time:
+                    if pat.load_schedule:
+                        pat_list += list(pat.load_schedule.preferred_time.all())
+                print(f'ASSIGNED LOAD {prof_assigned_time}')
+                print(f'ALREADY TIME {pat_list}')
                 # fls_allocated = FacultyLoad.objects.filter(load_schedule__isnull=False)
                 rooms = Room.objects.filter(room_category=secOff.subject.room_category)
-                print(f'Rooms {rooms}')
+                print(f'ROOMS {rooms}')
                 for room in rooms:
-                    print(f'Room {room.room_name}')
+                    print(f'ROOM {room.room_name}')
         
                     fl_room_occupants = FacultyLoad.objects.filter(load_schedule__room=room)
-                    print(f'Room Occupants {fl_room_occupants}')
+                    print(f'ROOM OCCUPANTS {fl_room_occupants}')
                     check_sched = []
                     for fl_room_occupant in fl_room_occupants:
                         check_sched += list(fl_room_occupant.load_schedule.preferred_time.all())
-                    print(f'Time Schedules {check_sched}')
-
+                    print(f'TIME OCCUPIED {check_sched}')
                     for i in range(5):
                         for j in range(26-divisions):
                             check_time = []
+                            check_time_ids = []
                             for k in range(divisions):
                                 check_time.append(PreferredTime.objects.get(select_time=j+k, select_day=i))
-                            if bool([item for item in check_time if item in check_sched]) or not bool(all(item in ppt_list for item in check_time)):
-                                print("j next loop")
+                                check_time_ids.append(PreferredTime.objects.get(select_time=j+k, select_day=i).pk)
+                            # print(f'{bool([item for item in check_time if item in check_sched])}')
+                            # print(f'{not bool(all(item in ppt_list for item in check_time))}')
+                            # print(f'{not bool([item for item in check_time if item in pat_list])}')
+                            # print(f'ct {check_time}')
+                            # print(f'cs {check_sched}')
+                            # print(f'pat {pat_list}')
+                            if bool([item for item in check_time if item in check_sched]) or not bool(all(item in ppt_list for item in check_time)) or bool([item for item in check_time if item in pat_list]):
+                                print("J next loop")
                             else:
-                                print(f'{bool([item for item in check_time if item in check_sched])} - {bool(all(item in ppt_list for item in check_time))}')
+                                print(f'{bool([item for item in check_time if item in check_sched])} - {not bool(all(item in ppt_list for item in check_time))} - {bool([item for item in check_time if item in pat_list])}')
                                 break #break for j
-                        if bool([item for item in check_time if item in check_sched]) or not bool(all(item in ppt_list for item in check_time)):
-                            print("i next loop")
+                        if bool([item for item in check_time if item in check_sched]) or not bool(all(item in ppt_list for item in check_time)) or bool([item for item in check_time if item in pat_list]):
+                            print("I next loop")
                         else:
-                            print(f'{bool([item for item in check_time if item in check_sched])} - {bool(all(item in ppt_list for item in check_time))}')
+                            print(f'{bool([item for item in check_time if item in check_sched])} - {not bool(all(item in ppt_list for item in check_time))} - {bool([item for item in check_time if item in pat_list])}')
                             break #break for i
-                    if bool([item for item in check_time if item in check_sched]) or not bool(all(item in ppt_list for item in check_time)):
-                        print("r next loop")
+                    if bool([item for item in check_time if item in check_sched]) or not bool(all(item in ppt_list for item in check_time)) or bool([item for item in check_time if item in pat_list]):
+                        print("R next loop")
                     else:
-                        print(f'{bool([item for item in check_time if item in check_sched])} - {bool(all(item in ppt_list for item in check_time))}')
+                        print(f'{bool([item for item in check_time if item in check_sched])} - {not bool(all(item in ppt_list for item in check_time))} - {bool([item for item in check_time if item in pat_list])}')
                         break #break for room
-                print(f'ROOM - {room.room_name} SCHEDULE - {check_time}')
+                if bool([item for item in check_time if item in check_sched]) or not bool(all(item in ppt_list for item in check_time)) or bool([item for item in check_time if item in pat_list]):
+                    print("FL next loop")
+                else:
+                    print(f'{bool([item for item in check_time if item in check_sched])} - {not bool(all(item in ppt_list for item in check_time))} - {bool([item for item in check_time if item in pat_list])}')
+         
+                    fl_preferred_time = PreferredTime.objects.filter(pk__in=check_time_ids)
+                    load_schedule = LoadSchedule.objects.filter(room=room, preferred_time__in=fl_preferred_time).first()
+                    if not load_schedule:
+                        print('doesnt exists')
+                        load_schedule = LoadSchedule(room=room)
+                        load_schedule.save()
+                        load_schedule.preferred_time.set(fl_preferred_time)
+                        load_schedule.save()
+                        load_schedule = LoadSchedule.objects.filter(room=room, preferred_time__in=fl_preferred_time).first()
+                    print(load_schedule)
+                    fl.load_schedule = load_schedule
+                    fl.save()
+                    print(f'ASSIGNED TO ROOM - {room.room_name} - {i} -  SCHEDULE - {check_time}')
+                    # try:
+                    #     fl_next = fls[1]
+                    # except IndexError:
+                    #     fl_next = False
+                    # if i == 0 and fl_next:
+                    #     print(f'{fl_next} load is thursday')
+                    # elif i == 1:
+                    #     print('next load is friday')
+                    # elif i == 2:
+                    #     print('next load is saturday')
                     
+                    break #break for fl
 
     return HttpResponse(secOffs)

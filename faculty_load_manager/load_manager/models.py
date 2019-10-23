@@ -220,7 +220,7 @@ class FacultyLoad(models.Model):
     subject = models.ForeignKey(SectionOffering, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{self.get_load_category_display()} - {self.subject.subject.subject_name}'
+        return f'{self.get_load_category_display()} - {self.subject.subject.subject_name} - {self.load_schedule}'
 
     class Meta:
         unique_together = ('load_category', 'subject')
