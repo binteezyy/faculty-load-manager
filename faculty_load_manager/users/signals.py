@@ -8,8 +8,9 @@ from load_manager.models import *
 def create_profile(sender, instance, created, **kwargs):
     if created:
         profile = FacultyProfile.objects.create(faculty=instance)
+        u = UserProfile.objects.create(user=instance)
         profile.save()
-
+        u.save()
 # @receiver(post_save, sender=Setting)
 # def create_SemesterOffering(sender, instance, created, **kwargs):
 #     if created:
