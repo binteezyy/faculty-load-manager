@@ -6,6 +6,7 @@
                           {% elif viewtype == 'faculty-prefer' %} {{ faculty }}
                           {% elif viewtype == 'subject' %}{{ subject }}
                           {% elif viewtype == 'faculty-load' %}Faculty Load
+                          {% elif viewtype == 'room' %}{{ subject }}
                                {% endif %}</h3>
   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
     <span aria-hidden="true">&times;</span>
@@ -71,7 +72,7 @@
         </thead>
       </table>
     {% elif viewtype == 'faculty-prefer' %}
-    <div class="container">
+      <div class="container">
       <div class="row">
         <h4>Preferred Subjects</h4>
         <ol>
@@ -151,6 +152,39 @@
           {% endif %}
         </tbody>
       </table>
+    {% elif viewtype == 'room' %}
+    <div class="container">
+      <div class="row">
+        <div class="table-responsive">
+          <div class="table-responsive">
+            <table class="table table-bordered" id="schedule-table" style="text-align: center">
+                <thead>
+                  <th>TIME</th>
+                  {% for v, time in times %}
+                  <td>{{ time }}</td>
+                  {%endfor%}
+                </thead>
+                {% for val,day in days %}
+                <tr>
+                    <th>{{ day }}</th>
+                    {% for v, time in times %}
+                      <td>{% for sched in room_sched %}
+                          {% for i in sched.load_schedule.preferred_time.all %}
+                            {% if i.select_day == val and i.select_time == v %}
+                            <p> <b>[{{ sched.subject.block_section }}]</b></p>
+                            <p>{{ sched.subject.subject.subject_name }}</p>
+                            <p>{{ sched.subject.professor.first_name }} {{ sched.subject.professor.last_name }}</p>
+                            {% endif %}
+                          {% endfor %}
+                      {% endfor %}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
     {% endif %}
   </div>
 

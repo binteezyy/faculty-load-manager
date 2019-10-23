@@ -2,8 +2,8 @@
 {% load staticfiles %}
 
 {% block extra_css %}
-<!-- SELECT2 -->
-<link rel="stylesheet" href="{% static "vendor/DataTables/datatables.min.css" %}">
+<link rel="stylesheet" href="{% static "vendor/font-awesome/css/all.min.css" %}">
+<link rel="stylesheet" href="{% static "vendor/DataTables/DataTables-1.10.18/css/dataTables.bootstrap4.min.css" %}">
 {% endblock %}
 
 {% block content %}
@@ -43,9 +43,10 @@
 {% endblock content %}
 
 {% block extra_js %}
-  <script type="text/javascript" src="{% static "vendor/DataTables/datatables.min.js" %}"></script>
+<script type="text/javascript" src="{% static "vendor/DataTables/datatables.min.js" %}"></script>
+<script type="text/javascript" src="{% static "vendor/DataTables/DataTables-1.10.18/js/dataTables.bootstrap4.min.js" %}"></script>
+<script type="text/javascript">
 
-  <script type="text/javascript">
   $(document).ready(function() {
     $("#create-user").modalForm({
        formURL: "{% url 'chairperson-upm-user-create' %}"

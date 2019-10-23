@@ -9,6 +9,8 @@ urlpatterns = [
     path('ajax/save', views.ajax_save, name='ajax-save'),
 
     #### MODEL CRUDS
+    ##ANNOUCEMENT
+    path('create/annoucement', model_views.AnnoucementCreateView.as_view(), name='create-annoucement'),
     ##SETTINGS
     path('create/settings', model_views.SettingsCreateView.as_view(), name='create-settings'),
     path('read/settings/<int:pk>', model_views.SettingsReadView.as_view(), name='read-settings'),
@@ -24,7 +26,7 @@ urlpatterns = [
     ## MODAL URLS
     path('read/settings/faculty-prefer/<int:pk>', model_views.SettingsFacultyPreferReadView.as_view(), name='read-settings-'),
     path('delete/settings/faculty-prefer/<int:pk>', model_views.SettingsFacultyPreferDeleteView.as_view(), name='delete-settings'),
-    
+
     ##FACULTY LOAD
     path('create/faculty-loads', model_views.FacultyLoadCreateView.as_view(), name='create-faculty-load'),
     path('read/faculty-load/<int:pk>', model_views.FacultyLoadReadView.as_view(), name='read-faculty-load'),
@@ -38,6 +40,8 @@ urlpatterns = [
     path('update/curriculum/subject/<int:pk>', model_views.SubjectUpdateView.as_view(), name='update-curriculum-subject'),
     path('delete/curriculum/subject/<int:pk>', model_views.SubjectDeleteView.as_view(), name='delete-curriculum-subject'),
 
+    ## ROOM
+    path('read/room/<int:pk>', model_views.RoomReadView.as_view(), name='read-room'),
     #### LOAD MANAGER
     path('load-manager/', views.load_manager_list, name='load-manager-list'),
     path('load-manager/create/', views.load_manager_create,
@@ -75,7 +79,9 @@ urlpatterns = [
     ## SECTION OFFERING
     path('chairperson/section-offering/', views.section_offering, name='section-offering'),
     path('chairperson/section-offering/table', views.section_offering_table, name='chairperson-section-offering-table'),
-
+    # ROOM
+    path('chairperson/settings/room/', views.rooms, name='room'),
+    path('chairperson/settings/room/table', views.room_table, name='room-table'),
      ## FACULTY LOAD
      path('chairperson/faculty-load/', views.faculty_load, name='faculty-load'),
      path('chairperson/faculty-load/table', views.faculty_load_table, name='chairperson-faculty-load-table'),

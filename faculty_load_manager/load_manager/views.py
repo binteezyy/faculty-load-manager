@@ -710,6 +710,72 @@ def faculty_load_table(request):
     pprint(data)
     return HttpResponse(data, content_type='application/json')
 
+## ROOMSM
+@login_required
+@user_passes_test(lambda u: u.is_superuser or u.is_staff )
+def rooms(request):
+    try:
+        current_settings = Setting.objects.get(current=True)
+    except Exception as e:
+        current_settings = None
+
+    context = {
+        'avatar': UserProfile.objects.get(user=request.user).avatar,
+        'user_type': FacultyProfile.objects.get(faculty=request.user).get_faculty_type_display,
+        'title': 'Rooms',
+        'viewtype': 'rooms',
+        'settings': current_settings,
+    }
+    # settings = Setting.objects.get_or_create()
+
+    return render(request, 'load_manager/components/chairperson/room/index.html', context)
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def room_table(request):
+    import json
+    from pprint import pprint
+    settings = Setting.objects.get(current=True)
+    semester = str(settings.semester)
+    start_year = str(settings.school_year.start_year)
+    end_year = str(settings.school_year.end_year)
+    rooms = Room.objects.all()
+
+    try:
+        start = Year.objects.get(year=start_year)
+    except Year.DoesNotExist:
+        new_year = Year(year=start_year)
+        new_year.save()
+        start = Year.objects.get(year=start_year)
+
+    try:
+        end = Year.objects.get(year=end_year)
+    except Year.DoesNotExist:
+        new_year = Year(year=end_year)
+        new_year.save()
+        end  = Year.objects.get(year=end_year)
+
+    try:
+        sy = SchoolYear.objects.get(start_year=start, end_year=end)
+    except SchoolYear.DoesNotExist:
+        new_sy = SchoolYear(start_year=start, end_year=end)
+        new_sy.save()
+        sy = SchoolYear.objects.get(start_year=start, end_year=end)
+
+    fls = FacultyLoad.objects.filter(subject__school_year=sy, subject__semester=semester)
+
+    data = []
+    for room in rooms:
+        x = {"fields":{"id": room.pk,
+                       "name": room.room_name,
+                       "category": room.get_room_category_display(),
+             }
+        }
+        data.append(x)
+    data = json.dumps(data)
+    pprint(data)
+    return HttpResponse(data, content_type='application/json')
+
 from django.core.files.storage import FileSystemStorage
 @login_required
 @user_passes_test(lambda u: u.is_superuser or u.is_staff )
@@ -1197,6 +1263,8 @@ def allocate_section_offering(request):
 
 
     # Allocation subject to prof; first come, first serve.
+    settings.status = 2
+    settings.save()
     return redirect('section-offering')
 
 @login_required

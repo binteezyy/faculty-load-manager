@@ -44,6 +44,15 @@ class Announcements(models.Model):
 
     def __str__(self):
         return f'{self.title}'
+    # 
+    # def __init__(self, *args, **kwargs):
+    #    self.request = kwargs.pop('request', None)
+    #    return super(Announcements, self).__init__(*args, **kwargs)
+    #
+    # def save_model(self,request, *args, **kwargs):
+    #     obj = super(Annoucements, self).save(*args, **kwargs)
+    #     obj.author = request.user
+    #     obj.save()
 class Setting(models.Model):
     school_year = models.ForeignKey(
         SchoolYear, on_delete=models.CASCADE, null=True)

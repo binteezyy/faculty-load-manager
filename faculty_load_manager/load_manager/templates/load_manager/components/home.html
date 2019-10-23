@@ -1,16 +1,31 @@
 {% extends 'load_manager/container/container.html' %}
 {% load staticfiles %}
 {% block content %}
+{% include "_modal.html" %}
+{% if request.user.is_staff and request.user.is_superuser %}
+  <button id="create-annoucement" class="btn btn-success btn-block btn-raised mb-2" type="button" name="button">Add Announcement</button>
+{% endif %}
 {% for i in announcements %}
-<div class="card bg-light mb-3">
-  <div class="card-header">{{i.category}}</div>
-  <div class="card-body">
-    <h5 class="card-title">{{i.title}}</h5>
-    <p class="card-text">{{i.message}}</p>
+    <div class="card bg-light mb-3">
+      <div class="card-header">{{i.category}}</div>
+      <div class="card-body">
+        <h5 class="card-title">{{i.title}}</h5>
+        <p class="card-text">{{i.message}}</p>
+      </div>
+      <div class="card-footer text-muted">
+        {{ i.created }}
+      </div>
+    </div>
   </div>
-  <div class="card-footer text-muted">
-    {{ i.created }}
-  </div>
-</div>
 {% endfor %}
 {% endblock content %}
+
+{% block extra_js %}
+  {% if request.user.is_staff and request.user.is_superuser %}
+    <script type="text/javascript">
+      $("#create-annoucement").modalForm({
+         formURL: "{% url 'create-annoucement' %}"
+     });
+    </script>
+  {% endif %}
+{% endblock extra_js %}

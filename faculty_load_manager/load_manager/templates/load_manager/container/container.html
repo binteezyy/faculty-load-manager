@@ -58,6 +58,12 @@
       <span>Curriculum</span>
     </a>
   </li>
+  <li class="sb-item {% if viewtype == 'rooms' %}active{% endif %} dashboard">
+    <a class="sb-link" href="{% url 'room' %}">
+      <i></i>
+      <span>Room</span>
+    </a>
+  </li>
   <li class="sb-item {% if viewtype == 'settings' %}active{% endif %} dashboard">
     <a class="sb-link" href="{% url 'settings' %}">
       <i></i>

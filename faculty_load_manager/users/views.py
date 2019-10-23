@@ -53,7 +53,6 @@ def randomPassword():
     return password
 
 @login_required
-@user_passes_test(lambda u: u.is_superuser)
 def user_profile(request,pk):
     if request.method == 'POST':
         return redirect('user-profile',pk = request.user.pk )

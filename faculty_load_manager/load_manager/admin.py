@@ -37,8 +37,10 @@ class PostSectionOffering(admin.ModelAdmin):
 class PostFacultyLoad(admin.ModelAdmin):
     list_display = ('subject', 'load_category')
 
+class PostRoom(admin.ModelAdmin):
+    list_display = ('id', 'room_name','room_category')
 
-admin.site.register(Room)
+admin.site.register(Room, PostRoom)
 admin.site.register(Year)
 admin.site.register(Subject, PostSubject)
 admin.site.register(SchoolYear)

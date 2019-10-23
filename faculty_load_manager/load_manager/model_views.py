@@ -14,6 +14,18 @@ from bootstrap_modal_forms.generic import (BSModalCreateView,
 login_url = 'home'
 import os
 from pprint import pprint
+
+class AnnoucementCreateView(LoginRequiredMixin, UserPassesTestMixin,BSModalCreateView):
+    template_name = 'load_manager/components/modals/create.html'
+    form_class = AnnouncementForm
+    model = Announcements
+    model_type = 'annoucement'
+    success_message = 'Success: Settings was created.'
+    success_url = reverse_lazy('home')
+
+    def test_func(self):
+        return self.request.user.is_superuser
+
 # Settings
 class SettingsCreateView(LoginRequiredMixin, UserPassesTestMixin,BSModalCreateView):
     template_name = 'load_manager/components/modals/create.html'
@@ -210,5 +222,20 @@ class SubjectDeleteView(LoginRequiredMixin, UserPassesTestMixin,BSModalDeleteVie
     context_object_name = 'section-offering'
     success_message = 'Success: Settings was deleted.'
     success_url = reverse_lazy('section-offering')
+    def test_func(self):
+        return self.request.user.is_superuser
+
+class RoomReadView(LoginRequiredMixin, UserPassesTestMixin,BSModalReadView):
+    model = Room
+    context_object_name = 'semester-offering-subject'
+    template_name = 'load_manager/components/modals/read.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['viewtype'] = 'room'
+        context['subject'] = kwargs['object']
+        context['times'] = PreferredTime.TIME_SELECT
+        context['days'] = DAY_OF_THE_WEEK
+        context["room_sched"] = FacultyLoad.objects.filter(load_schedule__room = kwargs['object'])
+        return context
     def test_func(self):
         return self.request.user.is_superuser
