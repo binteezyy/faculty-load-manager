@@ -13,10 +13,11 @@ urlpatterns = [
     path('create/annoucement', model_views.AnnouncementCreateView.as_view(), name='create-annoucement'),
     path('delete/annoucement/<int:pk>', model_views.AnnouncementDeleteView.as_view(), name='delete-annoucement'),
     ##SETTINGS
-    path('create/settings', model_views.SettingsCreateView.as_view(), name='create-settings'),
-    path('read/settings/<int:pk>', model_views.SettingsReadView.as_view(), name='read-settings'),
-    path('update/settings/<int:pk>', model_views.SettingsUpdateView.as_view(), name='update-settings'),
-    path('delete/settings/<int:pk>', model_views.SettingsDeleteView.as_view(), name='delete-settings'),
+    path('create/user-management/users/create',
+         user_pool_management_create, name='chairperson-upm-user-create'),
+    path('read/user/<int:pk>', model_views.UserReadView.as_view(), name='read-user'),
+    path('update/user/<int:pk>', model_views.UserUpdateView.as_view(), name='update-user'),
+    path('delete/user/<int:pk>', model_views.UserDeleteView.as_view(), name='delete-user'),
 
     ##SECTION OFFERING
     path('create/section-offerings', model_views.SectionOfferingCreateView.as_view(), name='create-section-offering'),
@@ -43,6 +44,13 @@ urlpatterns = [
 
     ## ROOM
     path('read/room/<int:pk>', model_views.RoomReadView.as_view(), name='read-room'),
+
+    ##SETTINGS
+    path('create/settings', model_views.SettingsCreateView.as_view(), name='create-settings'),
+    path('read/settings/<int:pk>', model_views.SettingsReadView.as_view(), name='read-settings'),
+    path('update/settings/<int:pk>', model_views.SettingsUpdateView.as_view(), name='update-settings'),
+    path('delete/settings/<int:pk>', model_views.SettingsDeleteView.as_view(), name='delete-settings'),
+
     #### LOAD MANAGER
     path('load-manager/', views.load_manager_list, name='load-manager-list'),
     path('load-manager/create/', views.load_manager_create,
@@ -91,8 +99,7 @@ urlpatterns = [
          user_pool_management, name='chairperson-upm'),
     path('chairperson/user-management/users/table',
          user_pool_mangement_table, name='chairperson-upm-user-table'),
-    path('chairperson/user-management/users/create',
-         user_pool_management_create, name='chairperson-upm-user-create'),
+
 
     # FUNCTIONS
     path('parse/', views.parse_view, name='parse_view'),

@@ -84,7 +84,8 @@ def user_pool_mangement_table(request):
     data = []
     for user in users:
         profile = FacultyProfile.objects.get(faculty=user.id)
-        x = {"fields":{"user-fname":user.first_name,
+        x = {"fields":{"user-id":user.pk,
+                       "user-fname":user.first_name,
                        "user-lname":user.last_name,
                        "user-email":user.email,
                        "user-type": profile.get_faculty_type_display(),
