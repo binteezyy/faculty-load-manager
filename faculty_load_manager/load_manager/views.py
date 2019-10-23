@@ -30,6 +30,7 @@ def home_view(request):
     except Exception as e:
         csettings = None
         status = ''
+        accouncements = None
     if request.user.is_authenticated:
         context = {
             'user': request.user,
