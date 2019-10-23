@@ -12,7 +12,8 @@ from bootstrap_modal_forms.generic import (BSModalCreateView,
                                            BSModalReadView,
                                            BSModalDeleteView)
 login_url = 'home'
-
+import os
+from pprint import pprint
 # Settings
 class SettingsCreateView(LoginRequiredMixin, UserPassesTestMixin,BSModalCreateView):
     template_name = 'load_manager/components/modals/create.html'
@@ -56,6 +57,33 @@ class SettingsDeleteView(LoginRequiredMixin, UserPassesTestMixin,BSModalDeleteVi
     template_name = 'load_manager/components/modals/delete.html'
     context_object_name = 'setting'
     success_message = 'Success: Settings was deleted.'
+    success_url = reverse_lazy('settings')
+    def test_func(self):
+        return self.request.user.is_superuser
+
+# SettingsFacultyPrefer
+class SettingsFacultyPreferReadView(LoginRequiredMixin, UserPassesTestMixin,BSModalReadView):
+    model = PreferredSchedule
+    context_object_name = 'faculty-prefer'
+    template_name = 'load_manager/components/modals/read.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['viewtype'] = 'faculty-prefer'
+        context['faculty'] = f"{kwargs['object'].user.first_name} {kwargs['object'].user.last_name}"
+        context['psubjs'] = kwargs['object'].preferred_subject.all()
+        context['ptime'] = kwargs['object'].preferred_time.all().values_list('select_day','select_time')
+        context['times'] = PreferredTime.TIME_SELECT
+        context['days'] = DAY_OF_THE_WEEK
+        os.system('cls')
+        pprint(context['ptime'])
+        return context
+    def test_func(self):
+        return self.request.user.is_superuser
+class SettingsFacultyPreferDeleteView(LoginRequiredMixin, UserPassesTestMixin,BSModalDeleteView):
+    model = PreferredSchedule
+    template_name = 'load_manager/components/modals/delete.html'
+    context_object_name = 'faculty_prefer'
+    success_message = 'Success: Faculty Preference was deleted.'
     success_url = reverse_lazy('settings')
     def test_func(self):
         return self.request.user.is_superuser

@@ -6,9 +6,8 @@
   <div class="sidebar-header">
     <div class="container-fluid">
       <div class="row center-block">
-        <img
-          src="https://doc-04-24-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/nom87u5v0c5id5rluchf6gl623gu3c2g/1571472000000/01772302398777697825/*/1bDGuaFuwSGKY8_uAG_vqgpJ2PQ_AJrc5?e=view"
-          class="rounded mx-auto d-block" width="100px" size="100px">
+        <img src="https://doc-04-24-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/nom87u5v0c5id5rluchf6gl623gu3c2g/1571472000000/01772302398777697825/*/1bDGuaFuwSGKY8_uAG_vqgpJ2PQ_AJrc5?e=view"
+        class="rounded mx-auto d-block" width="100px" size="100px">
         <h3>CPE<br> Department</h3>
       </div>
     </div>
@@ -26,11 +25,15 @@
             <h4 style="color:white">{{ request.user.first_name }}</h4>
             <h5 style="color:red">{{ user_type }}</h5>
           </div>
-        </div>
-      </a>
-      <div class="row">
 
-      </div>
+        </div>
+        <div class="row">
+          <div class="col center-block text-center">
+            <a href="{% url 'logout' %}">Logout</a>
+          </div>
+        </div>
+        <br>
+      </a>
     </div>
   </div>
   <hr>

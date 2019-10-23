@@ -3,6 +3,7 @@
 <div class="modal-header">
   <h3 class="modal-title">{% if viewtype == 'settings' %}{{ setting }}
                           {% elif viewtype == 'section-offering' %}{{ section_offering }}
+                          {% elif viewtype == 'faculty-prefer' %} {{ faculty }}
                           {% elif viewtype == 'subject' %}{{ subject }}
                           {% elif viewtype == 'faculty-load' %}Faculty Load
                                {% endif %}</h3>
@@ -69,6 +70,41 @@
           </tr>
         </thead>
       </table>
+    {% elif viewtype == 'faculty-prefer' %}
+    <div class="container">
+      <div class="row">
+        <h4>Preferred Subjects</h4>
+        <ol>
+          {% for subjs in psubjs %}
+          <li> {{ subjs }} </li>
+          {% endfor %}
+        </ol>
+      </div>
+      <div class="row">
+        <h4>Preferred Time</h4>
+        <div class="table-responsive">
+          <table class="table table-bordered" id="schedule-table" style="text-align: center">
+              <thead>
+                <th>TIME</th>
+                {% for v, time in times %}
+                <td>{{ time }}</td>
+                {%endfor%}
+              </thead>
+              {% for val,day in days %}
+              <tr>
+                  <th>{{ day }}</th>
+                  {% for v, time in times %}
+                    <td{% for pday,ptime in ptime %}
+                        {% if pday == val and ptime == v %}
+                          style="background-color:red"{% endif %}
+                    {% endfor %}</td>
+                  {% endfor %}
+              </tr>
+              {% endfor %}
+          </table>
+        </div>
+      </div>
+    </div>
     {% elif viewtype == 'sem-off-subject' %}
       <h3></h3>
       <table class="table table-striped">
@@ -115,7 +151,6 @@
           {% endif %}
         </tbody>
       </table>
-    {% elif viewtype == 'faculty-load' %}
     {% endif %}
   </div>
 

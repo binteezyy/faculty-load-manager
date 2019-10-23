@@ -13,6 +13,8 @@ def SEMESTER_STATUS():
               (1, 'Open'),
               (2, 'Closed'),
               (3, 'Locked')]
+
+
 class EmailBackend(ModelBackend):
     def authenticate(self, username=None, password=None, **kwargs):
         UserModel = get_user_model()
@@ -25,7 +27,23 @@ class EmailBackend(ModelBackend):
                 return user
         return None
 
+class AnnouncementCategory(models.Model):
+    category = models.CharField(max_length=50)
+    def __str__(self):
+        return f'{self.category}'
 
+class Announcements(models.Model):
+    title = models.CharField(max_length=100)
+    category = models.ForeignKey(AnnouncementCategory, on_delete=models.CASCADE)
+    message = models.TextField()
+    author = models.ForeignKey(
+            settings.AUTH_USER_MODEL,
+            on_delete=models.CASCADE,
+            )
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.title}'
 class Setting(models.Model):
     school_year = models.ForeignKey(
         SchoolYear, on_delete=models.CASCADE, null=True)
@@ -74,11 +92,11 @@ class Setting(models.Model):
                 pass
         super(Setting, self).save(*args, **kwargs)
 
-    def delete(self):
-        if self.current == True:
-            raise ValueError('You cannot delete current')
-        else:
-            super(Setting, self).delete(*args, **kwargs)
+    # def delete(self):
+    #     if self.current == True:
+    #         raise ValueError('You cannot delete current')
+    #     else:
+    #         super(Setting, self).delete()
 
 class UserProfile(models.Model):
     user   = models.OneToOneField(User,on_delete=models.CASCADE)
