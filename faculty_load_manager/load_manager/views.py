@@ -23,6 +23,7 @@ from bs4 import BeautifulSoup
 def home_view(request):
     next = request.GET.get('next')
     status = ''
+    announcements = None
     try:
         csettings = Setting.objects.get(current=True)
         status = csettings.get_status_display
