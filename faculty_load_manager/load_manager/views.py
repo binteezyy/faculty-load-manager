@@ -1173,8 +1173,9 @@ def allocate_section_offering(request):
                 allowed_hours = prof.regular_hours + prof.part_time_hours
                 allocated_hours = 0
                 subject_hours = secOff.subject.lab_hours + secOff.subject.lec_hours
+                print(secOff_prof_qs)
                 for secOff_prof in secOff_prof_qs:
-                    allocated_hours = secOff_prof.subject.lec_hours + secOff_prof.subject.lec_hours
+                    allocated_hours += secOff_prof.subject.lec_hours + secOff_prof.subject.lec_hours
 
                 print(f'{prof.faculty} total of {allocated_hours} allocated hours')
                 print(f'{prof.faculty} total of {allowed_hours} allowed hours')
@@ -1311,139 +1312,144 @@ def allocate_faculty_load(request):
         new_sy = SchoolYear(start_year=start, end_year=end)
         new_sy.save()
         sy = SchoolYear.objects.get(start_year=start, end_year=end)
-    print(sy)
 
     # loop through prof, descending faculty type
     profs = FacultyProfile.objects.all().order_by('-faculty_type')
     for prof in profs:
     # loop through section offerings assigned to faculty
-        fls = FacultyLoad.objects.filter(subject__professor=prof.faculty, preferred_time=None)
         print(f'FACULTY {prof.faculty}')
-        for fl in fls:
-            print(fl)
-    # check hours
-    # check if lab or lec
-    # if > 5, split // + 1, if < 5, full. allocate 3 hours first, then 2 hours
-            lab_hours = fl.subject.subject.lab_hours
-            lec_hours = fl.subject.subject.lec_hours
-            if lab_hours >= 5:
-                if lab_hours % 2:
-                    lab1 = lab_hours//2
-                    lab2 = lab_hours//2 - 1
-                else:
-                    lab1 = lab_hours//2
-                    lab2 = lab_hours//2
-                if fl.load_category == 0:
-                    labhr = lab1
-                elif fl.load_category == 1:
-                    labhr = lab2
-            elif lab_hours < 5:
-                lab1 = lab_hours
-                if fl.load_category == 0:
-                    labhr = lab1
+        # fls = FacultyLoad.objects.filter(subject__professor=prof.faculty, load_schedule=None)
+        secOffs = SectionOffering.objects.filter(professor=prof.faculty, school_year=sy, semester=semester)
+        for secOff in secOffs:
+            print(secOff)
+            fls = FacultyLoad.objects.filter(subject__professor=prof.faculty, load_schedule=None, subject=secOff)
+            for fl in fls:
+                
+                print(fl)
+                #check hours
+                #check if lab or lec
+                #if > 5, split // + 1, if < 5, full. allocate 3 hours first, then 2 hours
+                lab_hours = fl.subject.subject.lab_hours
+                lec_hours = fl.subject.subject.lec_hours
+                if lab_hours >= 5:
+                    if lab_hours % 2:
+                        lab1 = lab_hours//2
+                        lab2 = lab_hours//2 - 1
+                    else:
+                        lab1 = lab_hours//2
+                        lab2 = lab_hours//2
+                    if fl.load_category == 0:
+                        labhr = lab1
+                    elif fl.load_category == 1:
+                        labhr = lab2           
+                elif lab_hours < 5:
+                    lab1 = lab_hours
+                    if fl.load_category == 0:
+                        labhr = lab1
 
-            if lec_hours >= 5:
-                if lec_hours % 2:
-                    lec1 = lec_hours//2
-                    lec2 = lec_hours//2 - 1
-                else:
-                    lec1 = lec_hours//2
-                    lec2 = lec_hours//2
-                if fl.load_category == 2:
-                    lechr = lec1
-                elif fl.load_category == 3:
-                    lechr = lec2
-            elif lec_hours < 5:
-                lec1 = lec_hours
-                if fl.load_category == 2:
-                    lechr = lec1
-
-            if fl.load_category == 0 or fl.load_category == 1:
-                subjhr = labhr
-            elif fl.load_category == 2 or fl.load_category == 3:
-                subjhr = lechr
-            print(f'{subjhr} hrs')
-            divisions = int(subjhr/0.5)
-            print(str(divisions) + ' divisions')
-            # check prof preferred time
-            ps = PreferredSchedule.objects.get(user=prof.faculty, school_year=sy, semester=semester)
-            time = ps.preferred_time.all()
-            # print(f'Prof {prof.faculty} preferred time: {time}')
-
-            # select time
-            # for i in range(26-divisions):
-            #     time_filter = []
-            #     print(time_filter)
-            #     for k in range(5):
-            #         for j in range(divisions-1):
-            #                 time_filter.append(PreferredTime.objects.get(select_time=i+j, select_day=k))
-
-            #         try:
-            #             time_g = PreferredSchedule.objects.filter(user=prof.faculty, school_year=sy, semester=semester, preferred_time__in=time_filter)
-            #             if time_g.count != divisions-1:
-            #                 print("cant go")
-            #             else:
-            #                 print("go")
-            #                 break
-            #         except PreferredSchedule.DoesNotExist:
-            #             print("cant")
-            fls2 = FacultyLoad.objects.filter(subject__professor__isnull=False)
-            for i in range(5):
-                for j in range(26-divisions):
-                    time_filter = []
-                    for k in range(divisions):
-                        time_filter.append(PreferredTime.objects.get(select_time=j+k, select_day=i))
-                    # print(f'tf{time_filter}')
-
-                    try:
-                        time_g = PreferredSchedule.objects.filter(user=prof.faculty, school_year=sy, semester=semester, preferred_time__in=time_filter) #.preferred_time.all()
-                        print(f'time g {time_g}')
-                        time_filter2 = []
-                        if time_g.count() != divisions:
-                            print("cant go")
+                if lec_hours >= 5:
+                    if lec_hours % 2:
+                        lec1 = lec_hours//2
+                        lec2 = lec_hours//2 - 1
+                    else:
+                        lec1 = lec_hours//2
+                        lec2 = lec_hours//2
+                    if fl.load_category == 2:
+                        lechr = lec1
+                    elif fl.load_category == 3:
+                        lechr = lec2     
+                elif lec_hours < 5:
+                    lec1 = lec_hours
+                    if fl.load_category == 2:
+                        lechr = lec1
+                
+                if fl.load_category == 0 or fl.load_category == 1:
+                    subjhr = labhr
+                elif fl.load_category == 2 or fl.load_category == 3:
+                    subjhr = lechr
+                print(f'{subjhr} hrs')
+                divisions = int(subjhr/0.5)
+                print(str(divisions) + ' divisions') 
+                # check prof preferred time
+                prof_preferred_time = PreferredSchedule.objects.get(user=prof.faculty, school_year=sy, semester=semester).preferred_time.all()
+                ppt_list = list(prof_preferred_time)
+                # print(f'PPT LIST {ppt_list}')
+                prof_assigned_time = FacultyLoad.objects.filter(subject__professor=prof.faculty)
+                pat_list = []
+                for pat in prof_assigned_time:
+                    if pat.load_schedule:
+                        pat_list += list(pat.load_schedule.preferred_time.all())
+                print(f'ASSIGNED LOAD {prof_assigned_time}')
+                print(f'ALREADY TIME {pat_list}')
+                # fls_allocated = FacultyLoad.objects.filter(load_schedule__isnull=False)
+                rooms = Room.objects.filter(room_category=secOff.subject.room_category)
+                print(f'ROOMS {rooms}')
+                for room in rooms:
+                    print(f'ROOM {room.room_name}')
+        
+                    fl_room_occupants = FacultyLoad.objects.filter(load_schedule__room=room)
+                    print(f'ROOM OCCUPANTS {fl_room_occupants}')
+                    check_sched = []
+                    for fl_room_occupant in fl_room_occupants:
+                        check_sched += list(fl_room_occupant.load_schedule.preferred_time.all())
+                    print(f'TIME OCCUPIED {check_sched}')
+                    for i in range(5):
+                        for j in range(26-divisions):
+                            check_time = []
+                            check_time_ids = []
+                            for k in range(divisions):
+                                check_time.append(PreferredTime.objects.get(select_time=j+k, select_day=i))
+                                check_time_ids.append(PreferredTime.objects.get(select_time=j+k, select_day=i).pk)
+                            # print(f'{bool([item for item in check_time if item in check_sched])}')
+                            # print(f'{not bool(all(item in ppt_list for item in check_time))}')
+                            # print(f'{not bool([item for item in check_time if item in pat_list])}')
+                            # print(f'ct {check_time}')
+                            # print(f'cs {check_sched}')
+                            # print(f'pat {pat_list}')
+                            if bool([item for item in check_time if item in check_sched]) or not bool(all(item in ppt_list for item in check_time)) or bool([item for item in check_time if item in pat_list]):
+                                print("J next loop")
+                            else:
+                                print(f'{bool([item for item in check_time if item in check_sched])} - {not bool(all(item in ppt_list for item in check_time))} - {bool([item for item in check_time if item in pat_list])}')
+                                break #break for j
+                        if bool([item for item in check_time if item in check_sched]) or not bool(all(item in ppt_list for item in check_time)) or bool([item for item in check_time if item in pat_list]):
+                            print("I next loop")
                         else:
-                            for fl2 in fls2:
-                                # for pt in fl2.preferred_time.all:
-                                print(f'fl2 {fl2.preferred_time.all()}')
-                                time_filter2 += fl2.preferred_time.all()
-                        if time_g.count == 0:
-                            time_filter = []
-                            break
-                        elif bool([item for item in time_filter2 if item in time_filter]):
-                            print("cant")
-                            time_filter = []
-                        else:
-                            print("go")
-                            break
-
-                    except PreferredSchedule.DoesNotExist:
-                        print("not existing")
-                # print(f'time g {time_g.count()}')
-                time_filter2 = []
-                if time_g.count() != divisions:
-                            print("cant go")
+                            print(f'{bool([item for item in check_time if item in check_sched])} - {not bool(all(item in ppt_list for item in check_time))} - {bool([item for item in check_time if item in pat_list])}')
+                            break #break for i
+                    if bool([item for item in check_time if item in check_sched]) or not bool(all(item in ppt_list for item in check_time)) or bool([item for item in check_time if item in pat_list]):
+                        print("R next loop")
+                    else:
+                        print(f'{bool([item for item in check_time if item in check_sched])} - {not bool(all(item in ppt_list for item in check_time))} - {bool([item for item in check_time if item in pat_list])}')
+                        break #break for room
+                if bool([item for item in check_time if item in check_sched]) or not bool(all(item in ppt_list for item in check_time)) or bool([item for item in check_time if item in pat_list]):
+                    print("FL next loop")
                 else:
-                    for fl2 in fls2:
-                        # for pt in fl2.preferred_time.all:
-                        # print(f'fl2 {fl2.preferred_time.all()}')
-                        time_filter2 += fl2.preferred_time.all()
-                    # print(f'tf2 {time_filter2}')
-                if time_g.count() == 0:
-                    time_filter = []
-                    break
-                elif bool([item for item in time_filter2 if item in time_filter]):
-                    print("cant")
-                    time_filter = []
-                else:
-                    print("go")
-                    break
+                    print(f'{bool([item for item in check_time if item in check_sched])} - {not bool(all(item in ppt_list for item in check_time))} - {bool([item for item in check_time if item in pat_list])}')
+         
+                    fl_preferred_time = PreferredTime.objects.filter(pk__in=check_time_ids)
+                    load_schedule = LoadSchedule.objects.filter(room=room, preferred_time__in=fl_preferred_time).first()
+                    if not load_schedule:
+                        print('doesnt exists')
+                        load_schedule = LoadSchedule(room=room)
+                        load_schedule.save()
+                        load_schedule.preferred_time.set(fl_preferred_time)
+                        load_schedule.save()
+                        load_schedule = LoadSchedule.objects.filter(room=room, preferred_time__in=fl_preferred_time).first()
+                    print(load_schedule)
+                    fl.load_schedule = load_schedule
+                    fl.save()
+                    print(f'ASSIGNED TO ROOM - {room.room_name} - {i} -  SCHEDULE - {check_time}')
+                    # try:
+                    #     fl_next = fls[1]
+                    # except IndexError:
+                    #     fl_next = False
+                    # if i == 0 and fl_next:
+                    #     print(f'{fl_next} load is thursday')
+                    # elif i == 1:
+                    #     print('next load is friday')
+                    # elif i == 2:
+                    #     print('next load is saturday')
+                    
+                    break #break for fl
 
-            time_list = list(time_filter)
-            print('final')
-            print(time_list)
-
-            fl.preferred_time.add(*time_list)
-            fl.save()
-            # print(time_list)
-    # check FL if timeslot taken
-    return HttpResponse(fls)
+    return HttpResponse(secOffs)
