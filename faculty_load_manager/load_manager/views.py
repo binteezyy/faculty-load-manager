@@ -153,6 +153,11 @@ def load_manager_list(request):
     context = {
         'avatar': UserProfile.objects.get(user=request.user).avatar,
         'user_type': FacultyProfile.objects.get(faculty=request.user).get_faculty_type_display,
+        'preferred_time': psched,
+        'psubjs' : psched.preferred_subject.all(),
+        'ptime' : psched.preferred_time.all().values_list('select_day','select_time'),
+        'times': PreferredTime.TIME_SELECT,
+        'days': DAY_OF_THE_WEEK,
         'csetting': settings,
         'title': 'LOAD MANAGER',
         'status': status,
@@ -173,8 +178,7 @@ def load_manager_tables(request):
                        "date_submit":load.created_at.strftime("%d-%m-%Y %I:%M%p"),
                        "school_year": str(load.school_year),
                        "semester": str(load.get_semester_display()),
-                       "details": "",
-                       "status": "",
+                       "status": str(load.get_status_display()),
              }
         }
         data.append(x)
