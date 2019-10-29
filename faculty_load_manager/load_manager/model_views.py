@@ -196,6 +196,23 @@ class FacultyLoadDeleteView(LoginRequiredMixin, UserPassesTestMixin,BSModalDelet
     def test_func(self):
         return self.request.user.is_superuser
 
+class CurriculumUpdateView(BSModalUpdateView):
+    model = Curriculum
+    template_name = 'load_manager/components/modals/update.html'
+    form_class = CurriculumForm
+    success_message = 'Success: Curriculum was updated.'
+    success_url = reverse_lazy('settings-curriculum')
+
+class CurriculumDeleteView(LoginRequiredMixin, UserPassesTestMixin,BSModalDeleteView):
+    model = Curriculum
+    template_name = 'load_manager/components/modals/delete.html'
+    context_object_name = 'curriculum'
+    success_message = 'Success: Settings was deleted.'
+    success_url = reverse_lazy('ssettings-curriculum')
+    def test_func(self):
+        return self.request.user.is_superuser
+
+
 class SubjectCreateView(LoginRequiredMixin, UserPassesTestMixin,BSModalCreateView):
     template_name = 'load_manager/components/modals/create.html'
     form_class = SettingsForm
@@ -267,36 +284,32 @@ class UserCreateView(LoginRequiredMixin, UserPassesTestMixin,BSModalCreateView):
     def test_func(self):
         return self.request.user.is_superuser
 class UserReadView(LoginRequiredMixin, UserPassesTestMixin,BSModalReadView):
-    model = Setting
-    context_object_name = 'setting'
+    model = User
+    context_object_name = 'user'
     template_name = 'load_manager/components/modals/read.html'
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['viewtype'] = 'settings'
-
-        context['first_curriculum'] = kwargs['object'].first_curriculum
-        context['first_section'] = kwargs['object'].first_sections
-        context['second_curriculum'] = kwargs['object'].second_curriculum
-        context['second_section'] = kwargs['object'].second_sections
-        context['third_curriculum'] = kwargs['object'].third_curriculum
-        context['third_section'] = kwargs['object'].third_sections
-        context['fourth_curriculum'] = kwargs['object'].fourth_curriculum
-        context['fourth_section'] = kwargs['object'].fourth_sections
-        context['fifth_curriculum'] = kwargs['object'].fifth_curriculum
-        context['fifth_section'] = kwargs['object'].fifth_sections
+        context['viewtype'] = 'user'
+        context['first_name'] = kwargs['object'].first_name
+        context['last_name'] = kwargs['object'].last_name
+        context['img'] = UserProfile.objects.get(user=kwargs['object']).avatar
         return context
     def test_func(self):
         return self.request.user.is_superuser
 class UserUpdateView(BSModalUpdateView):
-    model = User
+    model = FacultyProfile
     template_name = 'load_manager/components/modals/update.html'
-    form_class = SettingsForm
-    success_message = 'Success: Book was updated.'
-    success_url = reverse_lazy('settings')
+    form_class = UserForm
+    success_message = 'Success: Profile was updated.'
+    success_url = reverse_lazy('chairperson-upm')
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['viewtype'] = 'user'
+        return context
 class UserDeleteView(LoginRequiredMixin, UserPassesTestMixin,BSModalDeleteView):
     model = User
     template_name = 'load_manager/components/modals/delete.html'
-    context_object_name = 'user'
+    context_object_name = 'faculty'
     success_message = 'Success: User was deleted.'
     success_url = reverse_lazy('chairperson-upm')
     def test_func(self):

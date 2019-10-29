@@ -12,6 +12,15 @@ class SettingsForm(BSModalForm):
         model = Setting
         exclude = ['status']
 
+class UserForm(BSModalForm):
+    class Meta:
+        model = FacultyProfile
+        exclude = ['faculty']
+
+class CurriculumForm(BSModalForm):
+    class Meta:
+        model = Curriculum
+        exclude = ['']
 
 class SectionOfferingProfessorForm(BSModalForm):
     class Meta:

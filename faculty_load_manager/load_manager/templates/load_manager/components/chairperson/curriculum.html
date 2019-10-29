@@ -12,8 +12,7 @@
 {% include "_modal.html" %}
 <div class="card animated fadeInDown settings-card">
   <div class="card-header">
-    <h5>Curriculum</h5> <button type="button" id="curriculum-upload" class="btn btn-success btn-outline-success" name="button">Upload Curriculum</button>
-
+    <h5>Curriculum</h5>
   </div>
   <div class="card-content">
     <div class="container-fluid">
@@ -42,7 +41,9 @@
       </div>
     </div>
   </div>
+  <div class="card-footer">
 
+  </div>
 </div>
 {% endblock content %}
 
@@ -53,9 +54,7 @@
 <script type="text/javascript">
 
   $(document).ready(function () {
-    $("#curriculum-upload").modalForm({
-      formURL: "{% url 'settings-curriculum-upload' %}"
-    });
+
     $('#curriculum-select').select2({
       // maximumSelectionLength: 3,
     });
@@ -66,6 +65,21 @@
     var tables = '/' + $('#curriculum-select').val() + '/subjects/';
     $('#curriculum-table').DataTable({
       "dataType": 'json',
+      "dom": "<'row'<'col-md-4'l><'col-md-8'<'row float-right'<'col-6 upload-cur'><'col-6 'Bf>>>>" +
+            "<'row'<'col-md-6'><'col-md-6'>>" +
+            "<'row'<'col-md-12't>><'row'<'col-md-12'ip>>",
+      "initComplete": function(settings, json) {
+        $("div.upload-cur").html('<button type="button" id="curriculum-upload" class="float-right btn btn-s btn-success btn-raised" name="button">Upload <i class="fas fa-file-upload"></i></button>');
+        $(".delete-curriculum").each(function () {
+          $(this).modalForm({formURL: $(this).data('id')});
+        });
+        $(".update-curriculum").each(function () {
+          $(this).modalForm({formURL: $(this).data('id')});
+        });
+        $("#curriculum-upload").modalForm({
+          formURL: "{% url 'settings-curriculum-upload' %}"
+        });
+      },
       "ajax": {
         "processing": true,
         "dataSrc": '',
@@ -87,8 +101,13 @@
           "targets": 2,
           "data": "fields.curriculum-pk",
           render: function (data, type, row) {
-            return '<button type="button" class="read btn btn-sm btn-primary m-1" data-id="' + data + '">' +
-              '<span class="fa fa-edit"></span><a href="/chairperson/curriculum/' + data + '"> Edit Curriculum Subjects </a> </button>'
+            let render = '<a href="/chairperson/curriculum/' + data + '"><button type="button" class="btn btn-sm btn-raised btn-info m-1">'+
+              'VIEW SUBJECTS <span class="fa fa-eye"></span></button></a>' +
+              '<button type="button" class="delete-curriculum btn btn-sm btn-raised btn-warning m-1" data-id="/delete/curriculum/'+data+'">'+
+              '<span class="fa fa-trash"></span></button>'+
+              '<button type="button" class="update-curriculum btn btn-sm btn-raised btn-success m-1" data-id="/update/curriculum/'+data+'">'+
+                '<span class="fa fa-edit"></span></button>';
+            return render
           }
 
         },

@@ -153,6 +153,10 @@ def load_manager_list(request):
     context = {
         'avatar': UserProfile.objects.get(user=request.user).avatar,
         'user_type': FacultyProfile.objects.get(faculty=request.user).get_faculty_type_display,
+        'preferred_time': psched,
+        'ptime' : psched.preferred_time.all().values_list('select_day','select_time'),
+        'times': PreferredTime.TIME_SELECT,
+        'days': DAY_OF_THE_WEEK,
         'csetting': settings,
         'title': 'LOAD MANAGER',
         'status': status,
@@ -173,8 +177,7 @@ def load_manager_tables(request):
                        "date_submit":load.created_at.strftime("%d-%m-%Y %I:%M%p"),
                        "school_year": str(load.school_year),
                        "semester": str(load.get_semester_display()),
-                       "details": "",
-                       "status": "",
+                       "status": str(load.get_status_display()),
              }
         }
         data.append(x)
@@ -327,22 +330,6 @@ def curriculum_subject_edit(request, pk):
             'subjects': subjects,
         }
         return render(request, 'load_manager/components/chairperson/curriculum-edit.html', context)
-    # if request.method == 'POST':
-    #     for subject in subjects:
-    #         # subject.minor_flag = request.POST.get('%s-minor-flag' % (subject.subject_code))
-    #         # subject.thesis_flag = request.POST.get('%s-thesis-flag' % (subject.subject_code))
-    #         # subject.save()
-    #         if request.POST.get('%s-minor-flag' % (subject.subject_code)):
-    #             subject.minor_flag = True
-    #             subject.thesis_flag = False
-    #             print('%s Offered' % (subject.subject_code))
-    #         else:
-    #             subject.minor_flag = False
-
-    #         a = request.POST.get('room-STAT 2053')
-    #         print(a)
-    #         subject.save()
-    #     return redirect('settings-curriculum')
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
@@ -370,7 +357,6 @@ def curriculum_subject_table(request, pk):
     pprint(data)
     return HttpResponse(data, content_type='application/json')
 
-    return HttpResponse(subjects)
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser or u.is_staff )

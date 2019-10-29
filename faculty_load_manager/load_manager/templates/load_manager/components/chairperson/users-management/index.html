@@ -10,12 +10,10 @@
 {% include "_modal.html" %}
   <div class="card animated fadeInDown settings-card">
     <div class="card-header">
-      <h5>User Pool Management</h5>
-        <button type="button" id="create-user" class="btn btn-success btn-outline-success" name="button">Register Faculty +</button>
+      <h5>Faculty Management</h5>
     </div>
     <div class="card-content">
       <div class="container-fluid">
-
         <div class="row p-3">
           <div class="col">
             <div class="table-responsive">
@@ -35,10 +33,15 @@
               </table>
             </div>
           </div>
+
         </div>
       </div>
       </div>
-
+    <div class="card-footer">
+      <div class="float-right text-center">
+        <button type="button" id="create-user" class="btn btn-success btn-outline-success btn-raised" name="button">Register Faculty</button>
+      </div>
+    </div>
   </div>
 {% endblock content %}
 
@@ -96,14 +99,14 @@
           },
           { "className": 'col-quotation-description text-nowrap',
             "targets":   6,
-            "data": 'fields.user-id',
+            "data": 'fields.id',
             render:function(data, type, row)
               {
-                let render = '<button type="button" class="read-user btn btn-sm btn-raised btn-primary m-1" data-id="/read/user/'+data+'">'+
+                let render = '<button type="button" class="read-user btn btn-sm btn-raised btn-primary m-1" data-id="/read/user/'+data[0]+'">'+
                   '<span class="far fa-eye"></span></button>' +
-                  '<button type="button" class="delete-user btn btn-sm btn-raised btn-warning m-1" data-id="/delete/user/'+data+'">'+
+                  '<button type="button" class="delete-user btn btn-sm btn-raised btn-warning m-1" data-id="/delete/user/'+data[0]+'">'+
                     '<span class="fa fa-trash"></span></button>'+
-                  '<button type="button" class="update-user btn btn-sm btn-raised btn-warning m-1" data-id="/update/user/'+data+'">'+
+                  '<button type="button" class="update-user btn btn-sm btn-raised btn-warning m-1" data-id="/update/user/'+data[1]+'">'+
                     '<span class="fa fa-edit"></span></button>';
                 return render
               },

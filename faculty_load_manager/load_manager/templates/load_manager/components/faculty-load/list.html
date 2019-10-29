@@ -19,8 +19,13 @@
      "dataSrc":'',
      "url": "{% url 'load-manager-history-tables' %}",
     },
+    "initComplete": function(settings, json) {
+      $(".read-prefer").each(function () {
+          $(this).modalForm({formURL: $(this).data('id')});
+        });
+    },
     "columnDefs": [
-      { "className": 'col-id',
+      { "className": 'col-id text-center',
         "targets":   0,
         "data": "fields.id",
         },
@@ -36,19 +41,21 @@
         "targets":   3,
         "data": 'fields.semester',
       },
-      { "className": 'col-details',
-        "targets":   4,
-        "data": null,
-        render:function(data, type, row)
-          {
-            return '<button type="button" class="read btn btn-sm btn-primary m-1" data-id="">'+
-              '<span class="fa fa-eye"></span> View</button>'
-          },
-      },
       { "className": 'col-status',
-        "targets":   5,
+        "targets":   4,
         "data": 'fields.status',
       },
+      { "className": 'col-details text-center',
+        "targets":   5,
+        "data": 'fields.id',
+        render:function(data, type, row)
+          {
+            let render = '<button type="button" class="read-prefer btn btn-sm btn-raised btn-primary m-1" data-id="/read/settings/faculty-prefer/'+data+'">'+
+              'REVIEW <span class="far fa-eye"></span></button>'
+            return render
+          },
+      },
+
     //   { "className": 'col-quotation-description text-nowrap',
     //     "targets":   3,
     //     "data": 'fields.total',
@@ -60,27 +67,59 @@
   </script>
 {% endblock %}
 {% block content %}
-
+{% include "_modal.html" %}
 {% if status == 'Open' %}
 <div class="card animated fadeInDown lm-current">
   <div class="card-header">
     <h5>Current Submission</h5>
   </div>
   <div class="card-content">
-    <div class="container-fluid">
+    <div class="container-fluid p-3">
       {% if submission %}
-      <p>Status:</p>
-      <p>Subjects:</p>
-      <ul>
-        {% for subject in psubj.preferred_subject.all %}
-          <li>{{ subject }}</li>
-        {% endfor %}
-      </ul>
-
+      <div class="row">
+        <div class="col p-4">
+          <h5>Preferred Subjects</h5><br>
+          <ul>
+            {% for subject in psubj.preferred_subject.all %}
+            <li>{{ subject }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+      <hr>
+      <div class="row">
+        <div class="col p-4">
+          <h5>Preferred Time</h5><br>
+          <div class="table-responsive">
+            <table class="table table-bordered" id="schedule-table" style="text-align: center">
+              <thead>
+                <th>TIME</th>
+                {% for v, time in times %}
+                <td>{{ time }}</td>
+                {%endfor%}
+              </thead>
+              {% for val,day in days %}
+              <tr>
+                  <th>{{ day }}</th>
+                  {% for v, time in times %}
+                    <td{% for pday,ptime in ptime %}
+                        {% if pday == val and ptime == v %}
+                          style="background-color:red"{% endif %}
+                    {% endfor %}</td>
+                  {% endfor %}
+              </tr>
+              {% endfor %}
+          </table>
+          </div>
+        </div>
+      </div>
       {% else %}
-      <button type="button" class="btn btn-raised btn-lg"><a href="{% url 'load-manager-create' %}">SUBMIT PREFERRED SCHEDULE</a> </button>
+        <a href="{% url 'load-manager-create' %}" style="text-decoration:none">
+          <button type="button" class="btn btn-success btn-raised btn-block btn-lg">
+            SUBMIT PREFERRED SCHEDULE
+          </button>
+        </a>
       {% endif %}
-
       </div>
     </div>
 
@@ -94,17 +133,17 @@
   <div class="card-content">
     <div class="table-responsive p-3">
       <table id="psched-table" class="table table-bordered table-hover" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info">
-       <thead >
+       <thead>
          <tr role="row" class="text-center">
-           <th style="width:10%">Form No.</th>
+           <th style="width:5%">Form No.</th>
            <th style="width:10%">Date Submitted</th>
            <th style="width:10%">School Year</th>
            <th style="width:10%">Semester</th>
-           <th>Details</th>
            <th style="width:10%">Status</th>
+           <th style="width:10%">Action(s)</th>
          </tr>
        </thead>
-       <tbody></tbody>
+       <tbody class="text-center"></tbody>
      </table>
 
     </div>
