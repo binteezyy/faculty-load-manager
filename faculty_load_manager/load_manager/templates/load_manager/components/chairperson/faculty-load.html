@@ -26,9 +26,7 @@
                                 <tr role="row" class="text-center">
                                     <th style="width:10%">Subject</th>
                                     <th style="width:10%">Section</th>
-                                    <th style="width:10%">Category</th>
-                                    <th style="width:10%">Room</th>
-                                    <th style="width:10%">Time</th>
+                                    <th style="width:10%">Schedule</th>
                                     <th style="width:10%">Prof</th>
                                     <th style="width:10%">Actions</th>
                                 </tr>
@@ -40,7 +38,14 @@
             </div>
         </div>
     </div>
-
+    <div class="card-footer">
+      <div class="float-right">
+        <a href="{% url 'allocation_faculty_load' %}">
+          <button class="btn btn-warning btn-raised" type="button" name="button">
+            Allocate Faculty Load </button>
+        </a>
+      </div>
+    </div>
 </div>
 {% endblock content %}
 
@@ -92,23 +97,13 @@
                     "data": "fields.fl-section",
                 },
                 {
-                    "className": 'col-fl-type text-center',
+                    "className": 'col-fl-sched text-center',
                     "targets": 2,
-                    "data": "fields.fl-type",
-                },
-                {
-                    "className": 'col-fl-room text-center',
-                    "targets": 3,
-                    "data": "fields.fl-room",
-                },
-                {
-                    "className": 'col-fl-time text-center',
-                    "targets": 4,
-                    "data": "fields.fl-time",
+                    "data": "fields.fl-sched",
                 },
                 {
                     "className": 'col-fl-prof text-center',
-                    "targets": 5,
+                    "targets": 3,
                     "data": "fields.fl-prof",
                 },
                 { "className": 'col-details text-center',

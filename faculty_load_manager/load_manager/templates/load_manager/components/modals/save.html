@@ -19,6 +19,10 @@
 </form>
 
 <script type="text/javascript">
+$("#modal-save").click(function() {
+  alert('');
+  $('#opening-save').addClass('hide');
+});
 $('#modal-save').on('click', function (e) {
       $.ajax({
         type: "POST",

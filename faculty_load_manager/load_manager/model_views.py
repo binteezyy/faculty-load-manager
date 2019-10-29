@@ -1,4 +1,7 @@
 from django.urls import reverse_lazy,reverse
+from django.shortcuts import render, redirect
+from django.contrib.auth.models import User
+from django.http import HttpResponse, HttpResponseRedirect
 from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http import HttpResponseRedirect
@@ -6,13 +9,38 @@ from django.contrib import messages
 from .model_forms import *
 from .models import *
 from users.models import *
-
 from bootstrap_modal_forms.generic import (BSModalCreateView,
                                            BSModalUpdateView,
                                            BSModalReadView,
                                            BSModalDeleteView)
 login_url = 'home'
+import os
+from pprint import pprint
 
+class AnnouncementCreateView(LoginRequiredMixin, UserPassesTestMixin,BSModalCreateView):
+    template_name = 'load_manager/components/modals/create.html'
+    form_class = AnnouncementForm
+    model = Announcement
+    model_type = 'annoucement'
+    success_message = 'Success: Settings was created.'
+    success_url = reverse_lazy('home')
+
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def form_valid(self, form):
+        obj = form.save(commit=False)
+        obj.author = self.request.user
+        obj.category = 0
+        return super().form_valid(form)
+class AnnouncementDeleteView(LoginRequiredMixin, UserPassesTestMixin,BSModalDeleteView):
+    model = Announcement
+    template_name = 'load_manager/components/modals/delete.html'
+    context_object_name = 'annoucement'
+    success_message = 'Success: Annoucement was deleted.'
+    success_url = reverse_lazy('home')
+    def test_func(self):
+        return self.request.user.is_superuser
 # Settings
 class SettingsCreateView(LoginRequiredMixin, UserPassesTestMixin,BSModalCreateView):
     template_name = 'load_manager/components/modals/create.html'
@@ -56,6 +84,33 @@ class SettingsDeleteView(LoginRequiredMixin, UserPassesTestMixin,BSModalDeleteVi
     template_name = 'load_manager/components/modals/delete.html'
     context_object_name = 'setting'
     success_message = 'Success: Settings was deleted.'
+    success_url = reverse_lazy('settings')
+    def test_func(self):
+        return self.request.user.is_superuser
+
+# SettingsFacultyPrefer
+class SettingsFacultyPreferReadView(LoginRequiredMixin, UserPassesTestMixin,BSModalReadView):
+    model = PreferredSchedule
+    context_object_name = 'faculty-prefer'
+    template_name = 'load_manager/components/modals/read.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['viewtype'] = 'faculty-prefer'
+        context['faculty'] = f"{kwargs['object'].user.first_name} {kwargs['object'].user.last_name}"
+        context['psubjs'] = kwargs['object'].preferred_subject.all()
+        context['ptime'] = kwargs['object'].preferred_time.all().values_list('select_day','select_time')
+        context['times'] = PreferredTime.TIME_SELECT
+        context['days'] = DAY_OF_THE_WEEK
+        os.system('cls')
+        pprint(context['ptime'])
+        return context
+    def test_func(self):
+        return self.request.user.is_superuser
+class SettingsFacultyPreferDeleteView(LoginRequiredMixin, UserPassesTestMixin,BSModalDeleteView):
+    model = PreferredSchedule
+    template_name = 'load_manager/components/modals/delete.html'
+    context_object_name = 'faculty_prefer'
+    success_message = 'Success: Faculty Preference was deleted.'
     success_url = reverse_lazy('settings')
     def test_func(self):
         return self.request.user.is_superuser
@@ -141,6 +196,23 @@ class FacultyLoadDeleteView(LoginRequiredMixin, UserPassesTestMixin,BSModalDelet
     def test_func(self):
         return self.request.user.is_superuser
 
+class CurriculumUpdateView(BSModalUpdateView):
+    model = Curriculum
+    template_name = 'load_manager/components/modals/update.html'
+    form_class = CurriculumForm
+    success_message = 'Success: Curriculum was updated.'
+    success_url = reverse_lazy('settings-curriculum')
+
+class CurriculumDeleteView(LoginRequiredMixin, UserPassesTestMixin,BSModalDeleteView):
+    model = Curriculum
+    template_name = 'load_manager/components/modals/delete.html'
+    context_object_name = 'curriculum'
+    success_message = 'Success: Settings was deleted.'
+    success_url = reverse_lazy('ssettings-curriculum')
+    def test_func(self):
+        return self.request.user.is_superuser
+
+
 class SubjectCreateView(LoginRequiredMixin, UserPassesTestMixin,BSModalCreateView):
     template_name = 'load_manager/components/modals/create.html'
     form_class = SettingsForm
@@ -182,5 +254,63 @@ class SubjectDeleteView(LoginRequiredMixin, UserPassesTestMixin,BSModalDeleteVie
     context_object_name = 'section-offering'
     success_message = 'Success: Settings was deleted.'
     success_url = reverse_lazy('section-offering')
+    def test_func(self):
+        return self.request.user.is_superuser
+
+class RoomReadView(LoginRequiredMixin, UserPassesTestMixin,BSModalReadView):
+    model = Room
+    context_object_name = 'semester-offering-subject'
+    template_name = 'load_manager/components/modals/read.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['viewtype'] = 'room'
+        context['subject'] = kwargs['object']
+        context['times'] = PreferredTime.TIME_SELECT
+        context['days'] = DAY_OF_THE_WEEK
+        context["room_sched"] = FacultyLoad.objects.filter(load_schedule__room = kwargs['object'])
+        return context
+    def test_func(self):
+        return self.request.user.is_superuser
+
+# Settings
+class UserCreateView(LoginRequiredMixin, UserPassesTestMixin,BSModalCreateView):
+    template_name = 'load_manager/components/modals/create.html'
+    form_class = SettingsForm
+    model = Setting
+    model_type = 'settings'
+    success_message = 'Success: Settings was created.'
+    success_url = reverse_lazy('settings')
+
+    def test_func(self):
+        return self.request.user.is_superuser
+class UserReadView(LoginRequiredMixin, UserPassesTestMixin,BSModalReadView):
+    model = User
+    context_object_name = 'user'
+    template_name = 'load_manager/components/modals/read.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['viewtype'] = 'user'
+        context['first_name'] = kwargs['object'].first_name
+        context['last_name'] = kwargs['object'].last_name
+        context['img'] = UserProfile.objects.get(user=kwargs['object']).avatar
+        return context
+    def test_func(self):
+        return self.request.user.is_superuser
+class UserUpdateView(BSModalUpdateView):
+    model = FacultyProfile
+    template_name = 'load_manager/components/modals/update.html'
+    form_class = UserForm
+    success_message = 'Success: Profile was updated.'
+    success_url = reverse_lazy('chairperson-upm')
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['viewtype'] = 'user'
+        return context
+class UserDeleteView(LoginRequiredMixin, UserPassesTestMixin,BSModalDeleteView):
+    model = User
+    template_name = 'load_manager/components/modals/delete.html'
+    context_object_name = 'faculty'
+    success_message = 'Success: User was deleted.'
+    success_url = reverse_lazy('chairperson-upm')
     def test_func(self):
         return self.request.user.is_superuser

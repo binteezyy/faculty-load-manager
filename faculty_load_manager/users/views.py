@@ -53,7 +53,6 @@ def randomPassword():
     return password
 
 @login_required
-@user_passes_test(lambda u: u.is_superuser)
 def user_profile(request,pk):
     if request.method == 'POST':
         return redirect('user-profile',pk = request.user.pk )
@@ -85,7 +84,8 @@ def user_pool_mangement_table(request):
     data = []
     for user in users:
         profile = FacultyProfile.objects.get(faculty=user.id)
-        x = {"fields":{"user-fname":user.first_name,
+        x = {"fields":{"id":[user.pk,profile.pk],
+                       "user-fname":user.first_name,
                        "user-lname":user.last_name,
                        "user-email":user.email,
                        "user-type": profile.get_faculty_type_display(),
@@ -105,40 +105,40 @@ def user_pool_management_create(request):
         lname = request.POST.get('lname')
         email = request.POST.get('email')
         username = request.POST.get('username')
-        type = request.POST.get('type')
+        ftype = request.POST.get('type')
 
-        r = randomPassword()
-        user = User.objects.create_user(username=username,
-                                         email=email,
-                                         password=r,
-                                         first_name=fname,
-                                         last_name=lname
-                                         )
-        profile = FacultyProfile.objects.get(faculty=user)
+
         try:
-            if type == '0':
+            user = User.objects.create_user(username=username,
+                                             email=email,
+                                             password="",
+                                             first_name=fname,
+                                             last_name=lname
+                                             )
+            profile = FacultyProfile.objects.get(faculty=user)
+            profile.faculty_type = int(ftype)
+            if ftype == '0': #Part-Time
                 profile.regular_hours = 0
                 profile.part_time_hours = 12
-            elif type == '1':
+            elif ftype == '1': #Regular
                 profile.regular_hours = 15
                 profile.part_time_hours = 12
-            elif type == '2':
+            elif ftype == '2': #Chief
                 profile.regular_hours = 6
                 profile.part_time_hours = 12
-            elif type == '3':
+            elif ftype == '3': #Director
                 profile.regular_hours = 3
                 profile.part_time_hours = 12
             else:
-                user.delete()
+                profile.delete()
                 raise ValueError('Invalid Faculty Type')
 
+
             profile.save()
-            subject = 'Welcome to Computer Engineering Faculty Website'
-            message = f'Hi {fname}! You have been registered. Here is your temporary password:  {r}'
-            email_from = settings.EMAIL_HOST_USER
-            recipient_list = [email,]
-            send_mail( subject, message, email_from, recipient_list )
+
+
         except Exception as e:
+            user.delete()
             raise e
         return redirect('chairperson-upm')
     else:

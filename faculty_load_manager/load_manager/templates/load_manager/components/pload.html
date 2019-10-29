@@ -32,8 +32,7 @@
   <div class="card-header">
     <h4>Preferred Schedule</h4>
   </div>
-  <div class="card-content">
-
+  <div class="card-content p-3">
     <div class="container-fluid">
     <form method="POST" >
       {% csrf_token %}
@@ -52,7 +51,7 @@
             <!-- <span class="glyphicon glyphicon-question-sign"></span> -->
             <i class="far fa-question-circle" style="color:black"></i>
         </a></h5>
-        
+
         <div class="container">
             <table class="table table-bordered" id="schedule-table" style="text-align: center">
                 <th>TIME</th>
@@ -78,5 +77,5 @@
     </form>
   </div>
   </div>
-</div>    
+</div>
 {% endblock content %}

@@ -4,7 +4,8 @@
   {% csrf_token %}
 
   <div class="modal-header">
-    <h3 class="modal-title">Update  {% if model == Setting %}Setting
+    <h3 class="modal-title">Update {% if viewtype == 'setting' %}
+                                    {% elif viewtype == 'user' %}Faculty
                                  {% endif %}</h3>
     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
       <span aria-hidden="true">&times;</span>

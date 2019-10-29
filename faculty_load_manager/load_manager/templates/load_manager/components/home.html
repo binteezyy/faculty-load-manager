@@ -1,32 +1,69 @@
 {% extends 'load_manager/container/container.html' %}
 {% load staticfiles %}
 {% block content %}
-<div class="card animated fadeInDown lm-current">
-    <div class="card-header">
-        <h4>Announcements</h4>
-    </div>
-    <div class="card-body">
-        <div class="container-fluid">
-            Logged in as {{user.username}} <a href="{% url 'logout' %}"> Logout</a>
+{% include "_modal.html" %}
+{% if request.user.is_staff and request.user.is_superuser %}
+  <button id="create-annoucement" class="btn btn-success btn-block btn-raised mb-2" type="button" name="button">Add Announcement</button>
+{% endif %}
+{% for i in announcements %}
+    <div class="card mb-3 {% if i.category == 0 %}bg-light
+                          {% elif i.category == 1 %}bg-info
+                          {% endif %}">
+      <div class="card-header">
+        <div class="my-1 float-left">
+          <h3 class="mb-0">
+            {% if i.category == 0 %}{{i.title}}
+            {% elif i.category == 1 %}<span style="color:white">Notice</span>
+            {% endif %}
+          </h3>
+
         </div>
-    </div>
-</div>
-<br/>
-<div class="card animated fadeInDown lm-current">
-    <div class="card-header">
-        <h4>Edit Announcement</h4>
-    </div>
-    <div class="card-body">
-        <div class="container-fluid">
-            <form method="POST">
-                <div class="form-group">
-                    <label class="bmd-label-floating">Edit Announcement</label>
-                    <textarea class="form-control" rows="6"></textarea>
-                    <!-- <small class="form-text text-muted">Markdown styling available. <a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet" target="_blank">Learn more</a></span> -->
-                </div>
-                <button type="submit" class="btn btn-raised btn-success">Submit</button>
-            </form>
+
+        {% if request.user.is_staff and request.user.is_superuser %}
+        <div class="float-right">
+          <button type="button" class="delete-annoucement btn btn-sm btn-raised btn-warning m-1"
+                  data-id="{% url 'delete-annoucement' i.pk %}">
+            <span class="fa fa-trash"></span></button>
         </div>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        {% if i.category == 0 %}
+          {{ i.message }}
+        {% elif i.category == 1%}
+          <span style="color:white">
+          {{ i.message }}
+        </span>
+        {% endif %}
+
+      </div>
+      <div class="card-footer {% if i.category == 0 %}bg-light
+                            {% elif i.category == 1 %}bg-info
+                            {% endif %}">
+        <div class="float-right">
+          {% if i.category == 0 %}
+            <i>{{ i.author.first_name }} {{ i.author.last_name }}</i> — {{ i.created }}
+          {% elif i.category == 1%}
+          <span style="color:white">
+            <i>SYSTEM</i> — {{ i.created }}
+          </span>
+          {% endif %}
+        </div>
+      </div>
     </div>
-</div>
+{% endfor %}
 {% endblock content %}
+
+{% block extra_js %}
+  {% if request.user.is_staff and request.user.is_superuser %}
+    <script type="text/javascript">
+      $("#create-annoucement").modalForm({
+         formURL: "{% url 'create-annoucement' %}"
+     });
+     $(".delete-annoucement").each(function () {
+       $(this).modalForm({formURL: $(this).data('id')});
+     });
+    </script>
+
+  {% endif %}
+{% endblock extra_js %}

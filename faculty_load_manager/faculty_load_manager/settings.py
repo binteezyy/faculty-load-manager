@@ -117,7 +117,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Manila'
 
 USE_I18N = True
 
@@ -134,7 +134,10 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static/'),
 
 ]
+PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
 #AUTHENTICATION_BACKENDS = ['path.to.auth.module.EmailBackend']
 
 MEDIA_URL = '/media/'

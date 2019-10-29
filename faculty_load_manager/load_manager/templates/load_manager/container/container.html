@@ -3,81 +3,82 @@
 {% block container %}
 
 <ul class="navbar-nav sidebar">
-  <div class="sidebar-header">
-    <div class="container-fluid">
-      <div class="row center-block">
-        <img src="https://doc-04-24-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/nom87u5v0c5id5rluchf6gl623gu3c2g/1571472000000/01772302398777697825/*/1bDGuaFuwSGKY8_uAG_vqgpJ2PQ_AJrc5?e=view" 
-        class="rounded mx-auto d-block" width="100px" size="100px">
-        <h3>CPE<br> Department</h3>
-      </div>
-    </div>
-  </div>
-  <div class="sidebar-profile {% if viewtype == 'user-profile' %}active{% endif %}">
+  <div class="sidebar-profile {% if viewtype == 'user-profile' %}active{% endif %} p-2">
     <div class="container-fluid">
       <a href="{% url 'user-profile' request.user.id %}" style="text-decoration:none;color: inherit;">
         <div class="row">
           <div class="col pt-3 center-block text-center">
-            <img src="/media/{{ avatar }}" class="rounded-circle" width="100px" size="100px">
+            <img class="profile rounded-circle" src="/media/{{ avatar }}" >
           </div>
         </div>
         <div class="row">
           <div class="col center-block text-center">
-            <h4 style="color:white">{{ request.user.first_name }}</h4>
-            <h5 style="color:red">{{ user_type }}</h5>
+            <h4 class="profile" style="color:white">{{ request.user.first_name }}</h4>
+            <h5 class="profile" style="color:red">{{ user_type }}</h5>
+          </div>
+
+        </div>
+        <div class="row">
+          <div class="col center-block text-center">
+            <a href="{% url 'logout' %}" style="text-decoration:none"><button type="button" class="btn btn-block btn-raised btn-danger" name="button">Logout</button></a>
           </div>
         </div>
+        <br>
       </a>
-      <div class="row">
-
-      </div>
     </div>
   </div>
-  <hr>
   <li class="sb-item {% if viewtype == 'home' %}active{% endif %} dashboard">
     <a class="sb-link" href="{% url 'home' %}">
-      <i></i>
-      <span>Home</span>
+      <i class="fas fa-home"></i> <span class="sidebar-title">Home</span>
     </a>
   </li>
   <li class="sb-item {% if viewtype == 'load-manager' %}active{% endif %} dashboard">
     <a class="sb-link" href="{% url 'load-manager-list' %}">
-      <i></i>
-      <span>Load Management</span>
+      <i class="far fa-calendar-alt"></i> <span class="sidebar-title">Load Management</span>
     </a>
   </li>
 
   {% if request.user.is_staff or request.user.is_superuser %}
   <hr>
-  <li class="sb-item {% if viewtype == 'curriculum' %}active{% endif %} dashboard">
-    <a class="sb-link" href="{% url 'settings-curriculum' %}">
-      <i></i>
-      <span>Curriculum</span>
-    </a>
-  </li>
-  <li class="sb-item {% if viewtype == 'settings' %}active{% endif %} dashboard">
-    <a class="sb-link" href="{% url 'settings' %}">
-      <i></i>
-      <span>Settings</span>
-    </a>
-  </li>
-  <li class="sb-item {% if viewtype == 'section-offering' %}active{% endif %} dashboard">
-    <a class="sb-link" href="{% url 'section-offering' %}">
-      <i></i>
-      <span>Section Offering</span>
-    </a>
-  </li>
-  <li class="sb-item {% if viewtype == 'faculty-load' %}active{% endif %} dashboard">
-    <a class="sb-link" href="{% url 'faculty-load' %}">
-      <i></i>
-      <span>Faculty Load</span>
-    </a>
-  </li>
-  <li class="sb-item {% if viewtype == 'user-pool-management' %}active{% endif %} dashboard">
-    <a class="sb-link" href="{% url 'chairperson-upm' %}">
-      <i></i>
-      <span>Users Management</span>
-    </a>
-  </li>
+  <div class="overflow-auto">
+    <li class="sb-item {% if viewtype == 'curriculum' %}active{% endif %} dashboard">
+      <a class="sb-link" href="{% url 'settings-curriculum' %}">
+        <i></i>
+        <span class="sidebar-title">Curriculum</span>
+      </a>
+    </li>
+    <li class="sb-item {% if viewtype == 'rooms' %}active{% endif %} dashboard">
+      <a class="sb-link" href="{% url 'room' %}">
+        <i></i>
+        <span class="sidebar-title">Room</span>
+      </a>
+    </li>
+    <li class="sb-item {% if viewtype == 'settings' %}active{% endif %} dashboard">
+      <a class="sb-link" href="{% url 'settings' %}">
+        <i></i>
+        <span class="sidebar-title">Settings</span>
+      </a>
+    </li>
+    <li class="sb-item {% if viewtype == 'section-offering' %}active{% endif %} dashboard">
+      <a class="sb-link" href="{% url 'section-offering' %}">
+        <i></i>
+        <span class="sidebar-title">Section Offering</span>
+      </a>
+    </li>
+    <li class="sb-item {% if viewtype == 'faculty-load' %}active{% endif %} dashboard">
+      <a class="sb-link" href="{% url 'faculty-load' %}">
+        <i></i>
+        <span class="sidebar-title">Faculty Load</span>
+      </a>
+    </li>
+    <li class="sb-item {% if viewtype == 'user-pool-management' %}active{% endif %} dashboard">
+      <a class="sb-link" href="{% url 'chairperson-upm' %}">
+        <i></i>
+        <span class="sidebar-title">Users Management</span>
+      </a>
+    </li>
+  </div>
+
   {% endif %}
 </ul>
 <div id="main-container">
