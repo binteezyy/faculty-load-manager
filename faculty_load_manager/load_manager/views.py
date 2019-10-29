@@ -154,7 +154,6 @@ def load_manager_list(request):
         'avatar': UserProfile.objects.get(user=request.user).avatar,
         'user_type': FacultyProfile.objects.get(faculty=request.user).get_faculty_type_display,
         'preferred_time': psched,
-        'psubjs' : psched.preferred_subject.all(),
         'ptime' : psched.preferred_time.all().values_list('select_day','select_time'),
         'times': PreferredTime.TIME_SELECT,
         'days': DAY_OF_THE_WEEK,
