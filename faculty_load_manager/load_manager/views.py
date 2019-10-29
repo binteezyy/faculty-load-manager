@@ -331,22 +331,6 @@ def curriculum_subject_edit(request, pk):
             'subjects': subjects,
         }
         return render(request, 'load_manager/components/chairperson/curriculum-edit.html', context)
-    # if request.method == 'POST':
-    #     for subject in subjects:
-    #         # subject.minor_flag = request.POST.get('%s-minor-flag' % (subject.subject_code))
-    #         # subject.thesis_flag = request.POST.get('%s-thesis-flag' % (subject.subject_code))
-    #         # subject.save()
-    #         if request.POST.get('%s-minor-flag' % (subject.subject_code)):
-    #             subject.minor_flag = True
-    #             subject.thesis_flag = False
-    #             print('%s Offered' % (subject.subject_code))
-    #         else:
-    #             subject.minor_flag = False
-
-    #         a = request.POST.get('room-STAT 2053')
-    #         print(a)
-    #         subject.save()
-    #     return redirect('settings-curriculum')
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
@@ -374,7 +358,6 @@ def curriculum_subject_table(request, pk):
     pprint(data)
     return HttpResponse(data, content_type='application/json')
 
-    return HttpResponse(subjects)
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser or u.is_staff )

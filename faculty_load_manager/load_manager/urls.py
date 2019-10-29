@@ -36,6 +36,9 @@ urlpatterns = [
     path('delete/faculty-load/<int:pk>', model_views.FacultyLoadDeleteView.as_view(), name='delete-faculty-load'),
 
     ##SEMESTER OFFERING
+    ## CURRICULUM
+    path('update/curriculum/<int:pk>', model_views.CurriculumUpdateView.as_view(), name='update-curriculum'),
+    path('delete/curriculum/<int:pk>', model_views.CurriculumDeleteView.as_view(), name='delete-curriculum'),
     # SUBJECT
     path('create/curriculum/subjects', model_views.SubjectCreateView.as_view(), name='create-curriculum-subject'),
     path('read/curriculum/subject/<int:pk>', model_views.SubjectReadView.as_view(), name='read-curriculum-subject'),

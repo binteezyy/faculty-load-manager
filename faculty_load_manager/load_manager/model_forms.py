@@ -17,6 +17,11 @@ class UserForm(BSModalForm):
         model = FacultyProfile
         exclude = ['faculty']
 
+class CurriculumForm(BSModalForm):
+    class Meta:
+        model = Curriculum
+        exclude = ['']
+
 class SectionOfferingProfessorForm(BSModalForm):
     class Meta:
         model = SectionOffering

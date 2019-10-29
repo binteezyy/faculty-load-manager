@@ -196,6 +196,23 @@ class FacultyLoadDeleteView(LoginRequiredMixin, UserPassesTestMixin,BSModalDelet
     def test_func(self):
         return self.request.user.is_superuser
 
+class CurriculumUpdateView(BSModalUpdateView):
+    model = Curriculum
+    template_name = 'load_manager/components/modals/update.html'
+    form_class = CurriculumForm
+    success_message = 'Success: Curriculum was updated.'
+    success_url = reverse_lazy('settings-curriculum')
+
+class CurriculumDeleteView(LoginRequiredMixin, UserPassesTestMixin,BSModalDeleteView):
+    model = Curriculum
+    template_name = 'load_manager/components/modals/delete.html'
+    context_object_name = 'curriculum'
+    success_message = 'Success: Settings was deleted.'
+    success_url = reverse_lazy('ssettings-curriculum')
+    def test_func(self):
+        return self.request.user.is_superuser
+
+
 class SubjectCreateView(LoginRequiredMixin, UserPassesTestMixin,BSModalCreateView):
     template_name = 'load_manager/components/modals/create.html'
     form_class = SettingsForm
