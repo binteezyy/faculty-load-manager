@@ -7,12 +7,22 @@ from django.conf import settings
 
 from load_manager.models import *
 
-from PIL                                        import Image
+from PIL import Image
+
+
 def SEMESTER_STATUS():
     return [(0, 'Not Opened'),
-              (1, 'Open'),
-              (2, 'Closed'),
-              (3, 'Locked')]
+            (1, 'Open'),
+            (2, 'Closed'),
+            (3, 'Locked')]
+
+
+class Ys_PreferredSchedule(models.Model):
+    preferred_time = models.ManyToManyField(PreferredTime, blank=True)
+    block_section = models.ForeignKey(BlockSection, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.block_section} | {self.preferred_time}'
 
 
 class EmailBackend(ModelBackend):
@@ -34,12 +44,13 @@ class Announcement(models.Model):
         (1, 'Notice'),
     ]
     title = models.CharField(max_length=100)
-    category = models.PositiveIntegerField(choices=CAT, default=1, validators=[MinValueValidator(0)])
+    category = models.PositiveIntegerField(
+        choices=CAT, default=1, validators=[MinValueValidator(0)])
     message = models.TextField()
     author = models.ForeignKey(
-            settings.AUTH_USER_MODEL,
-            on_delete=models.CASCADE,
-            )
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -53,6 +64,8 @@ class Announcement(models.Model):
     #     obj = super(Annoucements, self).save(*args, **kwargs)
     #     obj.author = request.user
     #     obj.save()
+
+
 class Setting(models.Model):
     school_year = models.ForeignKey(
         SchoolYear, on_delete=models.CASCADE, null=True)
@@ -62,7 +75,7 @@ class Setting(models.Model):
     ],
         null=True)
     first_curriculum = models.ForeignKey(
-        Curriculum, on_delete=models.CASCADE, null=True,blank=True, related_name='first_year_curriculum')
+        Curriculum, on_delete=models.CASCADE, null=True, blank=True, related_name='first_year_curriculum')
     second_curriculum = models.ForeignKey(
         Curriculum, on_delete=models.CASCADE, null=True, blank=True, related_name='second_year_curriculum')
     third_curriculum = models.ForeignKey(
@@ -79,7 +92,7 @@ class Setting(models.Model):
 
     current = models.BooleanField(default=False)
 
-    status = models.IntegerField(choices = SEMESTER_STATUS(), default = 0, validators=[
+    status = models.IntegerField(choices=SEMESTER_STATUS(), default=0, validators=[
         MaxValueValidator(3),
         MinValueValidator(0)
     ])
@@ -107,9 +120,11 @@ class Setting(models.Model):
     #     else:
     #         super(Setting, self).delete()
 
+
 class UserProfile(models.Model):
-    user   = models.OneToOneField(User,on_delete=models.CASCADE)
-    avatar = models.ImageField(default='default.jpg', upload_to='profile_pics',null=True, blank=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    avatar = models.ImageField(
+        default='default.jpg', upload_to='profile_pics', null=True, blank=True)
 
     def __str__(self):
         return f'{self.user}'
@@ -124,6 +139,7 @@ class UserProfile(models.Model):
             img.thumbnail(output_size)
             img.save(self.avatar.path)
 
+
 class FacultyProfile(models.Model):
     F_TYPE = [
         (0, 'Part-time'),
@@ -136,10 +152,12 @@ class FacultyProfile(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
     )
-    faculty_type = models.PositiveIntegerField(choices=F_TYPE, default=1, validators=[MinValueValidator(0)])
+    faculty_type = models.PositiveIntegerField(
+        choices=F_TYPE, default=1, validators=[MinValueValidator(0)])
     regular_hours = models.PositiveIntegerField(
         default=1, validators=[MinValueValidator(0)])
     part_time_hours = models.PositiveIntegerField(
         default=1, validators=[MinValueValidator(0)])
+
     def __str__(self):
         return f'{self.faculty} {self.get_faculty_type_display()}'

@@ -568,31 +568,8 @@ def section_offering(request):
 def section_offering_table(request):
     import json
     from pprint import pprint
-    settings = Setting.objects.get(current=True)
-    semester = str(settings.semester)
-    start_year = str(settings.school_year.start_year)
-    end_year = str(settings.school_year.end_year)
-
-    try:
-        start = Year.objects.get(year=start_year)
-    except Year.DoesNotExist:
-        new_year = Year(year=start_year)
-        new_year.save()
-        start = Year.objects.get(year=start_year)
-
-    try:
-        end = Year.objects.get(year=end_year)
-    except Year.DoesNotExist:
-        new_year = Year(year=end_year)
-        new_year.save()
-        end  = Year.objects.get(year=end_year)
-
-    try:
-        sy = SchoolYear.objects.get(start_year=start, end_year=end)
-    except SchoolYear.DoesNotExist:
-        new_sy = SchoolYear(start_year=start, end_year=end)
-        new_sy.save()
-        sy = SchoolYear.objects.get(start_year=start, end_year=end)
+    semester = str(Setting.objects.get(current=True).semester)
+    sy = get_school_year()
 
     secOffs = SectionOffering.objects.filter(school_year=sy, semester=semester)
 
@@ -639,31 +616,8 @@ def faculty_load(request):
 def faculty_load_table(request):
     import json
     from pprint import pprint
-    settings = Setting.objects.get(current=True)
-    semester = str(settings.semester)
-    start_year = str(settings.school_year.start_year)
-    end_year = str(settings.school_year.end_year)
-
-    try:
-        start = Year.objects.get(year=start_year)
-    except Year.DoesNotExist:
-        new_year = Year(year=start_year)
-        new_year.save()
-        start = Year.objects.get(year=start_year)
-
-    try:
-        end = Year.objects.get(year=end_year)
-    except Year.DoesNotExist:
-        new_year = Year(year=end_year)
-        new_year.save()
-        end  = Year.objects.get(year=end_year)
-
-    try:
-        sy = SchoolYear.objects.get(start_year=start, end_year=end)
-    except SchoolYear.DoesNotExist:
-        new_sy = SchoolYear(start_year=start, end_year=end)
-        new_sy.save()
-        sy = SchoolYear.objects.get(start_year=start, end_year=end)
+    semester = str(Setting.objects.get(current=True).semester)
+    sy = get_school_year()
 
     fls = FacultyLoad.objects.filter(subject__school_year=sy, subject__semester=semester)
 
@@ -723,32 +677,8 @@ def rooms(request):
 def room_table(request):
     import json
     from pprint import pprint
-    settings = Setting.objects.get(current=True)
-    semester = str(settings.semester)
-    start_year = str(settings.school_year.start_year)
-    end_year = str(settings.school_year.end_year)
-    rooms = Room.objects.all()
-
-    try:
-        start = Year.objects.get(year=start_year)
-    except Year.DoesNotExist:
-        new_year = Year(year=start_year)
-        new_year.save()
-        start = Year.objects.get(year=start_year)
-
-    try:
-        end = Year.objects.get(year=end_year)
-    except Year.DoesNotExist:
-        new_year = Year(year=end_year)
-        new_year.save()
-        end  = Year.objects.get(year=end_year)
-
-    try:
-        sy = SchoolYear.objects.get(start_year=start, end_year=end)
-    except SchoolYear.DoesNotExist:
-        new_sy = SchoolYear(start_year=start, end_year=end)
-        new_sy.save()
-        sy = SchoolYear.objects.get(start_year=start, end_year=end)
+    semester = str(Setting.objects.get(current=True).semester)
+    sy = get_school_year()
 
     fls = FacultyLoad.objects.filter(subject__school_year=sy, subject__semester=semester)
 
@@ -913,31 +843,8 @@ from django.db.models import Q
 @login_required
 @user_passes_test(lambda u: u.is_superuser or u.is_staff )
 def generate_semester_offering(request):
-    settings = Setting.objects.get(current=True)
-    semester = str(settings.semester)
-    start_year = str(settings.school_year.start_year)
-    end_year = str(settings.school_year.end_year)
-
-    try:
-        start = Year.objects.get(year=start_year)
-    except Year.DoesNotExist:
-        new_year = Year(year=start_year)
-        new_year.save()
-        start = Year.objects.get(year=start_year)
-
-    try:
-        end = Year.objects.get(year=end_year)
-    except Year.DoesNotExist:
-        new_year = Year(year=end_year)
-        new_year.save()
-        end  = Year.objects.get(year=end_year)
-
-    try:
-        sy = SchoolYear.objects.get(start_year=start, end_year=end)
-    except SchoolYear.DoesNotExist:
-        new_sy = SchoolYear(start_year=start, end_year=end)
-        new_sy.save()
-        sy = SchoolYear.objects.get(start_year=start, end_year=end)
+    semester = str(Setting.objects.get(current=True).semester)
+    sy = get_school_year()
 
     try:
         semOff = SemesterOffering.objects.get(school_year=sy, semester=semester)
@@ -992,31 +899,8 @@ def generate_semester_offering(request):
 @login_required
 @user_passes_test(lambda u: u.is_superuser or u.is_staff )
 def generate_section_offering(request):
-    settings = Setting.objects.get(current=True)
-    semester = str(settings.semester)
-    start_year = str(settings.school_year.start_year)
-    end_year = str(settings.school_year.end_year)
-
-    try:
-        start = Year.objects.get(year=start_year)
-    except Year.DoesNotExist:
-        new_year = Year(year=start_year)
-        new_year.save()
-        start = Year.objects.get(year=start_year)
-
-    try:
-        end = Year.objects.get(year=end_year)
-    except Year.DoesNotExist:
-        new_year = Year(year=end_year)
-        new_year.save()
-        end  = Year.objects.get(year=end_year)
-
-    try:
-        sy = SchoolYear.objects.get(start_year=start, end_year=end)
-    except SchoolYear.DoesNotExist:
-        new_sy = SchoolYear(start_year=start, end_year=end)
-        new_sy.save()
-        sy = SchoolYear.objects.get(start_year=start, end_year=end)
+    semester = str(Setting.objects.get(current=True).semester)
+    sy = get_school_year()
 
     try:
         # fifth_count = BlockSection.objects.filter(school_year=sy, semester=semester, year_level=5).count()
@@ -1049,7 +933,7 @@ def generate_section_offering(request):
         first_count = 0
     print(f'first year - {first_count}')
 
-    # generate block sections
+    # generate block sections and bs_preferredsched
     for i in range(fifth_count):
         try:
             bs = BlockSection.objects.get(school_year=sy, semester=semester, year_level=5, section=str(int(i+1)))
@@ -1057,6 +941,12 @@ def generate_section_offering(request):
             bs = BlockSection(school_year=sy, semester=semester, year_level=5, section=str(int(i+1)))
             bs.save()
         print(bs)
+        try:
+            bs_ps = Ys_PreferredSchedule.objects.get(block_section=bs)
+        except Ys_PreferredSchedule.DoesNotExist:
+            bs_ps = Ys_PreferredSchedule(block_section=bs)
+            bs_ps.save()
+        print(bs_ps)
 
     for i in range(fourth_count):
         try:
@@ -1065,6 +955,12 @@ def generate_section_offering(request):
             bs = BlockSection(school_year=sy, semester=semester, year_level=4, section=str(int(i+1)))
             bs.save()
         print(bs)
+        try:
+            bs_ps = Ys_PreferredSchedule.objects.get(block_section=bs)
+        except Ys_PreferredSchedule.DoesNotExist:
+            bs_ps = Ys_PreferredSchedule(block_section=bs)
+            bs_ps.save()
+        print(bs_ps)
 
     for i in range(third_count):
         try:
@@ -1073,6 +969,12 @@ def generate_section_offering(request):
             bs = BlockSection(school_year=sy, semester=semester, year_level=3, section=str(int(i+1)))
             bs.save()
         print(bs)
+        try:
+            bs_ps = Ys_PreferredSchedule.objects.get(block_section=bs)
+        except Ys_PreferredSchedule.DoesNotExist:
+            bs_ps = Ys_PreferredSchedule(block_section=bs)
+            bs_ps.save()
+        print(bs_ps)
 
     for i in range(second_count):
         try:
@@ -1081,6 +983,12 @@ def generate_section_offering(request):
             bs = BlockSection(school_year=sy, semester=semester, year_level=2, section=str(int(i+1)))
             bs.save()
         print(bs)
+        try:
+            bs_ps = Ys_PreferredSchedule.objects.get(block_section=bs)
+        except Ys_PreferredSchedule.DoesNotExist:
+            bs_ps = Ys_PreferredSchedule(block_section=bs)
+            bs_ps.save()
+        print(bs_ps)
 
     for i in range(first_count):
         try:
@@ -1089,6 +997,12 @@ def generate_section_offering(request):
             bs = BlockSection(school_year=sy, semester=semester, year_level=1, section=str(int(i+1)))
             bs.save()
         print(bs)
+        try:
+            bs_ps = Ys_PreferredSchedule.objects.get(block_section=bs)
+        except Ys_PreferredSchedule.DoesNotExist:
+            bs_ps = Ys_PreferredSchedule(block_section=bs)
+            bs_ps.save()
+        print(bs_ps)
 
     semOff = SemesterOffering.objects.get(school_year=sy, semester=semester)
     # first_s = Subject.objects.filter(year_level=1, semester=semester, curriculum=first_c).filter(
@@ -1176,6 +1090,114 @@ def generate_section_offering(request):
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser or u.is_staff )
+def generate_faculty_load(request):
+    semester = str(Setting.objects.get(current=True).semester)
+    sy = get_school_year()
+
+    # Loop through section offering
+    secOffs = SectionOffering.objects.filter(school_year=sy, semester=semester)
+    # Check secOff.subject lab hours, lec hours
+    for secOff in secOffs:
+        lab_hours = secOff.subject.lab_hours
+        lec_hours = secOff.subject.lec_hours
+        print(f'{secOff.subject} {lab_hours} + {lec_hours}')
+    # If > 0 lab hours and >= 5 lab hrs - lab1 labhrs//2+1 lab2 lab//hrs+2 - lab1
+    # elif >0 lab hours < 5 lab1 - labhrs
+    # create FL
+        if lab_hours > 0 and lab_hours >= 5:
+            try:
+                facload = FacultyLoad.objects.get(subject=secOff, load_category=0)
+            except FacultyLoad.DoesNotExist:
+                facload = FacultyLoad(subject=secOff, load_category=0)
+                facload.save()
+            print(facload)
+            try:
+                facload = FacultyLoad.objects.get(subject=secOff, load_category=1)
+            except FacultyLoad.DoesNotExist:
+                facload = FacultyLoad(subject=secOff, load_category=1)
+                facload.save()
+            print(facload)
+        elif lab_hours > 0 and lab_hours < 5:
+            try:
+                facload = FacultyLoad.objects.get(subject=secOff, load_category=0)
+            except FacultyLoad.DoesNotExist:
+                facload = FacultyLoad(subject=secOff, load_category=0)
+                facload.save()
+            print(facload)
+    # If > 0 lec hours and >= 5 lec hrs - lec1 lechrs//2+1 lec2 lec//hrs+2 - lec1
+    # elif >0 lec hours < 5 lec1 - lechrs
+        if lec_hours > 0 and lec_hours >= 5:
+            try:
+                facload = FacultyLoad.objects.get(subject=secOff, load_category=2)
+            except FacultyLoad.DoesNotExist:
+                facload = FacultyLoad(subject=secOff, load_category=2)
+                facload.save()
+            print(facload)
+            try:
+                facload = FacultyLoad.objects.get(subject=secOff, load_category=3)
+            except FacultyLoad.DoesNotExist:
+                facload = FacultyLoad(subject=secOff, load_category=3)
+                facload.save()
+            print(facload)
+        elif lec_hours > 0 and lec_hours < 5:
+            try:
+                facload = FacultyLoad.objects.get(subject=secOff, load_category=2)
+            except FacultyLoad.DoesNotExist:
+                facload = FacultyLoad(subject=secOff, load_category=2)
+                facload.save()
+            print(facload)
+    # create FL
+    settings.status = 1
+    settings.save()
+    return redirect('settings')
+
+def get_school_year():
+    settings = Setting.objects.get(current=True)
+    start_year = str(settings.school_year.start_year)
+    end_year = str(settings.school_year.end_year)
+
+    try:
+        start = Year.objects.get(year=start_year)
+    except Year.DoesNotExist:
+        new_year = Year(year=start_year)
+        new_year.save()
+        start = Year.objects.get(year=start_year)
+
+    try:
+        end = Year.objects.get(year=end_year)
+    except Year.DoesNotExist:
+        new_year = Year(year=end_year)
+        new_year.save()
+        end  = Year.objects.get(year=end_year)
+
+    try:
+        sy = SchoolYear.objects.get(start_year=start, end_year=end)
+    except SchoolYear.DoesNotExist:
+        new_sy = SchoolYear(start_year=start, end_year=end)
+        new_sy.save()
+        sy = SchoolYear.objects.get(start_year=start, end_year=end)
+    
+    return sy
+    
+@login_required
+@user_passes_test(lambda u: u.is_superuser or u.is_staff )
+def sched_faculty_load(request):
+    ## Loop through section offering, this will consist of 2 faculty loads
+    ## Get first faculty load
+    ## Check if lab, lecture, or elecs_lab and how many hours.
+    ## Loop though time slots. Check if available for section and suits section's preferred sched
+    ## Loop through LoadSchedule (room + timeslot) and select available room
+    ## Allocate LoadSchedule
+    ## Get second faculty load and consider mon-thurs tues-fri wed-sat pairing (this should be strict to ys_preferred sched as well)
+    ## Check if lab, lecture, or elecs_lab and how many hours.
+    ## Loop though time slots. Check if available for section and suits section's preferred sched
+    ## Loop through LoadSchedule (room + timeslot) and select available room
+    ## Allocate LoadSchedule
+    sy = get_school_year()
+    return HttpResponse(sy)
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser or u.is_staff )
 def allocate_section_offering(request):
     settings = Setting.objects.get(current=True)
     semester = str(settings.semester)
@@ -1254,92 +1276,6 @@ def allocate_section_offering(request):
     settings.status = 2
     settings.save()
     return redirect('section-offering')
-
-@login_required
-@user_passes_test(lambda u: u.is_superuser or u.is_staff )
-def generate_faculty_load(request):
-    settings = Setting.objects.get(current=True)
-    semester = str(settings.semester)
-    start_year = str(settings.school_year.start_year)
-    end_year = str(settings.school_year.end_year)
-
-    try:
-        start = Year.objects.get(year=start_year)
-    except Year.DoesNotExist:
-        new_year = Year(year=start_year)
-        new_year.save()
-        start = Year.objects.get(year=start_year)
-
-    try:
-        end = Year.objects.get(year=end_year)
-    except Year.DoesNotExist:
-        new_year = Year(year=end_year)
-        new_year.save()
-        end  = Year.objects.get(year=end_year)
-
-    try:
-        sy = SchoolYear.objects.get(start_year=start, end_year=end)
-    except SchoolYear.DoesNotExist:
-        new_sy = SchoolYear(start_year=start, end_year=end)
-        new_sy.save()
-        sy = SchoolYear.objects.get(start_year=start, end_year=end)
-
-    # Loop through section offering
-    secOffs = SectionOffering.objects.filter(school_year=sy, semester=semester)
-    # Check secOff.subject lab hours, lec hours
-    for secOff in secOffs:
-        lab_hours = secOff.subject.lab_hours
-        lec_hours = secOff.subject.lec_hours
-        print(f'{secOff.subject} {lab_hours} + {lec_hours}')
-    # If > 0 lab hours and >= 5 lab hrs - lab1 labhrs//2+1 lab2 lab//hrs+2 - lab1
-    # elif >0 lab hours < 5 lab1 - labhrs
-    # create FL
-        if lab_hours > 0 and lab_hours >= 5:
-            try:
-                facload = FacultyLoad.objects.get(subject=secOff, load_category=0)
-            except FacultyLoad.DoesNotExist:
-                facload = FacultyLoad(subject=secOff, load_category=0)
-                facload.save()
-            print(facload)
-            try:
-                facload = FacultyLoad.objects.get(subject=secOff, load_category=1)
-            except FacultyLoad.DoesNotExist:
-                facload = FacultyLoad(subject=secOff, load_category=1)
-                facload.save()
-            print(facload)
-        elif lab_hours > 0 and lab_hours < 5:
-            try:
-                facload = FacultyLoad.objects.get(subject=secOff, load_category=0)
-            except FacultyLoad.DoesNotExist:
-                facload = FacultyLoad(subject=secOff, load_category=0)
-                facload.save()
-            print(facload)
-    # If > 0 lec hours and >= 5 lec hrs - lec1 lechrs//2+1 lec2 lec//hrs+2 - lec1
-    # elif >0 lec hours < 5 lec1 - lechrs
-        if lec_hours > 0 and lec_hours >= 5:
-            try:
-                facload = FacultyLoad.objects.get(subject=secOff, load_category=2)
-            except FacultyLoad.DoesNotExist:
-                facload = FacultyLoad(subject=secOff, load_category=2)
-                facload.save()
-            print(facload)
-            try:
-                facload = FacultyLoad.objects.get(subject=secOff, load_category=3)
-            except FacultyLoad.DoesNotExist:
-                facload = FacultyLoad(subject=secOff, load_category=3)
-                facload.save()
-            print(facload)
-        elif lec_hours > 0 and lec_hours < 5:
-            try:
-                facload = FacultyLoad.objects.get(subject=secOff, load_category=2)
-            except FacultyLoad.DoesNotExist:
-                facload = FacultyLoad(subject=secOff, load_category=2)
-                facload.save()
-            print(facload)
-    # create FL
-    settings.status = 1
-    settings.save()
-    return redirect('settings')
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser or u.is_staff )
