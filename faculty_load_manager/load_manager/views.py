@@ -677,8 +677,32 @@ def rooms(request):
 def room_table(request):
     import json
     from pprint import pprint
-    semester = str(Setting.objects.get(current=True).semester)
-    sy = get_school_year()
+    settings = Setting.objects.get(current=True)
+    semester = str(settings.semester)
+    start_year = str(settings.school_year.start_year)
+    end_year = str(settings.school_year.end_year)
+    rooms = Room.objects.all()
+
+    try:
+        start = Year.objects.get(year=start_year)
+    except Year.DoesNotExist:
+        new_year = Year(year=start_year)
+        new_year.save()
+        start = Year.objects.get(year=start_year)
+
+    try:
+        end = Year.objects.get(year=end_year)
+    except Year.DoesNotExist:
+        new_year = Year(year=end_year)
+        new_year.save()
+        end  = Year.objects.get(year=end_year)
+
+    try:
+        sy = SchoolYear.objects.get(start_year=start, end_year=end)
+    except SchoolYear.DoesNotExist:
+        new_sy = SchoolYear(start_year=start, end_year=end)
+        new_sy.save()
+        sy = SchoolYear.objects.get(start_year=start, end_year=end)
 
     fls = FacultyLoad.objects.filter(subject__school_year=sy, subject__semester=semester)
 
@@ -1176,9 +1200,9 @@ def get_school_year():
         new_sy = SchoolYear(start_year=start, end_year=end)
         new_sy.save()
         sy = SchoolYear.objects.get(start_year=start, end_year=end)
-    
+
     return sy
-    
+
 @login_required
 @user_passes_test(lambda u: u.is_superuser or u.is_staff )
 def sched_faculty_load(request):
