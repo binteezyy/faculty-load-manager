@@ -88,6 +88,32 @@ class SettingsDeleteView(LoginRequiredMixin, UserPassesTestMixin,BSModalDeleteVi
     def test_func(self):
         return self.request.user.is_superuser
 
+#Room
+class RoomCreateView(LoginRequiredMixin, UserPassesTestMixin,BSModalCreateView):
+    template_name = 'load_manager/components/modals/create.html'
+    form_class = RoomForm
+    model = Room
+    model_type = 'room'
+    success_message = 'Success: Room was created.'
+    success_url = reverse_lazy('room')
+
+    def test_func(self):
+        return self.request.user.is_superuser
+class RoomDeleteView(LoginRequiredMixin, UserPassesTestMixin,BSModalDeleteView):
+    model = Room
+    template_name = 'load_manager/components/modals/delete.html'
+    context_object_name = 'room'
+    success_message = 'Success: Room was deleted.'
+    success_url = reverse_lazy('room')
+    def test_func(self):
+        return self.request.user.is_superuser
+
+class RoomUpdateView(BSModalUpdateView):
+    model = Room
+    template_name = 'load_manager/components/modals/update.html'
+    form_class = RoomForm
+    success_message = 'Success: Book was updated.'
+    success_url = reverse_lazy('room')
 # SettingsFacultyPrefer
 class SettingsFacultyPreferReadView(LoginRequiredMixin, UserPassesTestMixin,BSModalReadView):
     model = PreferredSchedule

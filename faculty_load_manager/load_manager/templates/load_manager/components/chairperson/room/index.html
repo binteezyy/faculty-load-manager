@@ -18,27 +18,44 @@
      "dataSrc":'',
      "url": "{% url 'room-table' %}",
     },
+    "dom": "<'row'<'col-md-4'l><'col-md-8'<'row float-right'<'col-6 'Bf><'col-6 create-room'>>>>" +
+          "<'row'<'col-md-6'><'col-md-6'>>" +
+          "<'row'<'col-md-12't>><'row'<'col-md-12'ip>>",
     "initComplete": function(settings, json) {
+      $("div.create-room").html('<button type="button" id="create-room" class="float-right btn btn-s btn-success btn-raised" name="button">Create <i class="fas fa-plus"></i></button>');
+      $(".create-room").modalForm({formURL: "{% url 'create-room' %}"});
       $(".read-room").each(function () {
           $(this).modalForm({formURL: $(this).data('id')});
         });
+      $(".delete-room").each(function () {
+        $(this).modalForm({formURL: $(this).data('id')});
+      });
+      $(".update-room").each(function () {
+        $(this).modalForm({formURL: $(this).data('id')});
+      });
     },
     "columnDefs": [
-      { "className": 'col-name',
+      { "className": 'col-name text-center',
         "targets":   0,
         "data": "fields.name",
         },
-      { "className": 'col-category',
+      { "className": 'col-category text-center',
         "targets":   1,
         "data": "fields.category",
         },
-      { "className": 'col-details',
+      { "className": 'col-details text-center',
         "targets":   2,
         "data": "fields.id",
         render:function(data, type, row)
           {
-            return '<button type="button" class="read-room btn btn-raised btn-sm btn-primary m-1" data-id="/read/room/'+data+'">'+
-              '<span class="fa fa-eye"></span></button>'
+            let render = '<button type="button" class="read-room btn btn-raised btn-sm btn-primary m-1" data-id="/read/room/'+data+'">'+
+              '<span class="fa fa-eye"></span></button>' +
+              '<button type="button" class="delete-room btn btn-sm btn-raised btn-warning m-1" data-id="/delete/room/'+data+'">'+
+              '<span class="fa fa-trash"></span></button>'+
+              '<button type="button" class="update-room btn btn-sm btn-raised btn-success m-1" data-id="/update/room/'+data+'">'+
+                '<span class="fa fa-edit"></span></button>';
+            return render
+
           },
       },
   ]});
@@ -54,10 +71,10 @@
       <div class="table-responsive p-2">
         <table id="room-table" class="table table-bordered table-hover" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info">
          <thead >
-           <tr role="row" class="text-center">
-             <th>Room</th>
-             <th style="width:10%">Category</th>
-             <th style="width:10%">Action</th>
+           <tr role="row">
+             <th style="width:5%" class="text-center">Room</th>
+             <th style="width:10%" class="text-center">Category</th>
+             <th style="width:3%"  class="text-center">Action</th>
            </tr>
          </thead>
          <tbody></tbody>

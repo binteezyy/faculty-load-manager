@@ -66,7 +66,13 @@ urlpatterns = [
          model_views.SubjectDeleteView.as_view(), name='delete-curriculum-subject'),
 
     # ROOM
+    path('create/room', model_views.RoomCreateView.as_view(),
+         name='create-room'),
     path('read/room/<int:pk>', model_views.RoomReadView.as_view(), name='read-room'),
+    path('delete/room/<int:pk>',
+         model_views.RoomDeleteView.as_view(), name='delete-room'),
+    path('update/room/<int:pk>',
+         model_views.RoomUpdateView.as_view(), name='update-room'),
 
     # SETTINGS
     path('create/settings', model_views.SettingsCreateView.as_view(),
