@@ -146,8 +146,10 @@ urlpatterns = [
     # ALGO
     path('chairperson/sched-fl', views.sched_faculty_load,
          name='sched-faculty-load'),
+    path('chairperson/clear-fl', views.clear_fl, name='clear-fl'),
     path('chairperson/allocate-so', views.allocate_section_offering,
          name='allocate_section_offering'),
     path('chairperson/allocate-fl', views.allocate_faculty_load,
          name='allocation_faculty_load'),
+
 ]
