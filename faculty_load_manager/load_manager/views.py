@@ -1303,12 +1303,31 @@ def sched_faculty_load(request):
             first_fl.load_schedule = load_schedule
             first_fl.save()
             print(load_schedule)
-            print(f'LOAD ASSIGNED TIME {fl_assigned_time}')
+            print(f'LOAD ASSIGNED TIME {list(fl_assigned_time)}')
 
         ## Allocate LoadSchedule time
         ## Loop through LoadSchedule (room + timeslot) and select available room
             rooms = Room.objects.filter(room_category=secOff.subject.room_category)
             print(f'ROOMS {rooms}')
+            for room in rooms:
+                print(f'ROOM {room.room_name}')
+                fl_room_occupants = FacultyLoad.objects.filter(load_schedule__room=room)
+                print(f'ROOM OCCUPANTS {fl_room_occupants}')
+                check_sched = []
+                for fl_room_occupant in fl_room_occupants:
+                    check_sched += list(fl_room_occupant.load_schedule.preferred_time.all())
+                print(f'TIME OCCUPIED {check_sched}')
+
+                if bool([item for item in list(fl_assigned_time) if item in check_sched]):
+                    print('NEXT ROOM')
+                else:
+                    print(f'{bool([item for item in list(fl_assigned_time) if item in check_sched])}')
+                    load = first_fl.load_schedule
+                    load.room = room
+                    load.save()
+                    print(f'ASSIGNED TO ROOM {room.room_name}')
+                    break
+
 
         ## Get second faculty load and consider mon-thurs tues-fri wed-sat pairing (this should be strict to ys_preferred sched as well)
             if second_fl:
@@ -1367,7 +1386,7 @@ def sched_faculty_load(request):
                     x = 5
                 elif first_fl_day == 6:
                     x = 6
-                print(f'2nd FL day {x}')
+                #print(f'2nd FL day {x}')
 
             ## Loop though time slots. Check if available for section and suits section's preferred sched. Check if same subject is parallel
                 for i in range(x, 5):
@@ -1388,6 +1407,7 @@ def sched_faculty_load(request):
                         print(f'{bool([item for item in check_time if item in ss_assigned_time_list])} - {not bool(all(item in spt_list for item in check_time))} - {bool([item for item in check_time if item in sal_list])}')
                         break #break for i
 
+            ## Allocate LoadSchedule time
                 fl2_assigned_time = PreferredTime.objects.filter(pk__in=check_time_ids)
                 load_schedule2 = LoadSchedule(room=None)
                 load_schedule2.save()
@@ -1397,10 +1417,28 @@ def sched_faculty_load(request):
                 second_fl.save()
                 print(load_schedule2)
                 print(f'LOAD ASSIGNED TIME {fl2_assigned_time}')
-            ## Allocate LoadSchedule time
+            
             ## Loop through LoadSchedule (room + timeslot) and select available room
                 rooms = Room.objects.filter(room_category=secOff.subject.room_category)
                 print(f'ROOMS {rooms}')
+                for room in rooms:
+                    print(f'ROOM {room.room_name}')
+                    fl_room_occupants = FacultyLoad.objects.filter(load_schedule__room=room)
+                    print(f'ROOM OCCUPANTS {fl_room_occupants}')
+                    check_sched = []
+                    for fl_room_occupant in fl_room_occupants:
+                        check_sched += list(fl_room_occupant.load_schedule.preferred_time.all())
+                    print(f'TIME OCCUPIED {check_sched}')
+
+                    if bool([item for item in list(fl2_assigned_time) if item in check_sched]):
+                        print('NEXT ROOM')
+                    else:
+                        print(f'{bool([item for item in list(fl2_assigned_time) if item in check_sched])}')
+                        load = second_fl.load_schedule
+                        load.room = room
+                        load.save()
+                        print(f'ASSIGNED TO ROOM {room.room_name}')
+                        break
         else:
             print(f'{secOff} already assigned')
         print('=====END=====')
