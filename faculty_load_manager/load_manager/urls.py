@@ -142,11 +142,13 @@ urlpatterns = [
     path('so/', views.generate_section_offering,
          name='generate_section_offering'),
     path('fl/', views.generate_faculty_load, name='generate_faculty_load'),
+    path('chairperson/clear-fl', views.clear_fl, name='clear-fl'),
+    path('chairperson/clear-prof', views.clear_prof, name='clear-prof'),
 
     # ALGO
     path('chairperson/sched-fl', views.sched_faculty_load,
          name='sched-faculty-load'),
-    path('chairperson/clear-fl', views.clear_fl, name='clear-fl'),
+    path('chairperson/assign-prof', views.assign_prof, name='assign-prof'),
     path('chairperson/allocate-so', views.allocate_section_offering,
          name='allocate_section_offering'),
     path('chairperson/allocate-fl', views.allocate_faculty_load,

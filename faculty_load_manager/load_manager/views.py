@@ -1442,16 +1442,100 @@ def sched_faculty_load(request):
         else:
             print(f'{secOff} already assigned')
         print('=====END=====')
-    return HttpResponse(first_fl)
+    return redirect('faculty-load')
 
+@login_required
+@user_passes_test(lambda u: u.is_superuser or u.is_staff )
+def assign_prof(request):
+    settings = Setting.objects.get(current=True)
+    sy = get_school_year()
+    semester = str(Setting.objects.get(current=True).semester)
+
+    ## Query section offering based on settings, excluding already assigned
+    ## and sy descending by year level and ascending by subject code, then query faculty load
+    secOff_qs =  SectionOffering.objects.filter(school_year=sy, semester=semester).exclude(professor__isnull=False).order_by('-subject__year_level', 'subject__subject_code')
+    for secOff in secOff_qs:
+        fls = FacultyLoad.objects.filter(subject=secOff)
+        subject_hours = secOff.subject.lab_hours + secOff.subject.lec_hours
+        #print(f'FLS {fls}')
+
+    ## Create list of preferred times of section offering
+        fls_list = []
+        for fl in fls:
+            if fl.load_schedule:
+                fls_list += list(fl.load_schedule.preferred_time.all())
+
+    ## Query profs who prefers this section offering 
+    ## - first come first server descending based on Faculty Priority Rule
+        user_list = []
+        prefScheds = PreferredSchedule.objects.filter(school_year=sy, semester=semester, preferred_subject=secOff.subject)
+        for prefSched in prefScheds:
+            user_list.append(prefSched.user)
+
+        profs = FacultyProfile.objects.filter(faculty__in=user_list).order_by('-faculty_type')
+        if profs:
+            for prof in profs:
+                print("===START===")
+                print(f"SECTION OFFERING {secOff}")
+                #print(f'FLS_LIST {fls_list}')
+                print(f'PROFESSOR {prof.faculty} PREFERS {secOff.subject}')
+
+    ## Check if already allocated to this type of subject, next if yes.
+                secOff_prof_exists = SectionOffering.objects.filter(school_year=sy, semester=semester, professor=prof.faculty, subject=secOff.subject)
+ 
+    ## Check prof remaining hours, next if no remaining hours.
+                secOff_prof_qs = SectionOffering.objects.filter(school_year=sy, semester=semester, professor=prof.faculty)
+                allowed_hours = prof.regular_hours + prof.part_time_hours
+                allocated_hours = 0
+                subject_hours = secOff.subject.lab_hours + secOff.subject.lec_hours
+                #print(secOff_prof_qs)
+                for secOff_prof in secOff_prof_qs:
+                    allocated_hours += secOff_prof.subject.lec_hours + secOff_prof.subject.lec_hours
+
+                print(f'{prof.faculty} total of {allocated_hours} allocated hours')
+                print(f'{prof.faculty} total of {allowed_hours} allowed hours')
+
+    ## Check if prof preferred sched matches section offering's faculty load's preferred sched and if it is available
+                prof_preferred_time = PreferredSchedule.objects.get(user=prof.faculty, school_year=sy, semester=semester).preferred_time.all()
+                ppt_list = list(prof_preferred_time)
+                #print(f'PROF PREFERRED {prof_preferred_time}')
+                prof_assigned_load = FacultyLoad.objects.filter(subject__professor=prof.faculty)
+                pat_list = []
+                for pat in prof_assigned_load:
+                    if pat.load_schedule:
+                        pat_list += list(pat.load_schedule.preferred_time.all())
+                #print(f'ALREADY TIME {pat_list}')
+                #print(f'{bool([item for item in fls_list if item in ppt_list])}')
+                print(f'{not bool(secOff_prof_exists)} - {bool(allocated_hours + subject_hours <= allowed_hours)} - {bool(all(item in ppt_list for item in fls_list))} - {not bool([item for item in fls_list if item in pat_list])}' )
+                if not bool(secOff_prof_exists) and bool(allocated_hours + subject_hours <= allowed_hours) and bool(all(item in ppt_list for item in fls_list)) and not bool([item for item in fls_list if item in pat_list]):
+                    secOff.professor = prof.faculty
+                    secOff.save()
+                    print(f'ALLOCATED TO {prof.faculty}')
+                    break #break for prof
+                else:
+                    print ('NEXT PROF')
+                print("===END===")
+    return HttpResponse('assign prof')
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser or u.is_staff )
 def clear_fl(request):
     fls = FacultyLoad.objects.all()
     for fl in fls:
         fl.load_schedule = None
         fl.save()
         print(fl.load_schedule)
-    return HttpResponse("cleared")
+    return HttpResponse("cleared sched")
 
+@login_required
+@user_passes_test(lambda u: u.is_superuser or u.is_staff )
+def clear_prof(request):
+    secOffs = SectionOffering.objects.all()
+    for secOff in secOffs:
+        secOff.professor = None
+        secOff.save()
+        print(secOff.professor)
+    return HttpResponse("cleared prof")
 @login_required
 @user_passes_test(lambda u: u.is_superuser or u.is_staff )
 def allocate_section_offering(request):
