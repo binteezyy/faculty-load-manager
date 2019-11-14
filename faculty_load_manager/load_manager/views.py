@@ -1515,7 +1515,7 @@ def assign_prof(request):
                 else:
                     print ('NEXT PROF')
                 print("===END===")
-    return HttpResponse('assign prof')
+    return redirect('faculty-load')
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser or u.is_staff )
