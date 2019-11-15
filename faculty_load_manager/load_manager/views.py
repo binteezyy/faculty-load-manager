@@ -716,17 +716,12 @@ def sections(request):
         'viewtype': 'sections',
         'settings': current_settings,
     }
-    from pprint import pprint
-    pprint(context)
-    # settings = Setting.objects.get_or_create()
-
+    
     return render(request, 'load_manager/components/chairperson/sections/index.html', context)
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def section_table(request, q):
-    import json
-    from pprint import pprint
     settings = Setting.objects.get(current=True)
     semester = str(settings.semester)
     start_year = str(settings.school_year.start_year)
@@ -765,7 +760,6 @@ def section_table(request, q):
         }
         data.append(x)
     data = json.dumps(data)
-    pprint(data)
     return HttpResponse(data, content_type='application/json')
 
 from django.core.files.storage import FileSystemStorage
@@ -1326,7 +1320,7 @@ def sched_faculty_load(request):
             print(f'{subjhr} hrs')
             divisions = int(subjhr/0.5)
             print(str(divisions) + ' divisions')
-        
+
         ## Loop though time slots. Check if available for section and suits section's preferred sched. Check if same subject is parallel
             section_preferred_time = Ys_PreferredSchedule.objects.get(block_section=secOff.block_section).preferred_time.all()
             spt_list = list(section_preferred_time)

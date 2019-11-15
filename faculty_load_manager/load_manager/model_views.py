@@ -138,42 +138,55 @@ class SectionsDeleteView(LoginRequiredMixin, UserPassesTestMixin,BSModalDeleteVi
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser or u.is_staff)
+def SectionsUpdateAll(request,pk):
+    os.system('cls')
+    block_prefer = Ys_PreferredSchedule.objects.get(pk=pk)
+    selected = request.POST.getlist('timedays')
+    print('BLOCK PREFERENCE', block_prefer)
+    setting = Setting.objects.get(current=True)
+    current_user = request.user
+
+    block_prefer.preferred_time.clear()
+    d = PreferredTime.objects.exclude(select_day=6)
+    for x in d:
+        block_prefer.preferred_time.add(x)
+    return redirect('sections')
+@login_required
+@user_passes_test(lambda u: u.is_superuser or u.is_staff)
 def SectionsUpdateView(request,pk):
     settings = Setting.objects.get(current=True)
     time_schedules = PreferredTime.objects.all()
     current_user = request.user
     subjs = SemesterOffering.objects.get(school_year=settings.school_year,semester=settings.semester).subject.all()
-
+    print("\n\n\n\nPK:",pk)
     context = {
         'title': 'LOAD MANAGER | FORM',
         'viewtype': 'load-manager',
         'user': request.user,
-        'subjects': subjs,
+        'block_prefer': Ys_PreferredSchedule.objects.get(block_section__pk=pk),
         'time_schedules': time_schedules,
         'days': DAY_OF_THE_WEEK,
         'times': PreferredTime.TIME_SELECT,
     }
     if request.method=="POST":
         os.system('cls')
+        block_prefer = Ys_PreferredSchedule.objects.get(pk= int(request.POST.get('select-pk')))
         selected = request.POST.getlist('timedays')
-        subjects = request.POST.getlist('psubjects')
-        print(subjects)
+        print('BLOCK PREFERENCE', block_prefer)
         setting = Setting.objects.get(current=True)
         current_user = request.user
-        preferred_sched =  PreferredSchedule(user = current_user,
-                                            semester = setting.semester,
-                                            school_year = setting.school_year)
 
-        preferred_sched.save()
+        block_prefer.preferred_time.clear()
         for x in selected:
             daytime = x.split('-')
             print(daytime)
             d = PreferredTime.objects.filter(select_time=daytime[1]).get(select_day=daytime[0])
-            preferred_sched.preferred_time.add(d)
-        for x in subjects:
-            d = Subject.objects.get(pk=x)
-            preferred_sched.preferred_subject.add(d)
-        return redirect('load-manager-list')
+            block_prefer.preferred_time.add(d)
+
+        # d = PreferredTime.objects.exclude(select_day=6)
+        # for x in d:
+        #     block_prefer.preferred_time.add(x)
+        return redirect('sections')
     else:
         return render(request, 'load_manager/components/chairperson/sections/modals/update.html', context)
 # SettingsFacultyPrefer

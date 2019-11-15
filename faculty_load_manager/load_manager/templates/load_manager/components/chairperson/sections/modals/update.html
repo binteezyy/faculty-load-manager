@@ -29,6 +29,9 @@
   .active-amber-textarea.md-form textarea.md-textarea:focus:not([readonly])+label {
       color: #ffa000; /* text on textarea */
   }
+  .modal-lg{
+    max-width: 1200px !important;
+  }
 </style>
 
 <div class="modal-header">
@@ -41,70 +44,58 @@
 <form method="post" autocomplete="on">
   {% csrf_token %}
   <div class="modal-body">
-    <form method="POST" >
+    <form id="modal-form" method="POST" >
       {% csrf_token %}
+      <input type='hidden' value='{{block_prefer.pk}}' name='select-pk'>
       <div class="ptime">
-        <h5>Preferred Time <a href="#" data-toggle="tooltip" data-placement="right" title="Click and drag to select multiple preferred time">
+        <h5>Section Preference <a href="#" data-toggle="tooltip" data-placement="right" title="Click and drag to select multiple preferred time">
             <!-- <span class="glyphicon glyphicon-question-sign"></span> -->
             <i class="far fa-question-circle" style="color:black"></i>
         </a></h5>
 
-        <div class="container table-responsive p-2">
+        <div class="container table-responsive">
             <table class="table table-bordered" id="schedule-table" style="text-align: center">
-                <th>TIME</th>
-                {% for v, time in times %}
-                <td class="time">{{ time }}</td>
-                {%endfor%}
-                {% for val,day in days %}
+              <tbody>
                 <tr>
-                    <th>{{ day }}</th>
-                    {% for v,time in times %}
-                    <td><input type="checkbox" name="timedays" value="{{val}}-{{v}}" style="display:none"></td>
-                    {% endfor %}
+                  <td>TIME/DAY</td>
+                  {% for val,day in days %}
+                    <th>{{day}}</th>
+                  {% endfor %}
                 </tr>
-                {% endfor %}
+                {% for v, time in times %}
+                <tr class="time">
+                  <td>{{time}}</td>
+                  {% for val,day in days %}
+                  <td class="
+                  {% for time in block_prefer.preferred_time.all  %}
+                    {% if time.select_time == v and time.select_day == val %}highlighted{% endif %}
+                  {% endfor %}"
+                  >
+                      <input type="checkbox" name="timedays" value="{{val}}-{{v}}"
+                      {% for time in block_prefer.preferred_time.all  %}
+                        {% if time.select_time == v and time.select_day == val %}checked{% endif %}
+                      {% endfor %}
+                      style="display:none"
+                      >
+                  </td>
+                  {% endfor %}
+                </tr>
+                {%endfor%}
+              </tbody>
             </table>
         </div>
-        <hr>
-
-
       </div>
-      <button type="submit" class="btn btn-raised btn-success">Submit</button>
+  </div>
 
+
+  <div class="modal-footer p-3">
+    <a href="{% url 'update-section-weekdays' block_prefer.pk %}"><button type="button" class="btn btn-block btn-raised btn-info">WEEKDAYS</button></a>
+    <button type="submit" class="btn btn-block btn-raised btn-success">Submit</button>
     </form>
   </div>
-
-
-  <div class="modal-footer">
-    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-    <a href="{% url 'generate_semester_offering' %}">
-      <button id="generate" class="btn btn-primary btn-raised" type="button">Generate offering</button>
-    </a>
-  </div>
   <script type="text/javascript">
-  $("#schedule-table").each(function() { // invert tr and td
-      var $this = $(this);
-      var newrows = [];
-      $this.find("tr").each(function(){
-          var i = 0;
-          $(this).find("td, th").each(function(){
-              i++;
-              if(newrows[i] === undefined) { newrows[i] = $("<tr></tr>"); }
-              if(i == 1)
-                  newrows[i].append("<th>" + this.innerHTML  + "</th>");
-              else
-                  newrows[i].append("<td>" + this.innerHTML  + "</td>");
-          });
-      });
-      $this.find("tr").remove();
-      $.each(newrows, function(){
-          $this.append(this);
-      });
-  });
-
       var isMouseDown = false,
           isHighlighted;
-
       $("#schedule-table input:checkbox").click(function() {
           return false;
       });

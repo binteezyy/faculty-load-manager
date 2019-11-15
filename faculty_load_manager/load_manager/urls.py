@@ -141,6 +141,8 @@ urlpatterns = [
          model_views.SectionsDeleteView.as_view(), name='delete-section'),
     path('update/section/<int:pk>',
          model_views.SectionsUpdateView, name='update-section'),
+     path('update/section/<int:pk>/weekdays',
+        model_views.SectionsUpdateAll, name='update-section-weekdays'),
     # FACULTY LOAD
     path('chairperson/faculty-load/', views.faculty_load, name='faculty-load'),
     path('chairperson/faculty-load/table', views.faculty_load_table,

@@ -53,16 +53,16 @@
         <span class="sidebar-title">Rooms</span>
       </a>
     </li>
-    <li class="sb-item {% if viewtype == 'sections' %}active{% endif %} dashboard">
-      <a class="sb-link" href="{% url 'sections' %}">
-        <i></i>
-        <span class="sidebar-title">Sections</span>
-      </a>
-    </li>
     <li class="sb-item {% if viewtype == 'settings' %}active{% endif %} dashboard">
       <a class="sb-link" href="{% url 'settings' %}">
         <i></i>
         <span class="sidebar-title">Settings</span>
+      </a>
+    </li>
+    <li class="sb-item {% if viewtype == 'sections' %}active{% endif %} dashboard">
+      <a class="sb-link" href="{% url 'sections' %}">
+        <i></i>
+        <span class="sidebar-title">Sections</span>
       </a>
     </li>
     <hr>
