@@ -9,25 +9,25 @@
 {% block extra_js %}
   <script type="text/javascript" src="{% static "vendor/DataTables/datatables.min.js" %}"></script>
   <script type="text/javascript">
-  $('#room-table').DataTable( {
+  var cur_table = $('#sections-table').DataTable( {
     // "select": true,
     // "buttons": true,
     "dataType":'json',
     "ajax": {
      "processing": true,
      "dataSrc":'',
-     "url": "{% url 'room-table' %}",
+     "url": "{% url 'sections-table' 'current' %}",
     },
-    "dom": "<'row'<'col-md-4'l><'col-md-8'<'row float-right'<'col-6 'Bf><'col-6 create-room'>>>>" +
+    "dom": "<'row'<'col-md-4'l><'col-md-8'<'row float-right'<'col-6 'Bf><'col-6 create-sections hidden'>>>>" +
           "<'row'<'col-md-6'><'col-md-6'>>" +
           "<'row'<'col-md-12't>><'row'<'col-md-12'ip>>",
     "initComplete": function(settings, json) {
-      $("div.create-room").html('<button type="button" id="create-room" class="float-right btn btn-s btn-success btn-raised" name="button">Create <i class="fas fa-plus"></i></button>');
-      $(".create-room").modalForm({formURL: "{% url 'create-room' %}"});
+      // $("div.create-sections").html('<button type="button" id="create-section" class="float-right btn btn-s btn-success btn-raised" name="button">Create <i class="fas fa-plus"></i></button>');
+      // $(".create-sections").modalForm({formURL: "{% url 'create-block-section' %}"});
       $(".read-room").each(function () {
           $(this).modalForm({formURL: $(this).data('id')});
         });
-      $(".delete-room").each(function () {
+      $(".delete-section").each(function () {
         $(this).modalForm({formURL: $(this).data('id')});
       });
       $(".update-room").each(function () {
@@ -37,22 +37,22 @@
     "columnDefs": [
       { "className": 'col-name text-center',
         "targets":   0,
-        "data": "fields.name",
+        "data": "fields.year-lvl",
         },
-      { "className": 'col-category text-center',
+      { "className": 'col-year text-center',
         "targets":   1,
-        "data": "fields.category",
+        "data": "fields.section",
         },
-      { "className": 'col-details text-center',
+      { "className": 'col-section text-center',
         "targets":   2,
         "data": "fields.id",
         render:function(data, type, row)
           {
             let render = '<button type="button" class="read-room btn btn-raised btn-sm btn-primary m-1" data-id="/read/room/'+data+'">'+
               '<span class="fa fa-eye"></span></button>' +
-              '<button type="button" class="delete-room btn btn-sm btn-raised btn-warning m-1" data-id="/delete/room/'+data+'">'+
+              '<button type="button" class="delete-section btn btn-sm btn-raised btn-warning m-1" data-id="/delete/section/'+data+'">'+
               '<span class="fa fa-trash"></span></button>'+
-              '<button type="button" class="update-room btn btn-sm btn-raised btn-success m-1" data-id="/update/room/'+data+'">'+
+              '<button type="button" class="update-room btn btn-sm btn-raised btn-success m-1" data-id="/update/section/'+data+'">'+
                 '<span class="fa fa-edit"></span></button>';
             return render
 
@@ -60,20 +60,28 @@
       },
   ]});
   </script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $(".delete-section").each(function () {
+        $(this).modalForm({formURL: $(this).data('id')});
+      });
+    } );
+
+  </script>
 {% endblock %}
 {% block content %}
 {% include "_modal.html" %}
     <div class="card animated fadeInDown lm-list p-3">
     <div class="card-header">
-      <h5>Room</h5>
+      <h5>Current School-Year Sections [{{ curr_sy }}]</h5>
     </div>
     <div class="card-content">
       <div class="table-responsive p-2">
-        <table id="room-table" class="table table-bordered table-hover" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info">
+        <table id="sections-table" class="table table-bordered table-hover" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info">
          <thead >
            <tr role="row">
-             <th style="width:5%" class="text-center">Room</th>
-             <th style="width:10%" class="text-center">Category</th>
+             <th style="width:5%" class="text-center">Year</th>
+             <th style="width:10%" class="text-center">Section</th>
              <th style="width:3%"  class="text-center">Action</th>
            </tr>
          </thead>

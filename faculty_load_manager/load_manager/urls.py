@@ -66,7 +66,13 @@ urlpatterns = [
          model_views.SubjectDeleteView.as_view(), name='delete-curriculum-subject'),
 
     # ROOM
+    path('create/room', model_views.RoomCreateView.as_view(),
+         name='create-room'),
     path('read/room/<int:pk>', model_views.RoomReadView.as_view(), name='read-room'),
+    path('delete/room/<int:pk>',
+         model_views.RoomDeleteView.as_view(), name='delete-room'),
+    path('update/room/<int:pk>',
+         model_views.RoomUpdateView.as_view(), name='update-room'),
 
     # SETTINGS
     path('create/settings', model_views.SettingsCreateView.as_view(),
@@ -124,6 +130,17 @@ urlpatterns = [
     path('chairperson/settings/room/', views.rooms, name='room'),
     path('chairperson/settings/room/table',
          views.room_table, name='room-table'),
+
+    # SECTIONS
+    path('chairperson/settings/sections/', views.sections, name='sections'),
+    path('chairperson/settings/sections/table/<str:q>',
+         views.section_table, name='sections-table'),
+    path('create/sections', model_views.SectionCreateView.as_view(),
+         name='create-block-section'),
+    path('delete/section/<int:pk>',
+         model_views.SectionsDeleteView.as_view(), name='delete-section'),
+    path('update/section/<int:pk>',
+         model_views.SectionsUpdateView, name='update-section'),
     # FACULTY LOAD
     path('chairperson/faculty-load/', views.faculty_load, name='faculty-load'),
     path('chairperson/faculty-load/table', views.faculty_load_table,

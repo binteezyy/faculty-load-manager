@@ -12,6 +12,16 @@ class SettingsForm(BSModalForm):
         model = Setting
         exclude = ['status']
 
+class RoomForm(BSModalForm):
+    class Meta:
+        model = Room
+        exclude = ['']
+
+class BlockSectionForm(BSModalForm):
+    class Meta:
+        model = BlockSection
+        exclude = ['']
+
 class UserForm(BSModalForm):
     class Meta:
         model = FacultyProfile

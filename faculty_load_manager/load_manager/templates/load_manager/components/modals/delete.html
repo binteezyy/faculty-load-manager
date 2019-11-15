@@ -15,13 +15,15 @@
 
   <div class="modal-body">
 
-    <p>Are you sure you want to delete <strong>
+    <p>Are you sure you want to delete {% if room %}Room {% endif %}<strong>
       {% if setting %}
       {{ setting }}</strong>
       {% elif faculty_prefer%}
       {{ faculty_prefer.user.first_name }}'s Preference</strong>
       {% elif faculty %}
       {{ faculty.first_name }} {{ faculty.last_name }}</strong>'s Account
+      {% elif room %}
+      {{ room.room_name }}</strong>
       {% endif %}
     ?</p>
   </div>
