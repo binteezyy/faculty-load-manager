@@ -50,7 +50,7 @@
   margin-top: 0;
   line-height:1rem;
 }
-.sidebar > hr {
+.sidebar hr {
   border-top: 1px solid rgba(255, 255, 255, .15);
   margin: 0 1rem 0.3em;
 }

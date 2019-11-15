@@ -19,7 +19,6 @@ import os
 import json
 import re
 from bs4 import BeautifulSoup
-
 def home_view(request):
     next = request.GET.get('next')
     status = ''
@@ -711,6 +710,76 @@ def room_table(request):
         x = {"fields":{"id": room.pk,
                        "name": room.room_name,
                        "category": room.get_room_category_display(),
+             }
+        }
+        data.append(x)
+    data = json.dumps(data)
+    pprint(data)
+    return HttpResponse(data, content_type='application/json')
+
+## SECTIONS
+## ROOMSM
+@login_required
+@user_passes_test(lambda u: u.is_superuser or u.is_staff )
+def sections(request):
+    try:
+        current_settings = Setting.objects.get(current=True)
+    except Exception as e:
+        current_settings = None
+
+    context = {
+        'avatar': UserProfile.objects.get(user=request.user).avatar,
+        'user_type': FacultyProfile.objects.get(faculty=request.user).get_faculty_type_display,
+        'title': 'Sections',
+        'curr_sy': Setting.objects.get(current=True).school_year,
+        'viewtype': 'sections',
+        'settings': current_settings,
+    }
+    from pprint import pprint
+    pprint(context)
+    # settings = Setting.objects.get_or_create()
+
+    return render(request, 'load_manager/components/chairperson/sections/index.html', context)
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def section_table(request, q):
+    import json
+    from pprint import pprint
+    settings = Setting.objects.get(current=True)
+    semester = str(settings.semester)
+    start_year = str(settings.school_year.start_year)
+    end_year = str(settings.school_year.end_year)
+    rooms = Room.objects.all()
+
+    try:
+        start = Year.objects.get(year=start_year)
+    except Year.DoesNotExist:
+        new_year = Year(year=start_year)
+        new_year.save()
+        start = Year.objects.get(year=start_year)
+
+    try:
+        end = Year.objects.get(year=end_year)
+    except Year.DoesNotExist:
+        new_year = Year(year=end_year)
+        new_year.save()
+        end  = Year.objects.get(year=end_year)
+
+    try:
+        sy = SchoolYear.objects.get(start_year=start, end_year=end)
+    except SchoolYear.DoesNotExist:
+        new_sy = SchoolYear(start_year=start, end_year=end)
+        new_sy.save()
+        sy = SchoolYear.objects.get(start_year=start, end_year=end)
+
+    current_sections = BlockSection.objects.filter(school_year=sy, semester=semester)
+
+    data = []
+    for section in current_sections:
+        x = {"fields":{"id": section.pk,
+                       "year-lvl": section.year_level,
+                       "section": section.section,
              }
         }
         data.append(x)

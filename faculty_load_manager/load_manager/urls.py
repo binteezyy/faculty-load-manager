@@ -130,6 +130,17 @@ urlpatterns = [
     path('chairperson/settings/room/', views.rooms, name='room'),
     path('chairperson/settings/room/table',
          views.room_table, name='room-table'),
+
+    # SECTIONS
+    path('chairperson/settings/sections/', views.sections, name='sections'),
+    path('chairperson/settings/sections/table/<str:q>',
+         views.section_table, name='sections-table'),
+    path('create/sections', model_views.SectionCreateView.as_view(),
+         name='create-block-section'),
+    path('delete/section/<int:pk>',
+         model_views.SectionsDeleteView.as_view(), name='delete-section'),
+    path('update/section/<int:pk>',
+         model_views.SectionsUpdateView, name='update-section'),
     # FACULTY LOAD
     path('chairperson/faculty-load/', views.faculty_load, name='faculty-load'),
     path('chairperson/faculty-load/table', views.faculty_load_table,
