@@ -50,7 +50,7 @@
     <li class="sb-item {% if viewtype == 'rooms' %}active{% endif %} dashboard">
       <a class="sb-link" href="{% url 'room' %}">
         <i></i>
-        <span class="sidebar-title">Room</span>
+        <span class="sidebar-title">Rooms</span>
       </a>
     </li>
     <li class="sb-item {% if viewtype == 'settings' %}active{% endif %} dashboard">
@@ -59,6 +59,13 @@
         <span class="sidebar-title">Settings</span>
       </a>
     </li>
+    <li class="sb-item {% if viewtype == 'sections' %}active{% endif %} dashboard">
+      <a class="sb-link" href="{% url 'sections' %}">
+        <i></i>
+        <span class="sidebar-title">Sections</span>
+      </a>
+    </li>
+    <hr>
     <li class="sb-item {% if viewtype == 'section-offering' %}active{% endif %} dashboard">
       <a class="sb-link" href="{% url 'section-offering' %}">
         <i></i>
@@ -83,7 +90,7 @@
 </ul>
 <div id="main-container">
   <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4" style="z-index: 1;">
-    <a href="#" class="navbar-brand mb-0 h1o"> Computer Engineering Faculty Load</a>
+    <a href="#" class="navbar-brand mb-0 h1o"> Computer Engineering Faculty Load </a>
     {% if status != 'Locked' %}
     <h3><span class="badge {% if status == 'Not Opened' %}badge-secondary
           {% elif status == 'Open'%}badge-success

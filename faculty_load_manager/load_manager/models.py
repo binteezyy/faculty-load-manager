@@ -109,7 +109,7 @@ class BlockSection(models.Model):
         ordering = ['school_year', 'semester', 'year_level', 'section']
 
     def __str__(self):
-        return f'{self.year_level} - {self.section}'
+        return f'{self.year_level} - {self.section} | {self.school_year} - {self.get_semester_display()}'
 
 
 class SemesterOffering(models.Model):

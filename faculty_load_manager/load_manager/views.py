@@ -19,7 +19,6 @@ import os
 import json
 import re
 from bs4 import BeautifulSoup
-
 def home_view(request):
     next = request.GET.get('next')
     status = ''
@@ -569,30 +568,8 @@ def section_offering_table(request):
     import json
     from pprint import pprint
     settings = Setting.objects.get(current=True)
-    semester = str(settings.semester)
-    start_year = str(settings.school_year.start_year)
-    end_year = str(settings.school_year.end_year)
-
-    try:
-        start = Year.objects.get(year=start_year)
-    except Year.DoesNotExist:
-        new_year = Year(year=start_year)
-        new_year.save()
-        start = Year.objects.get(year=start_year)
-
-    try:
-        end = Year.objects.get(year=end_year)
-    except Year.DoesNotExist:
-        new_year = Year(year=end_year)
-        new_year.save()
-        end  = Year.objects.get(year=end_year)
-
-    try:
-        sy = SchoolYear.objects.get(start_year=start, end_year=end)
-    except SchoolYear.DoesNotExist:
-        new_sy = SchoolYear(start_year=start, end_year=end)
-        new_sy.save()
-        sy = SchoolYear.objects.get(start_year=start, end_year=end)
+    semester = str(Setting.objects.get(current=True).semester)
+    sy = get_school_year()
 
     secOffs = SectionOffering.objects.filter(school_year=sy, semester=semester)
 
@@ -640,30 +617,8 @@ def faculty_load_table(request):
     import json
     from pprint import pprint
     settings = Setting.objects.get(current=True)
-    semester = str(settings.semester)
-    start_year = str(settings.school_year.start_year)
-    end_year = str(settings.school_year.end_year)
-
-    try:
-        start = Year.objects.get(year=start_year)
-    except Year.DoesNotExist:
-        new_year = Year(year=start_year)
-        new_year.save()
-        start = Year.objects.get(year=start_year)
-
-    try:
-        end = Year.objects.get(year=end_year)
-    except Year.DoesNotExist:
-        new_year = Year(year=end_year)
-        new_year.save()
-        end  = Year.objects.get(year=end_year)
-
-    try:
-        sy = SchoolYear.objects.get(start_year=start, end_year=end)
-    except SchoolYear.DoesNotExist:
-        new_sy = SchoolYear(start_year=start, end_year=end)
-        new_sy.save()
-        sy = SchoolYear.objects.get(start_year=start, end_year=end)
+    semester = str(Setting.objects.get(current=True).semester)
+    sy = get_school_year()
 
     fls = FacultyLoad.objects.filter(subject__school_year=sy, subject__semester=semester)
 
@@ -673,17 +628,18 @@ def faculty_load_table(request):
             prof = str(fl.subject.professor.first_name + ' ' + fl.subject.professor.last_name)
         else:
             prof = "Empty"
-        if fl.load_schedule:
+        if fl.load_schedule and fl.load_schedule.room:
             time = str(fl.load_schedule.preferred_time)
             sched = str(fl.load_schedule.preferred_time.all().first()) + ' to ' + str(fl.load_schedule.preferred_time.all().last()) + ' Room ' + str(fl.load_schedule.room.room_name)
+            room = str(fl.load_schedule.room)
+        elif fl.load_schedule and not fl.load_schedule.room:
+            time = str(fl.load_schedule.preferred_time)
+            sched = str(fl.load_schedule.preferred_time.all().first()) + ' to ' + str(fl.load_schedule.preferred_time.all().last()) + ' Room Empty'
+            room = "Empty"
         else:
             time = "Empty"
             sched = "Empty"
-        if fl.load_schedule:
-            room = str(fl.load_schedule.room)
-        else:
             room = "Empty"
-
 
         x = {"fields":{"fl-id": fl.pk,
                        "fl-subject": str(fl.subject.subject.subject_name),
@@ -724,6 +680,49 @@ def room_table(request):
     import json
     from pprint import pprint
     settings = Setting.objects.get(current=True)
+    semester = str(Setting.objects.get(current=True).semester)
+    sy = get_school_year()
+
+
+    fls = FacultyLoad.objects.filter(subject__school_year=sy, subject__semester=semester)
+    rooms = Room.objects.all()
+    data = []
+    for room in rooms:
+        x = {"fields":{"id": room.pk,
+                       "name": room.room_name,
+                       "category": room.get_room_category_display(),
+             }
+        }
+        data.append(x)
+    data = json.dumps(data)
+    pprint(data)
+    return HttpResponse(data, content_type='application/json')
+
+## SECTIONS
+## ROOMSM
+@login_required
+@user_passes_test(lambda u: u.is_superuser or u.is_staff )
+def sections(request):
+    try:
+        current_settings = Setting.objects.get(current=True)
+    except Exception as e:
+        current_settings = None
+
+    context = {
+        'avatar': UserProfile.objects.get(user=request.user).avatar,
+        'user_type': FacultyProfile.objects.get(faculty=request.user).get_faculty_type_display,
+        'title': 'Sections',
+        'curr_sy': Setting.objects.get(current=True).school_year,
+        'viewtype': 'sections',
+        'settings': current_settings,
+    }
+    
+    return render(request, 'load_manager/components/chairperson/sections/index.html', context)
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def section_table(request, q):
+    settings = Setting.objects.get(current=True)
     semester = str(settings.semester)
     start_year = str(settings.school_year.start_year)
     end_year = str(settings.school_year.end_year)
@@ -750,18 +749,17 @@ def room_table(request):
         new_sy.save()
         sy = SchoolYear.objects.get(start_year=start, end_year=end)
 
-    fls = FacultyLoad.objects.filter(subject__school_year=sy, subject__semester=semester)
+    current_sections = BlockSection.objects.filter(school_year=sy, semester=semester)
 
     data = []
-    for room in rooms:
-        x = {"fields":{"id": room.pk,
-                       "name": room.room_name,
-                       "category": room.get_room_category_display(),
+    for section in current_sections:
+        x = {"fields":{"id": section.pk,
+                       "year-lvl": section.year_level,
+                       "section": section.section,
              }
         }
         data.append(x)
     data = json.dumps(data)
-    pprint(data)
     return HttpResponse(data, content_type='application/json')
 
 from django.core.files.storage import FileSystemStorage
@@ -914,30 +912,8 @@ from django.db.models import Q
 @user_passes_test(lambda u: u.is_superuser or u.is_staff )
 def generate_semester_offering(request):
     settings = Setting.objects.get(current=True)
-    semester = str(settings.semester)
-    start_year = str(settings.school_year.start_year)
-    end_year = str(settings.school_year.end_year)
-
-    try:
-        start = Year.objects.get(year=start_year)
-    except Year.DoesNotExist:
-        new_year = Year(year=start_year)
-        new_year.save()
-        start = Year.objects.get(year=start_year)
-
-    try:
-        end = Year.objects.get(year=end_year)
-    except Year.DoesNotExist:
-        new_year = Year(year=end_year)
-        new_year.save()
-        end  = Year.objects.get(year=end_year)
-
-    try:
-        sy = SchoolYear.objects.get(start_year=start, end_year=end)
-    except SchoolYear.DoesNotExist:
-        new_sy = SchoolYear(start_year=start, end_year=end)
-        new_sy.save()
-        sy = SchoolYear.objects.get(start_year=start, end_year=end)
+    semester = str(Setting.objects.get(current=True).semester)
+    sy = get_school_year()
 
     try:
         semOff = SemesterOffering.objects.get(school_year=sy, semester=semester)
@@ -993,30 +969,8 @@ def generate_semester_offering(request):
 @user_passes_test(lambda u: u.is_superuser or u.is_staff )
 def generate_section_offering(request):
     settings = Setting.objects.get(current=True)
-    semester = str(settings.semester)
-    start_year = str(settings.school_year.start_year)
-    end_year = str(settings.school_year.end_year)
-
-    try:
-        start = Year.objects.get(year=start_year)
-    except Year.DoesNotExist:
-        new_year = Year(year=start_year)
-        new_year.save()
-        start = Year.objects.get(year=start_year)
-
-    try:
-        end = Year.objects.get(year=end_year)
-    except Year.DoesNotExist:
-        new_year = Year(year=end_year)
-        new_year.save()
-        end  = Year.objects.get(year=end_year)
-
-    try:
-        sy = SchoolYear.objects.get(start_year=start, end_year=end)
-    except SchoolYear.DoesNotExist:
-        new_sy = SchoolYear(start_year=start, end_year=end)
-        new_sy.save()
-        sy = SchoolYear.objects.get(start_year=start, end_year=end)
+    semester = str(Setting.objects.get(current=True).semester)
+    sy = get_school_year()
 
     try:
         # fifth_count = BlockSection.objects.filter(school_year=sy, semester=semester, year_level=5).count()
@@ -1049,7 +1003,7 @@ def generate_section_offering(request):
         first_count = 0
     print(f'first year - {first_count}')
 
-    # generate block sections
+    # generate block sections and bs_preferredsched
     for i in range(fifth_count):
         try:
             bs = BlockSection.objects.get(school_year=sy, semester=semester, year_level=5, section=str(int(i+1)))
@@ -1057,6 +1011,12 @@ def generate_section_offering(request):
             bs = BlockSection(school_year=sy, semester=semester, year_level=5, section=str(int(i+1)))
             bs.save()
         print(bs)
+        try:
+            bs_ps = Ys_PreferredSchedule.objects.get(block_section=bs)
+        except Ys_PreferredSchedule.DoesNotExist:
+            bs_ps = Ys_PreferredSchedule(block_section=bs)
+            bs_ps.save()
+        print(bs_ps)
 
     for i in range(fourth_count):
         try:
@@ -1065,6 +1025,12 @@ def generate_section_offering(request):
             bs = BlockSection(school_year=sy, semester=semester, year_level=4, section=str(int(i+1)))
             bs.save()
         print(bs)
+        try:
+            bs_ps = Ys_PreferredSchedule.objects.get(block_section=bs)
+        except Ys_PreferredSchedule.DoesNotExist:
+            bs_ps = Ys_PreferredSchedule(block_section=bs)
+            bs_ps.save()
+        print(bs_ps)
 
     for i in range(third_count):
         try:
@@ -1073,6 +1039,12 @@ def generate_section_offering(request):
             bs = BlockSection(school_year=sy, semester=semester, year_level=3, section=str(int(i+1)))
             bs.save()
         print(bs)
+        try:
+            bs_ps = Ys_PreferredSchedule.objects.get(block_section=bs)
+        except Ys_PreferredSchedule.DoesNotExist:
+            bs_ps = Ys_PreferredSchedule(block_section=bs)
+            bs_ps.save()
+        print(bs_ps)
 
     for i in range(second_count):
         try:
@@ -1081,6 +1053,12 @@ def generate_section_offering(request):
             bs = BlockSection(school_year=sy, semester=semester, year_level=2, section=str(int(i+1)))
             bs.save()
         print(bs)
+        try:
+            bs_ps = Ys_PreferredSchedule.objects.get(block_section=bs)
+        except Ys_PreferredSchedule.DoesNotExist:
+            bs_ps = Ys_PreferredSchedule(block_section=bs)
+            bs_ps.save()
+        print(bs_ps)
 
     for i in range(first_count):
         try:
@@ -1089,6 +1067,12 @@ def generate_section_offering(request):
             bs = BlockSection(school_year=sy, semester=semester, year_level=1, section=str(int(i+1)))
             bs.save()
         print(bs)
+        try:
+            bs_ps = Ys_PreferredSchedule.objects.get(block_section=bs)
+        except Ys_PreferredSchedule.DoesNotExist:
+            bs_ps = Ys_PreferredSchedule(block_section=bs)
+            bs_ps.save()
+        print(bs_ps)
 
     semOff = SemesterOffering.objects.get(school_year=sy, semester=semester)
     # first_s = Subject.objects.filter(year_level=1, semester=semester, curriculum=first_c).filter(
@@ -1176,6 +1160,452 @@ def generate_section_offering(request):
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser or u.is_staff )
+def generate_faculty_load(request):
+    settings = Setting.objects.get(current=True)
+    semester = str(Setting.objects.get(current=True).semester)
+    sy = get_school_year()
+
+    # Loop through section offering
+    secOffs = SectionOffering.objects.filter(school_year=sy, semester=semester)
+    # Check secOff.subject lab hours, lec hours
+    for secOff in secOffs:
+        lab_hours = secOff.subject.lab_hours
+        lec_hours = secOff.subject.lec_hours
+        print(f'{secOff.subject} {lab_hours} + {lec_hours}')
+    # If > 0 lab hours and >= 5 lab hrs - lab1 labhrs//2+1 lab2 lab//hrs+2 - lab1
+    # elif >0 lab hours < 5 lab1 - labhrs
+    # create FL
+        if lab_hours > 0 and lab_hours >= 5:
+            try:
+                facload = FacultyLoad.objects.get(subject=secOff, load_category=0)
+            except FacultyLoad.DoesNotExist:
+                facload = FacultyLoad(subject=secOff, load_category=0)
+                facload.save()
+            print(facload)
+            try:
+                facload = FacultyLoad.objects.get(subject=secOff, load_category=1)
+            except FacultyLoad.DoesNotExist:
+                facload = FacultyLoad(subject=secOff, load_category=1)
+                facload.save()
+            print(facload)
+        elif lab_hours > 0 and lab_hours < 5:
+            try:
+                facload = FacultyLoad.objects.get(subject=secOff, load_category=0)
+            except FacultyLoad.DoesNotExist:
+                facload = FacultyLoad(subject=secOff, load_category=0)
+                facload.save()
+            print(facload)
+    # If > 0 lec hours and >= 5 lec hrs - lec1 lechrs//2+1 lec2 lec//hrs+2 - lec1
+    # elif >0 lec hours < 5 lec1 - lechrs
+        if lec_hours > 0 and lec_hours >= 5:
+            try:
+                facload = FacultyLoad.objects.get(subject=secOff, load_category=2)
+            except FacultyLoad.DoesNotExist:
+                facload = FacultyLoad(subject=secOff, load_category=2)
+                facload.save()
+            print(facload)
+            try:
+                facload = FacultyLoad.objects.get(subject=secOff, load_category=3)
+            except FacultyLoad.DoesNotExist:
+                facload = FacultyLoad(subject=secOff, load_category=3)
+                facload.save()
+            print(facload)
+        elif lec_hours > 0 and lec_hours < 5:
+            try:
+                facload = FacultyLoad.objects.get(subject=secOff, load_category=2)
+            except FacultyLoad.DoesNotExist:
+                facload = FacultyLoad(subject=secOff, load_category=2)
+                facload.save()
+            print(facload)
+    # create FL
+    settings.status = 1
+    settings.save()
+    return redirect('settings')
+
+def get_school_year():
+    settings = Setting.objects.get(current=True)
+    start_year = str(settings.school_year.start_year)
+    end_year = str(settings.school_year.end_year)
+
+    try:
+        start = Year.objects.get(year=start_year)
+    except Year.DoesNotExist:
+        new_year = Year(year=start_year)
+        new_year.save()
+        start = Year.objects.get(year=start_year)
+
+    try:
+        end = Year.objects.get(year=end_year)
+    except Year.DoesNotExist:
+        new_year = Year(year=end_year)
+        new_year.save()
+        end  = Year.objects.get(year=end_year)
+
+    try:
+        sy = SchoolYear.objects.get(start_year=start, end_year=end)
+    except SchoolYear.DoesNotExist:
+        new_sy = SchoolYear(start_year=start, end_year=end)
+        new_sy.save()
+        sy = SchoolYear.objects.get(start_year=start, end_year=end)
+
+    return sy
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser or u.is_staff )
+def sched_faculty_load(request):
+    settings = Setting.objects.get(current=True)
+    sy = get_school_year()
+    semester = str(Setting.objects.get(current=True).semester)
+
+    ## Loop through section offering, this will consist of 2 faculty loads
+    ## Based on settings' semester and sy, descending by year level, ascending subject code
+    secOff_qs = SectionOffering.objects.filter(school_year=sy, semester=semester).exclude(professor__isnull=False).order_by('-subject__year_level', 'subject__subject_code')
+    for secOff in secOff_qs:
+        print('=====START=====')
+        print(secOff)
+        fls = FacultyLoad.objects.filter(subject=secOff, load_schedule=None)
+        if fls:
+            print(f'FLS {fls.count()}')
+    ## Get first faculty load
+            # try:
+            #     first_fl = FacultyLoad.objects.get(subject=secOff)
+            #     second_fl = None
+            # except Exception as e:
+            first_fl = fls[0]
+            try:
+                second_fl = fls[1]
+            except Exception as e:
+                second_fl = None
+            print(f'FIRST {first_fl}')
+
+        ## Check if lab, lecture, or elecs_lab and how many hours.
+            lab_hours = first_fl.subject.subject.lab_hours
+            lec_hours = first_fl.subject.subject.lec_hours
+            if lab_hours >= 5:
+                if lab_hours % 2:
+                    lab1 = lab_hours//2
+                    lab2 = lab_hours//2 - 1
+                else:
+                    lab1 = lab_hours//2
+                    lab2 = lab_hours//2
+                if first_fl.load_category == 0:
+                    labhr = lab1
+                elif first_fl.load_category == 1:
+                    labhr = lab2
+            elif lab_hours < 5:
+                lab1 = lab_hours
+                if first_fl.load_category == 0:
+                    labhr = lab1
+
+            if lec_hours >= 5:
+                if lec_hours % 2:
+                    lec1 = lec_hours//2
+                    lec2 = lec_hours//2 - 1
+                else:
+                    lec1 = lec_hours//2
+                    lec2 = lec_hours//2
+                if first_fl.load_category == 2:
+                    lechr = lec1
+                elif first_fl.load_category == 3:
+                    lechr = lec2
+            elif lec_hours < 5:
+                lec1 = lec_hours
+                if first_fl.load_category == 2:
+                    lechr = lec1
+
+            if first_fl.load_category == 0 or first_fl.load_category == 1:
+                subjhr = labhr
+            elif first_fl.load_category == 2 or first_fl.load_category == 3:
+                subjhr = lechr
+            print(f'{subjhr} hrs')
+            divisions = int(subjhr/0.5)
+            print(str(divisions) + ' divisions')
+
+        ## Loop though time slots. Check if available for section and suits section's preferred sched. Check if same subject is parallel
+            section_preferred_time = Ys_PreferredSchedule.objects.get(block_section=secOff.block_section).preferred_time.all()
+            spt_list = list(section_preferred_time)
+            #print(f'SPT LIST {spt_list}')
+
+            section_assigned_load = FacultyLoad.objects.filter(subject__block_section=secOff.block_section)
+            sal_list = []
+            for sal in section_assigned_load:
+                if sal.load_schedule:
+                    sal_list += list(sal.load_schedule.preferred_time.all())
+            #print(f'SECTION ASSIGNED LOAD {section_assigned_load}')
+            #print(f'SECTION ALREADY TIME {sal_list}')
+
+            same_subjects = FacultyLoad.objects.filter(subject__subject=secOff.subject)
+            ss_assigned_time_list = []
+            for same_subj in same_subjects:
+                if same_subj.load_schedule:
+                    ss_assigned_time_list += list(same_subj.load_schedule.preferred_time.all())
+            #print(f'SAME SUBJECT TIMES {ss_assigned_time_list}')
+
+            for i in range(6):
+                for j in range(27-divisions):
+                    check_time = []
+                    check_time_ids = []
+                    for k in range(divisions):
+                        check_time.append(PreferredTime.objects.get(select_time=j+k, select_day=i))
+                        check_time_ids.append(PreferredTime.objects.get(select_time=j+k, select_day=i).pk)
+                    if bool([item for item in check_time if item in ss_assigned_time_list]) or not bool(all(item in spt_list for item in check_time)) or bool([item for item in check_time if item in sal_list]):
+                        print("J next loop")
+                    else:
+                        print(f'{bool([item for item in check_time if item in ss_assigned_time_list])} - {not bool(all(item in spt_list for item in check_time))} - {bool([item for item in check_time if item in sal_list])}')
+                        break #break for j
+                if bool([item for item in check_time if item in ss_assigned_time_list]) or not bool(all(item in spt_list for item in check_time)) or bool([item for item in check_time if item in sal_list]):
+                    if i == 5:
+                        print('No Sched')
+                        check_time_ids = []
+                    else:
+                        print("I next loop")
+                else:
+                    print(f'{bool([item for item in check_time if item in ss_assigned_time_list])} - {not bool(all(item in spt_list for item in check_time))} - {bool([item for item in check_time if item in sal_list])}')
+                    break #break for i
+
+            fl_assigned_time = PreferredTime.objects.filter(pk__in=check_time_ids)
+            load_schedule = LoadSchedule(room=None)
+            load_schedule.save()
+            load_schedule.preferred_time.set(fl_assigned_time)
+            load_schedule.save()
+            first_fl.load_schedule = load_schedule
+            first_fl.save()
+            print(load_schedule)
+            print(f'LOAD ASSIGNED TIME {list(fl_assigned_time)}')
+
+        ## Allocate LoadSchedule time
+        ## Loop through LoadSchedule (room + timeslot) and select available room
+            rooms = Room.objects.filter(room_category=secOff.subject.room_category)
+            print(f'ROOMS {rooms}')
+            for room in rooms:
+                print(f'ROOM {room.room_name}')
+                fl_room_occupants = FacultyLoad.objects.filter(load_schedule__room=room)
+                print(f'ROOM OCCUPANTS {fl_room_occupants}')
+                check_sched = []
+                for fl_room_occupant in fl_room_occupants:
+                    check_sched += list(fl_room_occupant.load_schedule.preferred_time.all())
+                print(f'TIME OCCUPIED {check_sched}')
+
+                if bool([item for item in list(fl_assigned_time) if item in check_sched]):
+                    print('NEXT ROOM')
+                else:
+                    print(f'{bool([item for item in list(fl_assigned_time) if item in check_sched])}')
+                    load = first_fl.load_schedule
+                    load.room = room
+                    load.save()
+                    print(f'ASSIGNED TO ROOM {room.room_name}')
+                    break
+
+
+        ## Get second faculty load and consider mon-thurs tues-fri wed-sat pairing (this should be strict to ys_preferred sched as well)
+            if second_fl:
+                print(f'SECOND {second_fl}')
+
+        ## Check if lab, lecture, or elecs_lab and how many hours.
+                lab_hours = first_fl.subject.subject.lab_hours
+                lec_hours = first_fl.subject.subject.lec_hours
+                if lab_hours >= 5:
+                    if lab_hours % 2:
+                        lab1 = lab_hours//2
+                        lab2 = lab_hours//2 - 1
+                    else:
+                        lab1 = lab_hours//2
+                        lab2 = lab_hours//2
+                    if first_fl.load_category == 0:
+                        labhr = lab1
+                    elif first_fl.load_category == 1:
+                        labhr = lab2
+                elif lab_hours < 5:
+                    lab1 = lab_hours
+                    if first_fl.load_category == 0:
+                        labhr = lab1
+
+                if lec_hours >= 5:
+                    if lec_hours % 2:
+                        lec1 = lec_hours//2
+                        lec2 = lec_hours//2 - 1
+                    else:
+                        lec1 = lec_hours//2
+                        lec2 = lec_hours//2
+                    if first_fl.load_category == 2:
+                        lechr = lec1
+                    elif first_fl.load_category == 3:
+                        lechr = lec2
+                elif lec_hours < 5:
+                    lec1 = lec_hours
+                    if first_fl.load_category == 2:
+                        lechr = lec1
+
+                if first_fl.load_category == 0 or first_fl.load_category == 1:
+                    subjhr = labhr
+                elif first_fl.load_category == 2 or first_fl.load_category == 3:
+                    subjhr = lechr
+                print(f'{subjhr} hrs')
+                divisions = int(subjhr/0.5)
+                print(str(divisions) + ' divisions')
+
+                first_fl_day = fl_assigned_time[0].select_day
+                x = 0
+                if first_fl_day == 0:
+                    x = 3
+                elif first_fl_day == 1 or first_fl_day == 3:
+                    x = 4
+                elif first_fl_day == 2 or first_fl_day == 4:
+                    x = 5
+                elif first_fl_day == 6:
+                    x = 6
+                #print(f'2nd FL day {x}')
+
+            ## Loop though time slots. Check if available for section and suits section's preferred sched. Check if same subject is parallel
+                for i in range(x, 6):
+                    for j in range(27-divisions):
+                        check_time = []
+                        check_time_ids = []
+                        for k in range(divisions):
+                            check_time.append(PreferredTime.objects.get(select_time=j+k, select_day=i))
+                            check_time_ids.append(PreferredTime.objects.get(select_time=j+k, select_day=i).pk)
+                        if bool([item for item in check_time if item in ss_assigned_time_list]) or not bool(all(item in spt_list for item in check_time)) or bool([item for item in check_time if item in sal_list]):
+                            print("J next loop")
+                        else:
+                            print(f'{bool([item for item in check_time if item in ss_assigned_time_list])} - {not bool(all(item in spt_list for item in check_time))} - {bool([item for item in check_time if item in sal_list])}')
+                            break #break for j
+                    if bool([item for item in check_time if item in ss_assigned_time_list]) or not bool(all(item in spt_list for item in check_time)) or bool([item for item in check_time if item in sal_list]):
+                        print("I next loop")
+                    else:
+                        print(f'{bool([item for item in check_time if item in ss_assigned_time_list])} - {not bool(all(item in spt_list for item in check_time))} - {bool([item for item in check_time if item in sal_list])}')
+                        break #break for i
+
+            ## Allocate LoadSchedule time
+                fl2_assigned_time = PreferredTime.objects.filter(pk__in=check_time_ids)
+                load_schedule2 = LoadSchedule(room=None)
+                load_schedule2.save()
+                load_schedule2.preferred_time.set(fl2_assigned_time)
+                load_schedule2.save()
+                second_fl.load_schedule = load_schedule2
+                second_fl.save()
+                print(load_schedule2)
+                print(f'LOAD ASSIGNED TIME {fl2_assigned_time}')
+            
+            ## Loop through LoadSchedule (room + timeslot) and select available room
+                rooms = Room.objects.filter(room_category=secOff.subject.room_category)
+                print(f'ROOMS {rooms}')
+                for room in rooms:
+                    print(f'ROOM {room.room_name}')
+                    fl_room_occupants = FacultyLoad.objects.filter(load_schedule__room=room)
+                    print(f'ROOM OCCUPANTS {fl_room_occupants}')
+                    check_sched = []
+                    for fl_room_occupant in fl_room_occupants:
+                        check_sched += list(fl_room_occupant.load_schedule.preferred_time.all())
+                    print(f'TIME OCCUPIED {check_sched}')
+
+                    if bool([item for item in list(fl2_assigned_time) if item in check_sched]):
+                        print('NEXT ROOM')
+                    else:
+                        print(f'{bool([item for item in list(fl2_assigned_time) if item in check_sched])}')
+                        load = second_fl.load_schedule
+                        load.room = room
+                        load.save()
+                        print(f'ASSIGNED TO ROOM {room.room_name}')
+                        break
+        else:
+            print(f'{secOff} already assigned')
+        print('=====END=====')
+    return redirect('faculty-load')
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser or u.is_staff )
+def assign_prof(request):
+    settings = Setting.objects.get(current=True)
+    sy = get_school_year()
+    semester = str(Setting.objects.get(current=True).semester)
+
+    ## Query section offering based on settings, excluding already assigned
+    ## and sy descending by year level and ascending by subject code, then query faculty load
+    secOff_qs =  SectionOffering.objects.filter(school_year=sy, semester=semester).exclude(professor__isnull=False).order_by('-subject__year_level', 'subject__subject_code')
+    for secOff in secOff_qs:
+        fls = FacultyLoad.objects.filter(subject=secOff)
+        subject_hours = secOff.subject.lab_hours + secOff.subject.lec_hours
+        #print(f'FLS {fls}')
+
+    ## Create list of preferred times of section offering
+        fls_list = []
+        for fl in fls:
+            if fl.load_schedule:
+                fls_list += list(fl.load_schedule.preferred_time.all())
+
+    ## Query profs who prefers this section offering 
+    ## - first come first server descending based on Faculty Priority Rule
+        user_list = []
+        prefScheds = PreferredSchedule.objects.filter(school_year=sy, semester=semester, preferred_subject=secOff.subject)
+        for prefSched in prefScheds:
+            user_list.append(prefSched.user)
+
+        profs = FacultyProfile.objects.filter(faculty__in=user_list).order_by('-faculty_type')
+        if profs:
+            for prof in profs:
+                print("===START===")
+                print(f"SECTION OFFERING {secOff}")
+                #print(f'FLS_LIST {fls_list}')
+                print(f'PROFESSOR {prof.faculty} PREFERS {secOff.subject}')
+
+    ## Check if already allocated to this type of subject, next if yes.
+                secOff_prof_exists = SectionOffering.objects.filter(school_year=sy, semester=semester, professor=prof.faculty, subject=secOff.subject)
+ 
+    ## Check prof remaining hours, next if no remaining hours.
+                secOff_prof_qs = SectionOffering.objects.filter(school_year=sy, semester=semester, professor=prof.faculty)
+                allowed_hours = prof.regular_hours + prof.part_time_hours
+                allocated_hours = 0
+                subject_hours = secOff.subject.lab_hours + secOff.subject.lec_hours
+                #print(secOff_prof_qs)
+                for secOff_prof in secOff_prof_qs:
+                    allocated_hours += secOff_prof.subject.lec_hours + secOff_prof.subject.lec_hours
+
+                print(f'{prof.faculty} total of {allocated_hours} allocated hours')
+                print(f'{prof.faculty} total of {allowed_hours} allowed hours')
+
+    ## Check if prof preferred sched matches section offering's faculty load's preferred sched and if it is available
+                prof_preferred_time = PreferredSchedule.objects.get(user=prof.faculty, school_year=sy, semester=semester).preferred_time.all()
+                ppt_list = list(prof_preferred_time)
+                #print(f'PROF PREFERRED {prof_preferred_time}')
+                prof_assigned_load = FacultyLoad.objects.filter(subject__professor=prof.faculty)
+                pat_list = []
+                for pat in prof_assigned_load:
+                    if pat.load_schedule:
+                        pat_list += list(pat.load_schedule.preferred_time.all())
+                #print(f'ALREADY TIME {pat_list}')
+                #print(f'{bool([item for item in fls_list if item in ppt_list])}')
+                print(f'{not bool(secOff_prof_exists)} - {bool(allocated_hours + subject_hours <= allowed_hours)} - {bool(all(item in ppt_list for item in fls_list))} - {not bool([item for item in fls_list if item in pat_list])}' )
+                if not bool(secOff_prof_exists) and bool(allocated_hours + subject_hours <= allowed_hours) and bool(all(item in ppt_list for item in fls_list)) and not bool([item for item in fls_list if item in pat_list]):
+                    secOff.professor = prof.faculty
+                    secOff.save()
+                    print(f'ALLOCATED TO {prof.faculty}')
+                    break #break for prof
+                else:
+                    print ('NEXT PROF')
+                print("===END===")
+    return redirect('faculty-load')
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser or u.is_staff )
+def clear_fl(request):
+    fls = FacultyLoad.objects.all()
+    for fl in fls:
+        fl.load_schedule = None
+        fl.save()
+        print(fl.load_schedule)
+    return HttpResponse("cleared sched")
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser or u.is_staff )
+def clear_prof(request):
+    secOffs = SectionOffering.objects.all()
+    for secOff in secOffs:
+        secOff.professor = None
+        secOff.save()
+        print(secOff.professor)
+    return HttpResponse("cleared prof")
+@login_required
+@user_passes_test(lambda u: u.is_superuser or u.is_staff )
 def allocate_section_offering(request):
     settings = Setting.objects.get(current=True)
     semester = str(settings.semester)
@@ -1254,92 +1684,6 @@ def allocate_section_offering(request):
     settings.status = 2
     settings.save()
     return redirect('section-offering')
-
-@login_required
-@user_passes_test(lambda u: u.is_superuser or u.is_staff )
-def generate_faculty_load(request):
-    settings = Setting.objects.get(current=True)
-    semester = str(settings.semester)
-    start_year = str(settings.school_year.start_year)
-    end_year = str(settings.school_year.end_year)
-
-    try:
-        start = Year.objects.get(year=start_year)
-    except Year.DoesNotExist:
-        new_year = Year(year=start_year)
-        new_year.save()
-        start = Year.objects.get(year=start_year)
-
-    try:
-        end = Year.objects.get(year=end_year)
-    except Year.DoesNotExist:
-        new_year = Year(year=end_year)
-        new_year.save()
-        end  = Year.objects.get(year=end_year)
-
-    try:
-        sy = SchoolYear.objects.get(start_year=start, end_year=end)
-    except SchoolYear.DoesNotExist:
-        new_sy = SchoolYear(start_year=start, end_year=end)
-        new_sy.save()
-        sy = SchoolYear.objects.get(start_year=start, end_year=end)
-
-    # Loop through section offering
-    secOffs = SectionOffering.objects.filter(school_year=sy, semester=semester)
-    # Check secOff.subject lab hours, lec hours
-    for secOff in secOffs:
-        lab_hours = secOff.subject.lab_hours
-        lec_hours = secOff.subject.lec_hours
-        print(f'{secOff.subject} {lab_hours} + {lec_hours}')
-    # If > 0 lab hours and >= 5 lab hrs - lab1 labhrs//2+1 lab2 lab//hrs+2 - lab1
-    # elif >0 lab hours < 5 lab1 - labhrs
-    # create FL
-        if lab_hours > 0 and lab_hours >= 5:
-            try:
-                facload = FacultyLoad.objects.get(subject=secOff, load_category=0)
-            except FacultyLoad.DoesNotExist:
-                facload = FacultyLoad(subject=secOff, load_category=0)
-                facload.save()
-            print(facload)
-            try:
-                facload = FacultyLoad.objects.get(subject=secOff, load_category=1)
-            except FacultyLoad.DoesNotExist:
-                facload = FacultyLoad(subject=secOff, load_category=1)
-                facload.save()
-            print(facload)
-        elif lab_hours > 0 and lab_hours < 5:
-            try:
-                facload = FacultyLoad.objects.get(subject=secOff, load_category=0)
-            except FacultyLoad.DoesNotExist:
-                facload = FacultyLoad(subject=secOff, load_category=0)
-                facload.save()
-            print(facload)
-    # If > 0 lec hours and >= 5 lec hrs - lec1 lechrs//2+1 lec2 lec//hrs+2 - lec1
-    # elif >0 lec hours < 5 lec1 - lechrs
-        if lec_hours > 0 and lec_hours >= 5:
-            try:
-                facload = FacultyLoad.objects.get(subject=secOff, load_category=2)
-            except FacultyLoad.DoesNotExist:
-                facload = FacultyLoad(subject=secOff, load_category=2)
-                facload.save()
-            print(facload)
-            try:
-                facload = FacultyLoad.objects.get(subject=secOff, load_category=3)
-            except FacultyLoad.DoesNotExist:
-                facload = FacultyLoad(subject=secOff, load_category=3)
-                facload.save()
-            print(facload)
-        elif lec_hours > 0 and lec_hours < 5:
-            try:
-                facload = FacultyLoad.objects.get(subject=secOff, load_category=2)
-            except FacultyLoad.DoesNotExist:
-                facload = FacultyLoad(subject=secOff, load_category=2)
-                facload.save()
-            print(facload)
-    # create FL
-    settings.status = 1
-    settings.save()
-    return redirect('settings')
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser or u.is_staff )
@@ -1431,12 +1775,12 @@ def allocate_faculty_load(request):
                 prof_preferred_time = PreferredSchedule.objects.get(user=prof.faculty, school_year=sy, semester=semester).preferred_time.all()
                 ppt_list = list(prof_preferred_time)
                 # print(f'PPT LIST {ppt_list}')
-                prof_assigned_time = FacultyLoad.objects.filter(subject__professor=prof.faculty)
+                prof_assigned_load = FacultyLoad.objects.filter(subject__professor=prof.faculty)
                 pat_list = []
-                for pat in prof_assigned_time:
+                for pat in prof_assigned_load:
                     if pat.load_schedule:
                         pat_list += list(pat.load_schedule.preferred_time.all())
-                print(f'ASSIGNED LOAD {prof_assigned_time}')
+                print(f'ASSIGNED LOAD {prof_assigned_load}')
                 print(f'ALREADY TIME {pat_list}')
                 # fls_allocated = FacultyLoad.objects.filter(load_schedule__isnull=False)
                 rooms = Room.objects.filter(room_category=secOff.subject.room_category)
@@ -1450,8 +1794,8 @@ def allocate_faculty_load(request):
                     for fl_room_occupant in fl_room_occupants:
                         check_sched += list(fl_room_occupant.load_schedule.preferred_time.all())
                     print(f'TIME OCCUPIED {check_sched}')
-                    for i in range(5):
-                        for j in range(26-divisions):
+                    for i in range(6):
+                        for j in range(27-divisions):
                             check_time = []
                             check_time_ids = []
                             for k in range(divisions):

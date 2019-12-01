@@ -5,6 +5,6 @@ from .models import *
 #
 
 
-# @receiver(post_save, sender=FacultyProfile)
-# def save_profile(sender, instance, **kwargs):
-#     pass
+@receiver(post_save, sender=BlockSection)
+def save_profile(sender, instance, **kwargs):
+    pass

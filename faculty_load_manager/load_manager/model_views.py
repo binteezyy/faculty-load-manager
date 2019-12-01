@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views import generic
+from django.contrib.auth.decorators import login_required,user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.http import HttpResponseRedirect
 from django.contrib import messages
@@ -88,6 +89,106 @@ class SettingsDeleteView(LoginRequiredMixin, UserPassesTestMixin,BSModalDeleteVi
     def test_func(self):
         return self.request.user.is_superuser
 
+#Room
+class RoomCreateView(LoginRequiredMixin, UserPassesTestMixin,BSModalCreateView):
+    template_name = 'load_manager/components/modals/create.html'
+    form_class = RoomForm
+    model = Room
+    model_type = 'room'
+    success_message = 'Success: Room was created.'
+    success_url = reverse_lazy('room')
+
+    def test_func(self):
+        return self.request.user.is_superuser
+class RoomDeleteView(LoginRequiredMixin, UserPassesTestMixin,BSModalDeleteView):
+    model = Room
+    template_name = 'load_manager/components/modals/delete.html'
+    context_object_name = 'room'
+    success_message = 'Success: Room was deleted.'
+    success_url = reverse_lazy('room')
+    def test_func(self):
+        return self.request.user.is_superuser
+
+class RoomUpdateView(BSModalUpdateView):
+    model = Room
+    template_name = 'load_manager/components/modals/update.html'
+    form_class = RoomForm
+    success_message = 'Success: Book was updated.'
+    success_url = reverse_lazy('room')
+
+#SECTIONS
+class SectionCreateView(LoginRequiredMixin, UserPassesTestMixin,BSModalCreateView):
+    template_name = 'load_manager/components/modals/create.html'
+    form_class = BlockSectionForm
+    model = BlockSection
+    model_type = 'block-sections'
+    success_message = 'Success: Section was created.'
+    success_url = reverse_lazy('sections')
+
+    def test_func(self):
+        return self.request.user.is_superuser
+class SectionsDeleteView(LoginRequiredMixin, UserPassesTestMixin,BSModalDeleteView):
+    model = BlockSection
+    template_name = 'load_manager/components/modals/delete.html'
+    context_object_name = 'block_section'
+    success_message = 'Success: Section was deleted.'
+    success_url = reverse_lazy('sections')
+    def test_func(self):
+        return self.request.user.is_superuser
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser or u.is_staff)
+def SectionsUpdateAll(request,pk):
+    os.system('cls')
+    block_prefer = Ys_PreferredSchedule.objects.get(pk=pk)
+    selected = request.POST.getlist('timedays')
+    print('BLOCK PREFERENCE', block_prefer)
+    setting = Setting.objects.get(current=True)
+    current_user = request.user
+
+    block_prefer.preferred_time.clear()
+    d = PreferredTime.objects.exclude(select_day=6)
+    for x in d:
+        block_prefer.preferred_time.add(x)
+    return redirect('sections')
+@login_required
+@user_passes_test(lambda u: u.is_superuser or u.is_staff)
+def SectionsUpdateView(request,pk):
+    settings = Setting.objects.get(current=True)
+    time_schedules = PreferredTime.objects.all()
+    current_user = request.user
+    subjs = SemesterOffering.objects.get(school_year=settings.school_year,semester=settings.semester).subject.all()
+    print("\n\n\n\nPK:",pk)
+    context = {
+        'title': 'LOAD MANAGER | FORM',
+        'viewtype': 'load-manager',
+        'user': request.user,
+        'block_prefer': Ys_PreferredSchedule.objects.get(block_section__pk=pk),
+        'time_schedules': time_schedules,
+        'days': DAY_OF_THE_WEEK,
+        'times': PreferredTime.TIME_SELECT,
+    }
+    if request.method=="POST":
+        os.system('cls')
+        block_prefer = Ys_PreferredSchedule.objects.get(pk= int(request.POST.get('select-pk')))
+        selected = request.POST.getlist('timedays')
+        print('BLOCK PREFERENCE', block_prefer)
+        setting = Setting.objects.get(current=True)
+        current_user = request.user
+
+        block_prefer.preferred_time.clear()
+        for x in selected:
+            daytime = x.split('-')
+            print(daytime)
+            d = PreferredTime.objects.filter(select_time=daytime[1]).get(select_day=daytime[0])
+            block_prefer.preferred_time.add(d)
+
+        # d = PreferredTime.objects.exclude(select_day=6)
+        # for x in d:
+        #     block_prefer.preferred_time.add(x)
+        return redirect('sections')
+    else:
+        return render(request, 'load_manager/components/chairperson/sections/modals/update.html', context)
 # SettingsFacultyPrefer
 class SettingsFacultyPreferReadView(LoginRequiredMixin, UserPassesTestMixin,BSModalReadView):
     model = PreferredSchedule
