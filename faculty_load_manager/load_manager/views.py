@@ -1277,8 +1277,8 @@ def sched_faculty_load(request):
                     ss_assigned_time_list += list(same_subj.load_schedule.preferred_time.all())
             #print(f'SAME SUBJECT TIMES {ss_assigned_time_list}')
 
-            for i in range(5):
-                for j in range(26-divisions):
+            for i in range(6):
+                for j in range(27-divisions):
                     check_time = []
                     check_time_ids = []
                     for k in range(divisions):
@@ -1290,7 +1290,11 @@ def sched_faculty_load(request):
                         print(f'{bool([item for item in check_time if item in ss_assigned_time_list])} - {not bool(all(item in spt_list for item in check_time))} - {bool([item for item in check_time if item in sal_list])}')
                         break #break for j
                 if bool([item for item in check_time if item in ss_assigned_time_list]) or not bool(all(item in spt_list for item in check_time)) or bool([item for item in check_time if item in sal_list]):
-                    print("I next loop")
+                    if i == 5:
+                        print('No Sched')
+                        check_time_ids = []
+                    else:
+                        print("I next loop")
                 else:
                     print(f'{bool([item for item in check_time if item in ss_assigned_time_list])} - {not bool(all(item in spt_list for item in check_time))} - {bool([item for item in check_time if item in sal_list])}')
                     break #break for i
@@ -1389,8 +1393,8 @@ def sched_faculty_load(request):
                 #print(f'2nd FL day {x}')
 
             ## Loop though time slots. Check if available for section and suits section's preferred sched. Check if same subject is parallel
-                for i in range(x, 5):
-                    for j in range(26-divisions):
+                for i in range(x, 6):
+                    for j in range(27-divisions):
                         check_time = []
                         check_time_ids = []
                         for k in range(divisions):
@@ -1726,8 +1730,8 @@ def allocate_faculty_load(request):
                     for fl_room_occupant in fl_room_occupants:
                         check_sched += list(fl_room_occupant.load_schedule.preferred_time.all())
                     print(f'TIME OCCUPIED {check_sched}')
-                    for i in range(5):
-                        for j in range(26-divisions):
+                    for i in range(6):
+                        for j in range(27-divisions):
                             check_time = []
                             check_time_ids = []
                             for k in range(divisions):
