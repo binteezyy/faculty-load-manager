@@ -1375,30 +1375,31 @@ def sched_faculty_load(request):
 
         ## Allocate LoadSchedule time
         ## Loop through LoadSchedule (room + timeslot) and select available room
-            rooms = Room.objects.filter(room_category=secOff.subject.room_category)
-            print(f'ROOMS {rooms}')
-            for room in rooms:
-                print(f'ROOM {room.room_name}')
-                fl_room_occupants = FacultyLoad.objects.filter(load_schedule__room=room)
-                print(f'ROOM OCCUPANTS {fl_room_occupants}')
-                check_sched = []
-                for fl_room_occupant in fl_room_occupants:
-                    check_sched += list(fl_room_occupant.load_schedule.preferred_time.all())
-                print(f'TIME OCCUPIED {check_sched}')
+            if fl_assigned_time:
+                rooms = Room.objects.filter(room_category=secOff.subject.room_category)
+                print(f'ROOMS {rooms}')
+                for room in rooms:
+                    print(f'ROOM {room.room_name}')
+                    fl_room_occupants = FacultyLoad.objects.filter(load_schedule__room=room)
+                    print(f'ROOM OCCUPANTS {fl_room_occupants}')
+                    check_sched = []
+                    for fl_room_occupant in fl_room_occupants:
+                        check_sched += list(fl_room_occupant.load_schedule.preferred_time.all())
+                    print(f'TIME OCCUPIED {check_sched}')
 
-                if bool([item for item in list(fl_assigned_time) if item in check_sched]):
-                    print('NEXT ROOM')
-                else:
-                    print(f'{bool([item for item in list(fl_assigned_time) if item in check_sched])}')
-                    load = first_fl.load_schedule
-                    load.room = room
-                    load.save()
-                    print(f'ASSIGNED TO ROOM {room.room_name}')
-                    break
+                    if bool([item for item in list(fl_assigned_time) if item in check_sched]):
+                        print('NEXT ROOM')
+                    else:
+                        print(f'{bool([item for item in list(fl_assigned_time) if item in check_sched])}')
+                        load = first_fl.load_schedule
+                        load.room = room
+                        load.save()
+                        print(f'ASSIGNED TO ROOM {room.room_name}')
+                        break
 
 
         ## Get second faculty load and consider mon-thurs tues-fri wed-sat pairing (this should be strict to ys_preferred sched as well)
-            if second_fl:
+            if second_fl and fl_assigned_time:
                 print(f'SECOND {second_fl}')
 
         ## Check if lab, lecture, or elecs_lab and how many hours.
