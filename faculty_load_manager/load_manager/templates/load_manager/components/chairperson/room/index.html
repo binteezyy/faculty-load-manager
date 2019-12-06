@@ -7,7 +7,6 @@
 {% endblock %}
 
 {% block extra_js %}
-  {% if current_settings %}
   <script type="text/javascript" src="{% static "vendor/DataTables/datatables.min.js" %}"></script>
   <script type="text/javascript">
     $('#room-table').DataTable( {
@@ -18,6 +17,10 @@
        "processing": true,
        "dataSrc":'',
        "url": "{% url 'room-table' %}",
+        "error": function(data){
+           console.log(data);
+           alert(data.status+': '+data.responseJSON['message']);
+        }
       },
       "dom": "<'row'<'col-md-4'l><'col-md-8'<'row float-right'<'col-6 'Bf><'col-6 create-room'>>>>" +
             "<'row'<'col-md-6'><'col-md-6'>>" +
@@ -25,6 +28,8 @@
       "initComplete": function(settings, json) {
         $("div.create-room").html('<button type="button" id="create-room" class="float-right btn btn-s btn-success btn-raised" name="button">Create <i class="fas fa-plus"></i></button>');
         $(".create-room").modalForm({formURL: "{% url 'create-room' %}"});
+      },
+      "drawCallback": function( settings ) {
         $(".read-room").each(function () {
             $(this).modalForm({formURL: $(this).data('id')});
           });
@@ -61,12 +66,9 @@
         },
     ]});
   </script>
-  {% endif %}
 {% endblock %}
 {% block content %}
 {% include "_modal.html" %}
-  {% if current_settings %}
-
     <div class="card animated fadeInDown lm-list p-3">
     <div class="card-header">
       <h5>Room</h5>
@@ -87,5 +89,4 @@
       </div>
     </div>
   </div>
-{% endif %}
 {% endblock %}

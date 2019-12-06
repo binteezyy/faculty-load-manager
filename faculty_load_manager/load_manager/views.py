@@ -679,8 +679,16 @@ def rooms(request):
 def room_table(request):
     import json
     from pprint import pprint
-    settings = Setting.objects.get(current=True)
-    semester = str(Setting.objects.get(current=True).semester)
+
+    try:
+        settings = Setting.objects.get(current=True)
+        semester = str(Setting.objects.get(current=True).semester)
+    except Exception as e:
+        response = JsonResponse({"error": str(e),
+                                 "message":"SETTINGS THIS SEMESTER DOES NOT EXIST"})
+        response.status_code = 403 # To announce that the user isn't allowed to publish
+        return response
+
     sy = get_school_year()
 
 
