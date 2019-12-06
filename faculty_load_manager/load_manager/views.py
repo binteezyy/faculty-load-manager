@@ -19,6 +19,8 @@ import os
 import json
 import re
 from bs4 import BeautifulSoup
+from django.utils import timezone
+
 def home_view(request):
     next = request.GET.get('next')
     status = ''
@@ -144,16 +146,14 @@ def load_manager_list(request):
             psched = PreferredSchedule.objects.get(user=request.user,school_year=settings.school_year,semester=settings.semester)
         else:
             cs = False
-            psched = ""
+            psched = None
     except:
         settings = None
-
 
     context = {
         'avatar': UserProfile.objects.get(user=request.user).avatar,
         'user_type': FacultyProfile.objects.get(faculty=request.user).get_faculty_type_display,
         'preferred_time': psched,
-        'ptime' : psched.preferred_time.all().values_list('select_day','select_time'),
         'times': PreferredTime.TIME_SELECT,
         'days': DAY_OF_THE_WEEK,
         'csetting': settings,
@@ -163,6 +163,12 @@ def load_manager_list(request):
         'submission': cs,
         'psubj': psched,
     }
+
+    if psched != None:
+        context['ptime']=psched.preferred_time.all().values_list('select_day','select_time'),
+    else:
+        context['ptime']=None
+        
     return render(request, 'load_manager/components/faculty-load/list.html', context)
 
 @login_required
@@ -225,77 +231,7 @@ def load_manager_create(request):
 #===================================================
 #                   UTILITIES
 #===================================================
-@login_required
-def ss(request):
-    for x,day in DAY_OF_THE_WEEK():
-        for y, day in PreferredTime.TIME_SELECT:
-            try:
-                sched = PreferredTime.objects.get(
-                select_day = x,
-                select_time = y
-                )
-                print(f'{x} {y} already exists')
-            except PreferredTime.DoesNotExist:
-                sched = PreferredTime(
-                    select_day = x,
-                    select_time = y
-                )
-                sched.save()
-    try:
-        x = Room.objects.get(room_name='310', room_category=1)
-        print('Exists')
-    except Room.DoesNotExist:
-        x = Room(room_name='310', room_category=1)
-        x.save()
-    try:
-        x = Room.objects.get(room_name='311', room_category=0)
-        print('Exists')
-    except Room.DoesNotExist:
-        x = Room(room_name='311', room_category=0)
-        x.save()
-    try:
-        x = Room.objects.get(room_name='312', room_category=0)
-        print('Exists')
-    except Room.DoesNotExist:
-        x = Room(room_name='312', room_category=0)
-        x.save()
-    try:
-        x = Room.objects.get(room_name='313', room_category=0)
-        print('Exists')
-    except Room.DoesNotExist:
-        x = Room(room_name='313', room_category=0)
-        x.save()
-    try:
-        x = Room.objects.get(room_name='314', room_category=0)
-        print('Exists')
-    except Room.DoesNotExist:
-        x = Room(room_name='314', room_category=0)
-        x.save()
-    try:
-        x = Room.objects.get(room_name='315', room_category=0)
-        print('Exists')
-    except Room.DoesNotExist:
-        x = Room(room_name='315', room_category=0)
-        x.save()
-    try:
-        x = Room.objects.get(room_name='300', room_category=0)
-        print('Exists')
-    except Room.DoesNotExist:
-        x = Room(room_name='300', room_category=0)
-        x.save()
-    try:
-        x = Room.objects.get(room_name='302', room_category=1)
-        print('Exists')
-    except Room.DoesNotExist:
-        x = Room(room_name='302', room_category=1)
-        x.save()
-    try:
-        x = Room.objects.get(room_name='316', room_category=1)
-        print('Exists')
-    except Room.DoesNotExist:
-        x = Room(room_name='316', room_category=1)
-        x.save()
-    return HttpResponse("SCHEDS CREATED")
+
 
 #===================================================
 #               CHAIRPERSON VIEW
