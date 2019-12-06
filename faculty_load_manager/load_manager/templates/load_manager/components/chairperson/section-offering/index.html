@@ -8,118 +8,120 @@
 
 {% block content %}
 {% include "_modal.html" %}
-<div class="card animated fadeInDown settings-card">
-  <div class="card-header">
-    <h5>Section Offering {{settings}}</h5>
-  </div>
-  <div class="card-content">
-    <div class="container-fluid">
+  {% if current_settings %}
+    <div class="card animated fadeInDown settings-card">
+    <div class="card-header">
+      <h5>Section Offering {{settings}}</h5>
+    </div>
+    <div class="card-content">
+      <div class="container-fluid">
 
-      <div class="row p-3">
-        <div class="col">
-          <div class="table-responsive">
-            <table id="section-offering-table" class="table table-bordered table-hover" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info">
-              <thead>
-                <tr role="row">
-                  <th style="width:10%">Subject</th>
-                  <th style="width:10%">Section</th>
-                  <th style="width:10%">Type</th>
-                  <th style="width:10%">Professor</th>
-                  <th style="width:10%">Action</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
+        <div class="row p-3">
+          <div class="col">
+            <div class="table-responsive">
+              <table id="section-offering-table" class="table table-bordered table-hover" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info">
+                <thead>
+                  <tr role="row">
+                    <th style="width:10%">Subject</th>
+                    <th style="width:10%">Section</th>
+                    <th style="width:10%">Type</th>
+                    <th style="width:10%">Professor</th>
+                    <th style="width:10%">Action</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-  <div class="card-footer text-right">
-    <div class="float-right">
-      <a href="{% url 'allocate_section_offering' %}" style="text-decoration:none">
-         <button class="btn btn-raised btn-block btn-success" type="button" name="button">
-           Allocate Section Offering
-         </button>
-      </a>
+    <div class="card-footer text-right">
+      <div class="float-right">
+        <a href="{% url 'allocate_section_offering' %}" style="text-decoration:none">
+           <button class="btn btn-raised btn-block btn-success" type="button" name="button">
+             Allocate Section Offering
+           </button>
+        </a>
+      </div>
     </div>
-  </div>
 
-</div>
+  </div>
+  {% endif %}
 {% endblock content %}
 
 {% block extra_js %}
-<script type="text/javascript" src="{% static "vendor/DataTables/datatables.min.js" %}"></script>
+  {% if current_settings %}
+    <script type="text/javascript" src="{% static "vendor/DataTables/datatables.min.js" %}"></script>
+    <script type="text/javascript">
+      $(document).ready(function () {
+        // $("#curriculum-upload").modalForm({
+        //     formURL: "{% url 'settings-curriculum-upload' %}"
+        // });
+        // $('#curriculum-select').select2({
+        //     // maximumSelectionLength: 3,
+        // });
+        // $('#curriculum-select').on('select2:select', function (e) {
+        //     alert('wow');
+        // });
 
-<script type="text/javascript">
-
-  $(document).ready(function () {
-    // $("#curriculum-upload").modalForm({
-    //     formURL: "{% url 'settings-curriculum-upload' %}"
-    // });
-    // $('#curriculum-select').select2({
-    //     // maximumSelectionLength: 3,
-    // });
-    // $('#curriculum-select').on('select2:select', function (e) {
-    //     alert('wow');
-    // });
-
-    $('#section-offering-table').DataTable({
-      "dataType": 'json',
-      "ajax": {
-        "processing": true,
-        "dataSrc": '',
-        "url": "{% url 'chairperson-section-offering-table'%}",
-      },
-      "initComplete": function(settings, json) {
-        $(".read-section-offering").each(function () {
-            $(this).modalForm({formURL: $(this).data('id')});
-          });
-        $(".delete-section-offering").each(function () {
-          $(this).modalForm({formURL: $(this).data('id')});
-        });
-        $(".update-section-offering").each(function () {
-          $(this).modalForm({formURL: $(this).data('id')});
-        });
-      },
-      "columnDefs": [
-        {
-          "className": 'col-secOff-subject text-center',
-          "targets": 0,
-          "data": "fields.secOff-subject",
-        },
-        {
-          "className": 'col-secOff-section text-center',
-          "targets": 1,
-          "data": "fields.secOff-section",
-        },
-        {
-          "className": 'col-secOff-type text-center',
-          "targets": 2,
-          "data": "fields.secOff-type",
-        },
-        {
-          "className": 'col-secOff-prof text-center',
-          "targets": 3,
-          "data": "fields.secOff-prof",
-        },
-        { "className": 'col-details text-center',
-          "targets":   -1,
-          "data": 'fields.id',
-          render:function(data, type, row)
-            {
-              let render = '<button type="button" class="read-section-offering btn btn-sm btn-raised btn-primary m-1" data-id="/read/section-offering/'+data+'">'+
-                '<span class="far fa-eye"></span></button>' +
-                '<button type="button" class="delete-section-offering btn btn-sm btn-raised btn-warning m-1" data-id="/delete/section-offering/'+data+'">'+
-                  '<span class="fa fa-trash"></span></button>'+
-                '<button type="button" class="update-section-offering btn btn-sm btn-raised btn-warning m-1" data-id="/update/section-offering/'+data+'">'+
-                  '<span class="fa fa-edit"></span></button>';
-
-              return render
-            }
+        $('#section-offering-table').DataTable({
+          "dataType": 'json',
+          "ajax": {
+            "processing": true,
+            "dataSrc": '',
+            "url": "{% url 'chairperson-section-offering-table'%}",
           },
-      ]
-    })
-  });
-</script>
+          "initComplete": function(settings, json) {
+            $(".read-section-offering").each(function () {
+                $(this).modalForm({formURL: $(this).data('id')});
+              });
+            $(".delete-section-offering").each(function () {
+              $(this).modalForm({formURL: $(this).data('id')});
+            });
+            $(".update-section-offering").each(function () {
+              $(this).modalForm({formURL: $(this).data('id')});
+            });
+          },
+          "columnDefs": [
+            {
+              "className": 'col-secOff-subject text-center',
+              "targets": 0,
+              "data": "fields.secOff-subject",
+            },
+            {
+              "className": 'col-secOff-section text-center',
+              "targets": 1,
+              "data": "fields.secOff-section",
+            },
+            {
+              "className": 'col-secOff-type text-center',
+              "targets": 2,
+              "data": "fields.secOff-type",
+            },
+            {
+              "className": 'col-secOff-prof text-center',
+              "targets": 3,
+              "data": "fields.secOff-prof",
+            },
+            { "className": 'col-details text-center',
+              "targets":   -1,
+              "data": 'fields.id',
+              render:function(data, type, row)
+                {
+                  let render = '<button type="button" class="read-section-offering btn btn-sm btn-raised btn-primary m-1" data-id="/read/section-offering/'+data+'">'+
+                    '<span class="far fa-eye"></span></button>' +
+                    '<button type="button" class="delete-section-offering btn btn-sm btn-raised btn-warning m-1" data-id="/delete/section-offering/'+data+'">'+
+                      '<span class="fa fa-trash"></span></button>'+
+                    '<button type="button" class="update-section-offering btn btn-sm btn-raised btn-warning m-1" data-id="/update/section-offering/'+data+'">'+
+                      '<span class="fa fa-edit"></span></button>';
+
+                  return render
+                }
+              },
+          ]
+        })
+      });
+    </script>
+  {% endif %}
 {% endblock %}

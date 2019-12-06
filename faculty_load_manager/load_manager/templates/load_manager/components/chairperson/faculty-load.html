@@ -10,7 +10,8 @@
 {% endblock %}
 {% block content %}
 {% include "_modal.html" %}
-<div class="card animated fadeInDown settings-card">
+  {% if current_settings %}
+    <div class="card animated fadeInDown settings-card">
     <div class="card-header">
         <h5>Faculty Load</h5>
     </div>
@@ -47,9 +48,11 @@
       </div>
     </div>
 </div>
+  {% endif %}
 {% endblock content %}
 
 {% block extra_js %}
+{% if current_settings %}
 <!-- SELECT2 -->
 <script src="{% static "vendor/select2/js/select2.min.js" %}"></script>
 <script type="text/javascript" src="{% static "vendor/DataTables/datatables.min.js" %}"></script>
@@ -127,4 +130,5 @@
 
 </script>
 
+{% endif %}
 {% endblock %}
