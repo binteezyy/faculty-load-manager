@@ -705,18 +705,19 @@ def room_table(request):
 def sections(request):
     try:
         current_settings = Setting.objects.get(current=True)
+        curr_sy = current_settings.school_year
     except Exception as e:
         current_settings = None
-
+        curr_sy = None
     context = {
         'avatar': UserProfile.objects.get(user=request.user).avatar,
         'user_type': FacultyProfile.objects.get(faculty=request.user).get_faculty_type_display,
         'title': 'Sections',
-        'curr_sy': Setting.objects.get(current=True).school_year,
+        'curr_sy': curr_sy,
         'viewtype': 'sections',
         'settings': current_settings,
     }
-    
+
     return render(request, 'load_manager/components/chairperson/sections/index.html', context)
 
 @login_required
@@ -1486,7 +1487,7 @@ def sched_faculty_load(request):
                 second_fl.save()
                 print(load_schedule2)
                 print(f'LOAD ASSIGNED TIME {fl2_assigned_time}')
-            
+
             ## Loop through LoadSchedule (room + timeslot) and select available room
                 rooms = Room.objects.filter(room_category=secOff.subject.room_category)
                 print(f'ROOMS {rooms}')
@@ -1534,7 +1535,7 @@ def assign_prof(request):
             if fl.load_schedule:
                 fls_list += list(fl.load_schedule.preferred_time.all())
 
-    ## Query profs who prefers this section offering 
+    ## Query profs who prefers this section offering
     ## - first come first server descending based on Faculty Priority Rule
         user_list = []
         prefScheds = PreferredSchedule.objects.filter(school_year=sy, semester=semester, preferred_subject=secOff.subject)
@@ -1551,7 +1552,7 @@ def assign_prof(request):
 
     ## Check if already allocated to this type of subject, next if yes.
                 secOff_prof_exists = SectionOffering.objects.filter(school_year=sy, semester=semester, professor=prof.faculty, subject=secOff.subject)
- 
+
     ## Check prof remaining hours, next if no remaining hours.
                 secOff_prof_qs = SectionOffering.objects.filter(school_year=sy, semester=semester, professor=prof.faculty)
                 allowed_hours = prof.regular_hours + prof.part_time_hours
