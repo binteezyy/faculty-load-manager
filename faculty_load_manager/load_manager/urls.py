@@ -93,8 +93,6 @@ urlpatterns = [
     path('load-manager/my-history/', views.load_manager_tables,
          name='load-manager-history-tables'),
 
-    # TEST URLS
-    path('ss', views.ss, name='ss'),
 
     # CHAIRPERSON VIEW
     # CURRICULUM
