@@ -12,3 +12,5 @@ faculty_load_manager/db.sqlite3
 
 env/
 .vscode
+
+media/
