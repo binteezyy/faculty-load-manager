@@ -19,6 +19,8 @@ import os
 import json
 import re
 from bs4 import BeautifulSoup
+from django.utils import timezone
+
 def home_view(request):
     next = request.GET.get('next')
     status = ''
@@ -144,16 +146,14 @@ def load_manager_list(request):
             psched = PreferredSchedule.objects.get(user=request.user,school_year=settings.school_year,semester=settings.semester)
         else:
             cs = False
-            psched = ""
+            psched = None
     except:
         settings = None
-
 
     context = {
         'avatar': UserProfile.objects.get(user=request.user).avatar,
         'user_type': FacultyProfile.objects.get(faculty=request.user).get_faculty_type_display,
         'preferred_time': psched,
-        'ptime' : psched.preferred_time.all().values_list('select_day','select_time'),
         'times': PreferredTime.TIME_SELECT,
         'days': DAY_OF_THE_WEEK,
         'csetting': settings,
@@ -163,6 +163,12 @@ def load_manager_list(request):
         'submission': cs,
         'psubj': psched,
     }
+
+    if psched != None:
+        context['ptime']=psched.preferred_time.all().values_list('select_day','select_time'),
+    else:
+        context['ptime']=None
+        
     return render(request, 'load_manager/components/faculty-load/list.html', context)
 
 @login_required
@@ -225,77 +231,7 @@ def load_manager_create(request):
 #===================================================
 #                   UTILITIES
 #===================================================
-@login_required
-def ss(request):
-    for x,day in DAY_OF_THE_WEEK():
-        for y, day in PreferredTime.TIME_SELECT:
-            try:
-                sched = PreferredTime.objects.get(
-                select_day = x,
-                select_time = y
-                )
-                print(f'{x} {y} already exists')
-            except PreferredTime.DoesNotExist:
-                sched = PreferredTime(
-                    select_day = x,
-                    select_time = y
-                )
-                sched.save()
-    try:
-        x = Room.objects.get(room_name='310', room_category=1)
-        print('Exists')
-    except Room.DoesNotExist:
-        x = Room(room_name='310', room_category=1)
-        x.save()
-    try:
-        x = Room.objects.get(room_name='311', room_category=0)
-        print('Exists')
-    except Room.DoesNotExist:
-        x = Room(room_name='311', room_category=0)
-        x.save()
-    try:
-        x = Room.objects.get(room_name='312', room_category=0)
-        print('Exists')
-    except Room.DoesNotExist:
-        x = Room(room_name='312', room_category=0)
-        x.save()
-    try:
-        x = Room.objects.get(room_name='313', room_category=0)
-        print('Exists')
-    except Room.DoesNotExist:
-        x = Room(room_name='313', room_category=0)
-        x.save()
-    try:
-        x = Room.objects.get(room_name='314', room_category=0)
-        print('Exists')
-    except Room.DoesNotExist:
-        x = Room(room_name='314', room_category=0)
-        x.save()
-    try:
-        x = Room.objects.get(room_name='315', room_category=0)
-        print('Exists')
-    except Room.DoesNotExist:
-        x = Room(room_name='315', room_category=0)
-        x.save()
-    try:
-        x = Room.objects.get(room_name='300', room_category=0)
-        print('Exists')
-    except Room.DoesNotExist:
-        x = Room(room_name='300', room_category=0)
-        x.save()
-    try:
-        x = Room.objects.get(room_name='302', room_category=1)
-        print('Exists')
-    except Room.DoesNotExist:
-        x = Room(room_name='302', room_category=1)
-        x.save()
-    try:
-        x = Room.objects.get(room_name='316', room_category=1)
-        print('Exists')
-    except Room.DoesNotExist:
-        x = Room(room_name='316', room_category=1)
-        x.save()
-    return HttpResponse("SCHEDS CREATED")
+
 
 #===================================================
 #               CHAIRPERSON VIEW
@@ -679,8 +615,16 @@ def rooms(request):
 def room_table(request):
     import json
     from pprint import pprint
-    settings = Setting.objects.get(current=True)
-    semester = str(Setting.objects.get(current=True).semester)
+
+    try:
+        settings = Setting.objects.get(current=True)
+        semester = str(Setting.objects.get(current=True).semester)
+    except Exception as e:
+        response = JsonResponse({"error": str(e),
+                                 "message":"SETTINGS THIS SEMESTER DOES NOT EXIST"})
+        response.status_code = 403 # To announce that the user isn't allowed to publish
+        return response
+
     sy = get_school_year()
 
 
@@ -705,18 +649,19 @@ def room_table(request):
 def sections(request):
     try:
         current_settings = Setting.objects.get(current=True)
+        curr_sy = current_settings.school_year
     except Exception as e:
         current_settings = None
-
+        curr_sy = None
     context = {
         'avatar': UserProfile.objects.get(user=request.user).avatar,
         'user_type': FacultyProfile.objects.get(faculty=request.user).get_faculty_type_display,
         'title': 'Sections',
-        'curr_sy': Setting.objects.get(current=True).school_year,
+        'curr_sy': curr_sy,
         'viewtype': 'sections',
         'settings': current_settings,
     }
-    
+
     return render(request, 'load_manager/components/chairperson/sections/index.html', context)
 
 @login_required
@@ -1486,7 +1431,7 @@ def sched_faculty_load(request):
                 second_fl.save()
                 print(load_schedule2)
                 print(f'LOAD ASSIGNED TIME {fl2_assigned_time}')
-            
+
             ## Loop through LoadSchedule (room + timeslot) and select available room
                 rooms = Room.objects.filter(room_category=secOff.subject.room_category)
                 print(f'ROOMS {rooms}')
@@ -1534,7 +1479,7 @@ def assign_prof(request):
             if fl.load_schedule:
                 fls_list += list(fl.load_schedule.preferred_time.all())
 
-    ## Query profs who prefers this section offering 
+    ## Query profs who prefers this section offering
     ## - first come first server descending based on Faculty Priority Rule
         user_list = []
         prefScheds = PreferredSchedule.objects.filter(school_year=sy, semester=semester, preferred_subject=secOff.subject)
@@ -1551,7 +1496,7 @@ def assign_prof(request):
 
     ## Check if already allocated to this type of subject, next if yes.
                 secOff_prof_exists = SectionOffering.objects.filter(school_year=sy, semester=semester, professor=prof.faculty, subject=secOff.subject)
- 
+
     ## Check prof remaining hours, next if no remaining hours.
                 secOff_prof_qs = SectionOffering.objects.filter(school_year=sy, semester=semester, professor=prof.faculty)
                 allowed_hours = prof.regular_hours + prof.part_time_hours
