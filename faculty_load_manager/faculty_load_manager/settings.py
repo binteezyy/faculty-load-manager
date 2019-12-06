@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'bootstrap_modal_forms',
     'users.apps.UsersConfig',
-    'load_manager',
+    'load_manager.apps.LoadManagerConfig',
 ]
 
 MIDDLEWARE = [
