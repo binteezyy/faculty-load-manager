@@ -168,7 +168,7 @@ def load_manager_list(request):
         context['ptime']=psched.preferred_time.all().values_list('select_day','select_time'),
     else:
         context['ptime']=None
-        
+
     return render(request, 'load_manager/components/faculty-load/list.html', context)
 
 @login_required
@@ -616,19 +616,19 @@ def room_table(request):
     import json
     from pprint import pprint
 
-    try:
-        settings = Setting.objects.get(current=True)
-        semester = str(Setting.objects.get(current=True).semester)
-    except Exception as e:
-        response = JsonResponse({"error": str(e),
-                                 "message":"SETTINGS THIS SEMESTER DOES NOT EXIST"})
-        response.status_code = 403 # To announce that the user isn't allowed to publish
-        return response
-
-    sy = get_school_year()
-
-
-    fls = FacultyLoad.objects.filter(subject__school_year=sy, subject__semester=semester)
+    # try:
+    #     settings = Setting.objects.get(current=True)
+    #     semester = str(Setting.objects.get(current=True).semester)
+    # except Exception as e:
+    #     response = JsonResponse({"error": str(e),
+    #                              "message":"SETTINGS THIS SEMESTER DOES NOT EXIST"})
+    #     response.status_code = 403 # To announce that the user isn't allowed to publish
+    #     return response
+    #
+    # sy = get_school_year()
+    #
+    #
+    # fls = FacultyLoad.objects.filter(subject__school_year=sy, subject__semester=semester)
     rooms = Room.objects.all()
     data = []
     for room in rooms:
