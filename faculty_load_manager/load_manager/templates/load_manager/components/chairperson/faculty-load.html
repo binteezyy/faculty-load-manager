@@ -77,7 +77,7 @@
                 "dataSrc": '',
                 "url": "{% url 'chairperson-faculty-load-table'  %}",
             },
-            "initComplete": function(settings, json) {
+            "drawCallback": function(settings, json) {
               $(".read-faculty-load").each(function () {
                   $(this).modalForm({formURL: $(this).data('id')});
                 });
