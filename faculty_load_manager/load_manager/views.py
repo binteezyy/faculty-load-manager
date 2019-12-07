@@ -1348,8 +1348,8 @@ def sched_faculty_load(request):
                 print(f'SECOND {second_fl}')
 
         ## Check if lab, lecture, or elecs_lab and how many hours.
-                lab_hours = first_fl.subject.subject.lab_hours
-                lec_hours = first_fl.subject.subject.lec_hours
+                lab_hours = second_fl.subject.subject.lab_hours
+                lec_hours = second_fl.subject.subject.lec_hours
                 if lab_hours >= 5:
                     if lab_hours % 2:
                         lab1 = lab_hours//2
@@ -1357,13 +1357,13 @@ def sched_faculty_load(request):
                     else:
                         lab1 = lab_hours//2
                         lab2 = lab_hours//2
-                    if first_fl.load_category == 0:
+                    if second_fl.load_category == 0:
                         labhr = lab1
-                    elif first_fl.load_category == 1:
+                    elif second_fl.load_category == 1:
                         labhr = lab2
                 elif lab_hours < 5:
                     lab1 = lab_hours
-                    if first_fl.load_category == 0:
+                    if second_fl.load_category == 0:
                         labhr = lab1
 
                 if lec_hours >= 5:
@@ -1373,32 +1373,32 @@ def sched_faculty_load(request):
                     else:
                         lec1 = lec_hours//2
                         lec2 = lec_hours//2
-                    if first_fl.load_category == 2:
+                    if second_fl.load_category == 2:
                         lechr = lec1
-                    elif first_fl.load_category == 3:
+                    elif second_fl.load_category == 3:
                         lechr = lec2
                 elif lec_hours < 5:
                     lec1 = lec_hours
-                    if first_fl.load_category == 2:
+                    if second_fl.load_category == 2:
                         lechr = lec1
 
-                if first_fl.load_category == 0 or first_fl.load_category == 1:
+                if second_fl.load_category == 0 or second_fl.load_category == 1:
                     subjhr = labhr
-                elif first_fl.load_category == 2 or first_fl.load_category == 3:
+                elif second_fl.load_category == 2 or second_fl.load_category == 3:
                     subjhr = lechr
                 print(f'{subjhr} hrs')
                 divisions = int(subjhr/0.5)
                 print(str(divisions) + ' divisions')
 
-                first_fl_day = fl_assigned_time[0].select_day
+                second_fl_day = fl_assigned_time[0].select_day
                 x = 0
-                if first_fl_day == 0:
+                if second_fl_day == 0:
                     x = 3
-                elif first_fl_day == 1 or first_fl_day == 3:
+                elif second_fl_day == 1 or second_fl_day == 3:
                     x = 4
-                elif first_fl_day == 2 or first_fl_day == 4:
+                elif second_fl_day == 2 or second_fl_day == 4:
                     x = 5
-                elif first_fl_day == 6:
+                elif second_fl_day == 6:
                     x = 6
                 #print(f'2nd FL day {x}')
 

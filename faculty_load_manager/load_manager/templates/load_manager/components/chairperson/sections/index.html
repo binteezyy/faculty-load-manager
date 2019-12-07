@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block extra_js %}
-  {% if current_settings %}
+
     <script type="text/javascript" src="{% static "vendor/DataTables/datatables.min.js" %}"></script>
     <script type="text/javascript">
       var cur_table = $('#sections-table').DataTable( {
@@ -22,7 +22,7 @@
         "dom": "<'row'<'col-md-4'l><'col-md-8'<'row float-right'<'col-6 'Bf><'col-6 create-sections hidden'>>>>" +
               "<'row'<'col-md-6'><'col-md-6'>>" +
               "<'row'<'col-md-12't>><'row'<'col-md-12'ip>>",
-        "initComplete": function(settings, json) {
+        "drawCallback": function(settings, json) {
           // $("div.create-sections").html('<button type="button" id="create-section" class="float-right btn btn-s btn-success btn-raised" name="button">Create <i class="fas fa-plus"></i></button>');
           // $(".create-sections").modalForm({formURL: "{% url 'create-block-section' %}"});
           $(".read-room").each(function () {
@@ -69,11 +69,10 @@
           $(this).modalForm({formURL: $(this).data('id')});
         });
     </script>
-  {% endif %}
+
 {% endblock %}
 {% block content %}
 {% include "_modal.html" %}
-  {% if current_settings %}
     <div class="card animated fadeInDown lm-list p-3">
       <div class="card-header">
         <h5>Current School-Year Sections [{{ curr_sy }}]</h5>
@@ -94,5 +93,4 @@
         </div>
       </div>
     </div>
-  {% endif %}
 {% endblock %}

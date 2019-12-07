@@ -8,7 +8,6 @@
 
 {% block content %}
 {% include "_modal.html" %}
-  {% if current_settings %}
     <div class="card animated fadeInDown settings-card">
     <div class="card-header">
       <h5>Section Offering {{settings}}</h5>
@@ -37,21 +36,17 @@
       </div>
     </div>
     <div class="card-footer text-right">
-      <div class="float-right">
-        <a href="{% url 'allocate_section_offering' %}" style="text-decoration:none">
+        <a href="{% url 'assign-prof' %}" style="text-decoration:none">
            <button class="btn btn-raised btn-block btn-success" type="button" name="button">
-             Allocate Section Offering
+             Assign Professor
            </button>
         </a>
-      </div>
     </div>
 
   </div>
-  {% endif %}
 {% endblock content %}
 
 {% block extra_js %}
-  {% if current_settings %}
     <script type="text/javascript" src="{% static "vendor/DataTables/datatables.min.js" %}"></script>
     <script type="text/javascript">
       $(document).ready(function () {
@@ -72,7 +67,7 @@
             "dataSrc": '',
             "url": "{% url 'chairperson-section-offering-table'%}",
           },
-          "initComplete": function(settings, json) {
+          "drawCallback": function(settings, json) {
             $(".read-section-offering").each(function () {
                 $(this).modalForm({formURL: $(this).data('id')});
               });
@@ -123,5 +118,4 @@
         })
       });
     </script>
-  {% endif %}
 {% endblock %}

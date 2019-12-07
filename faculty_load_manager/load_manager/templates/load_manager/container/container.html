@@ -66,16 +66,16 @@
       </a>
     </li>
     <hr>
-    <li class="sb-item {% if viewtype == 'section-offering' %}active{% endif %} dashboard">
-      <a class="sb-link" href="{% url 'section-offering' %}">
-        <i></i>
-        <span class="sidebar-title">Section Offering</span>
-      </a>
-    </li>
     <li class="sb-item {% if viewtype == 'faculty-load' %}active{% endif %} dashboard">
       <a class="sb-link" href="{% url 'faculty-load' %}">
         <i></i>
         <span class="sidebar-title">Faculty Load</span>
+      </a>
+    </li>
+    <li class="sb-item {% if viewtype == 'section-offering' %}active{% endif %} dashboard">
+      <a class="sb-link" href="{% url 'section-offering' %}">
+        <i></i>
+        <span class="sidebar-title">Section Offering</span>
       </a>
     </li>
     <li class="sb-item {% if viewtype == 'user-pool-management' %}active{% endif %} dashboard">

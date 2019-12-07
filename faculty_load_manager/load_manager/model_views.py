@@ -349,7 +349,7 @@ class SubjectUpdateView(BSModalUpdateView):
     template_name = 'load_manager/components/modals/update.html'
     form_class = SubjectForm
     success_message = 'Success: Professor was updated.'
-    success_url = reverse_lazy('section-offering')
+    success_url = reverse_lazy('settings-curriculum')
 class SubjectDeleteView(LoginRequiredMixin, UserPassesTestMixin,BSModalDeleteView):
     model = SectionOffering
     template_name = 'load_manager/components/modals/delete.html'

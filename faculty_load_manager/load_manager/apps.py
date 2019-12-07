@@ -1,7 +1,8 @@
 from django.apps import AppConfig
 
 
-def ss(request):
+def ss():
+    from .models import Room
     try:
         x = Room.objects.get(room_name='310', room_category=1)
         print('Exists')
@@ -56,13 +57,12 @@ def ss(request):
     except Room.DoesNotExist:
         x = Room(room_name='316', room_category=1)
         x.save()
-    return HttpResponse("SCHEDS CREATED")
 
 
 def startup():
     from .models import Year,SchoolYear,PreferredTime,DAY_OF_THE_WEEK
     from django.utils import timezone
-
+    ss()
     # YEAR
     for i in range(1904,int(timezone.now().strftime("%Y")) +3):
         Year.objects.get_or_create(year=i)

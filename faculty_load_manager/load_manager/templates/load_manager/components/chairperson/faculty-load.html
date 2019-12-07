@@ -10,7 +10,6 @@
 {% endblock %}
 {% block content %}
 {% include "_modal.html" %}
-  {% if current_settings %}
     <div class="card animated fadeInDown settings-card">
     <div class="card-header">
         <h5>Faculty Load</h5>
@@ -40,19 +39,15 @@
         </div>
     </div>
     <div class="card-footer">
-      <div class="float-right">
-        <a href="{% url 'allocation_faculty_load' %}">
-          <button class="btn btn-warning btn-raised" type="button" name="button">
-            Allocate Faculty Load </button>
+        <a href="{% url 'sched-faculty-load' %}" class=>
+          <button id="assign-btn" class="btn btn-primary btn-raised btn-block" type="button" name="button">
+             Assign Faculty Load</button>
         </a>
-      </div>
     </div>
 </div>
-  {% endif %}
 {% endblock content %}
 
 {% block extra_js %}
-{% if current_settings %}
 <!-- SELECT2 -->
 <script src="{% static "vendor/select2/js/select2.min.js" %}"></script>
 <script type="text/javascript" src="{% static "vendor/DataTables/datatables.min.js" %}"></script>
@@ -125,10 +120,19 @@
                 },
             ]
         })
+        $('#assign-btn').click(function() {
+          $('div.card-content .container-fluid').empty();
+          alert("PLEASE WAIT");
+          $('#assign-btn').hide();
+          $('div.card-content .container-fluid').html("<div class='row text-center'>"+
+            "<div class='col p-3'>"+
+              "<h5>PLEASE WAIT...</h5>"+
+              "<img src='https://media.giphy.com/media/17mNCcKU1mJlrbXodo/giphy.gif' width='100px' alt=''>"+
+            "</div>"+
+          "</div>");
+        });
     });
 
 
 </script>
-
-{% endif %}
 {% endblock %}
