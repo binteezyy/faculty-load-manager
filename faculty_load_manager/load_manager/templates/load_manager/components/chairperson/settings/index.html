@@ -222,7 +222,7 @@
      "dataSrc":'',
      "url": "{% url 'settings-table' %}",
     },
-    "initComplete": function(settings, json) {
+    "drawCallback": function(settings, json) {
       $(".read-setting").each(function () {
           $(this).modalForm({formURL: $(this).data('id')});
         });

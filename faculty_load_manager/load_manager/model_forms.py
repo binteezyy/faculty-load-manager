@@ -36,3 +36,8 @@ class SectionOfferingProfessorForm(BSModalForm):
     class Meta:
         model = SectionOffering
         fields = ['professor']
+
+class SubjectForm(BSModalForm):
+    class Meta:
+        model = Subject
+        exclude = ['']

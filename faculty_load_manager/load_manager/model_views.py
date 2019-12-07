@@ -343,10 +343,11 @@ class SubjectReadView(LoginRequiredMixin, UserPassesTestMixin,BSModalReadView):
         return context
     def test_func(self):
         return self.request.user.is_superuser
+
 class SubjectUpdateView(BSModalUpdateView):
-    model = SectionOffering
+    model = Subject
     template_name = 'load_manager/components/modals/update.html'
-    form_class = SectionOfferingProfessorForm
+    form_class = SubjectForm
     success_message = 'Success: Professor was updated.'
     success_url = reverse_lazy('section-offering')
 class SubjectDeleteView(LoginRequiredMixin, UserPassesTestMixin,BSModalDeleteView):

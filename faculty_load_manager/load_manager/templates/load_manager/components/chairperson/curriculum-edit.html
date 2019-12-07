@@ -55,7 +55,7 @@
                 "dataSrc": '',
                 "url": "{% url 'chairperson-curriculum-subject-table' curriculum.pk %}",
             },
-            "initComplete": function(settings, json) {
+            "drawCallback": function(settings, json) {
               $(".read-curriculum-subject").each(function () {
                 $(this).modalForm({formURL: $(this).data('id')});
                 });
