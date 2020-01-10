@@ -165,10 +165,13 @@ def load_manager_list(request):
     }
 
     if psched != None:
-        context['ptime']=psched.preferred_time.all().values_list('select_day','select_time'),
+        context['ptimes']=psched.preferred_time.all().values_list('select_day','select_time')
     else:
-        context['ptime']=None
+        context['ptimes']=None
 
+    import os
+    os.system('cls')
+    print('PTIME: ',context['ptimes'])
     return render(request, 'load_manager/components/faculty-load/list.html', context)
 
 @login_required
@@ -190,16 +193,22 @@ def load_manager_tables(request):
     return HttpResponse(data, content_type='application/json')
 @login_required
 def load_manager_create(request):
+    faculty_type = FacultyProfile.objects.get(faculty=request.user).faculty_type
     settings = Setting.objects.get(current=True)
     time_schedules = PreferredTime.objects.all()
     current_user = request.user
     subjs = SemesterOffering.objects.get(school_year=settings.school_year,semester=settings.semester).subject.all()
-
+    import os
+    os.system('cls')
+    print(faculty_type)
     context = {
         'title': 'LOAD MANAGER | FORM',
         'viewtype': 'load-manager',
         'user': request.user,
+        'avatar': UserProfile.objects.get(user=request.user).avatar,
+        'user_type': FacultyProfile.objects.get(faculty=request.user).get_faculty_type_display,
         'subjects': subjs,
+        'type': faculty_type,
         'time_schedules': time_schedules,
         'days': DAY_OF_THE_WEEK,
         'times': PreferredTime.TIME_SELECT,

@@ -102,10 +102,12 @@
               <tr>
                   <th>{{ day }}</th>
                   {% for v, time in times %}
-                    <td{% for pday,ptime in ptime %}
+                    <td {% for pday,ptime in ptimes %}
                         {% if pday == val and ptime == v %}
-                          style="background-color:red"{% endif %}
-                    {% endfor %}</td>
+                          style="background-color:red;"
+                        {% endif %}
+                      {% endfor %}>
+                    </td>
                   {% endfor %}
               </tr>
               {% endfor %}

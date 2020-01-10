@@ -309,7 +309,7 @@ class CurriculumDeleteView(LoginRequiredMixin, UserPassesTestMixin,BSModalDelete
     template_name = 'load_manager/components/modals/delete.html'
     context_object_name = 'curriculum'
     success_message = 'Success: Settings was deleted.'
-    success_url = reverse_lazy('ssettings-curriculum')
+    success_url = reverse_lazy('settings-curriculum')
     def test_func(self):
         return self.request.user.is_superuser
 

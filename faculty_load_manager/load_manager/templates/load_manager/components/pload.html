@@ -54,18 +54,30 @@
 
         <div class="container">
             <table class="table table-bordered" id="schedule-table" style="text-align: center">
-                <th>TIME</th>
-                {% for v, time in times %}
-                <td>{{ time }}</td>
-                {%endfor%}
-                {% for val,day in days %}
-                <tr>
-                    <th>{{ day }}</th>
-                    {% for v,time in times %}
-                    <td><input type="checkbox" name="timedays" value="{{val}}-{{v}}" style="display:none"></td>
-                    {% endfor %}
-                </tr>
-                {% endfor %}
+              <th>TIME</th>
+              {% for v, time in times %}
+                {% if type == 2 or type == 3 %}
+                  {% if v < 21 %}
+                    <td>{{time}}</td>
+                  {% endif %}
+                {% else %}
+                  <td>{{time}}</td>
+                {% endif %}
+              {%endfor%}
+              {% for val,day in days %}
+              <tr>
+                  <th>{{ day }}</th>
+                  {% for v,time in times %}
+                  {% if type == 2 or type == 3 %}
+                    {% if v < 21 %}
+                      <td><input type="checkbox" name="timedays" value="{{val}}-{{v}}" style="display:none"></td>
+                    {% endif %}
+                  {% else %}
+                  <td><input type="checkbox" name="timedays" value="{{val}}-{{v}}" style="display:none"></td>
+                  {% endif %}
+                  {% endfor %}
+              </tr>
+              {% endfor %}
             </table>
         </div>
         <hr>
