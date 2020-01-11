@@ -9,10 +9,9 @@
 {% if csetting != None %}
   <div class="card animated fadeInDown">
     <div class="card-header">
-      <h5>Current Setting</h5>
+      <h5>Current Submissions <span class="badge badge-pill badge-primary">{{ csetting.get_status_display }}</span></h5>
     </div>
     <div class="card-content">
-      <p>{{ csetting.get_status_display }}</p>
       {% if csetting.status == 0 %}
       <form id="settings" class="p-3" method="post">
         <h5>First Year</h5>

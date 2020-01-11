@@ -90,6 +90,21 @@ class SettingsDeleteView(LoginRequiredMixin, UserPassesTestMixin,BSModalDeleteVi
         return self.request.user.is_superuser
 
 #Room
+class RoomReadView(LoginRequiredMixin, UserPassesTestMixin,BSModalReadView):
+    model = Room
+    context_object_name = 'semester-offering-subject'
+    template_name = 'load_manager/components/modals/read.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['viewtype'] = 'room'
+        context['subject'] = kwargs['object']
+        context['times'] = PreferredTime.TIME_SELECT
+        context['days'] = DAY_OF_THE_WEEK
+        context["room_sched"] = FacultyLoad.objects.filter(load_schedule__room = kwargs['object'])
+        return context
+    def test_func(self):
+        return self.request.user.is_superuser
+
 class RoomCreateView(LoginRequiredMixin, UserPassesTestMixin,BSModalCreateView):
     template_name = 'load_manager/components/modals/create.html'
     form_class = RoomForm
@@ -117,6 +132,19 @@ class RoomUpdateView(BSModalUpdateView):
     success_url = reverse_lazy('room')
 
 #SECTIONS
+class SectionsReadView(LoginRequiredMixin, UserPassesTestMixin,BSModalReadView):
+    model = BlockSection
+    context_object_name = 'section'
+    template_name = 'load_manager/components/modals/read.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['viewtype'] = 'section'
+        context['times'] = PreferredTime.TIME_SELECT
+        context['days'] = DAY_OF_THE_WEEK
+        context['room_sched'] = FacultyLoad.objects.filter(subject__block_section = kwargs['object'])
+        return context
+    def test_func(self):
+        return self.request.user.is_superuser
 class SectionCreateView(LoginRequiredMixin, UserPassesTestMixin,BSModalCreateView):
     template_name = 'load_manager/components/modals/create.html'
     form_class = BlockSectionForm
@@ -189,6 +217,7 @@ def SectionsUpdateView(request,pk):
         return redirect('sections')
     else:
         return render(request, 'load_manager/components/chairperson/sections/modals/update.html', context)
+
 # SettingsFacultyPrefer
 class SettingsFacultyPreferReadView(LoginRequiredMixin, UserPassesTestMixin,BSModalReadView):
     model = PreferredSchedule
@@ -359,20 +388,6 @@ class SubjectDeleteView(LoginRequiredMixin, UserPassesTestMixin,BSModalDeleteVie
     def test_func(self):
         return self.request.user.is_superuser
 
-class RoomReadView(LoginRequiredMixin, UserPassesTestMixin,BSModalReadView):
-    model = Room
-    context_object_name = 'semester-offering-subject'
-    template_name = 'load_manager/components/modals/read.html'
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['viewtype'] = 'room'
-        context['subject'] = kwargs['object']
-        context['times'] = PreferredTime.TIME_SELECT
-        context['days'] = DAY_OF_THE_WEEK
-        context["room_sched"] = FacultyLoad.objects.filter(load_schedule__room = kwargs['object'])
-        return context
-    def test_func(self):
-        return self.request.user.is_superuser
 
 # Settings
 class UserCreateView(LoginRequiredMixin, UserPassesTestMixin,BSModalCreateView):

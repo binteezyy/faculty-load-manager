@@ -49,7 +49,7 @@
             "data": "fields.id",
             render:function(data, type, row)
               {
-                let render = '<button type="button" class="read-room btn btn-raised btn-sm btn-primary m-1" data-id="/read/room/'+data+'">'+
+                let render = '<button type="button" class="read-room btn btn-raised btn-sm btn-primary m-1" data-id="/read/sections/'+data+'">'+
                   '<span class="fa fa-eye"></span></button>' +
                   '<button type="button" class="delete-section btn btn-sm btn-raised btn-warning m-1" data-id="/delete/section/'+data+'">'+
                   '<span class="fa fa-trash"></span></button>'+
@@ -72,7 +72,7 @@
 
 {% endblock %}
 {% block content %}
-{% include "_modal.html" %}
+{% include "_modal.html" with size="modal-xl" %}
     <div class="card animated fadeInDown lm-list p-3">
       <div class="card-header">
         <h5>Current School-Year Sections [{{ curr_sy }}]</h5>

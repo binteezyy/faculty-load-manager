@@ -133,6 +133,8 @@ urlpatterns = [
     path('chairperson/settings/sections/', views.sections, name='sections'),
     path('chairperson/settings/sections/table/<str:q>',
          views.section_table, name='sections-table'),
+    path('read/sections/<int:pk>', model_views.SectionsReadView.as_view(),
+         name='read-block-section'),
     path('create/sections', model_views.SectionCreateView.as_view(),
          name='create-block-section'),
     path('delete/section/<int:pk>',
