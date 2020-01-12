@@ -177,7 +177,6 @@ def load_manager_list(request):
 @login_required
 def load_manager_tables(request):
     loads = PreferredSchedule.objects.filter(user=request.user)
-
     data = []
     for load in loads:
         print(load.semester)
@@ -186,6 +185,7 @@ def load_manager_tables(request):
                        "school_year": str(load.school_year),
                        "semester": str(load.get_semester_display()),
                        "status": str(load.get_status_display()),
+                       "user_id": request.user.pk,
              }
         }
         data.append(x)

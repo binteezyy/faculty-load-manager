@@ -38,6 +38,8 @@ urlpatterns = [
          model_views.SettingsFacultyPreferReadView.as_view(), name='read-settings-'),
     path('delete/settings/faculty-prefer/<int:pk>',
          model_views.SettingsFacultyPreferDeleteView.as_view(), name='delete-settings'),
+    path('read/settings/faculty-load-alloted/<int:pk>',
+         model_views.SettingsFacultyLoadAllotedReadView.as_view(), name='read-load-alloted'),
 
     # FACULTY LOAD
     path('create/faculty-loads', model_views.FacultyLoadCreateView.as_view(),
@@ -94,6 +96,7 @@ urlpatterns = [
          name='load-manager-history-tables'),
 
 
+
     # CHAIRPERSON VIEW
     # CURRICULUM
     path('chairperson/curriculum/', views.curriculum_settings,
@@ -141,8 +144,8 @@ urlpatterns = [
          model_views.SectionsDeleteView.as_view(), name='delete-section'),
     path('update/section/<int:pk>',
          model_views.SectionsUpdateView, name='update-section'),
-     path('update/section/<int:pk>/weekdays',
-        model_views.SectionsUpdateAll, name='update-section-weekdays'),
+    path('update/section/<int:pk>/weekdays',
+         model_views.SectionsUpdateAll, name='update-section-weekdays'),
     # FACULTY LOAD
     path('chairperson/faculty-load/', views.faculty_load, name='faculty-load'),
     path('chairperson/faculty-load/table', views.faculty_load_table,
