@@ -1538,6 +1538,10 @@ def assign_prof(request):
                 else:
                     print ('NEXT PROF')
                 print("===END===")
+        #here
+        announcement_message = f'Faculty load has now been allocated for {sy} - {semester}'
+        new_announcement = Announcement(title="Faculty Load", message=announcement_message)
+        new_announcement.save()
     return redirect('faculty-load')
 
 @login_required

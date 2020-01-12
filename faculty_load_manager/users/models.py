@@ -49,7 +49,7 @@ class Announcement(models.Model):
     message = models.TextField()
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
+        on_delete=models.CASCADE, blank=True
     )
     created = models.DateTimeField(auto_now_add=True)
 
