@@ -245,6 +245,37 @@ class SettingsFacultyPreferDeleteView(LoginRequiredMixin, UserPassesTestMixin,BS
     def test_func(self):
         return self.request.user.is_superuser
 
+# class RoomReadView(LoginRequiredMixin, UserPassesTestMixin,BSModalReadView):
+#     model = Room
+#     context_object_name = 'semester-offering-subject'
+#     template_name = 'load_manager/components/modals/read.html'
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['viewtype'] = 'room'
+#         context['subject'] = kwargs['object']
+#         context['times'] = PreferredTime.TIME_SELECT
+#         context['days'] = DAY_OF_THE_WEEK
+#         context["room_sched"] = FacultyLoad.objects.filter(load_schedule__room = kwargs['object'])
+#         return context
+#     def test_func(self):
+#         return self.request.user.is_superuser
+
+# SettingsFacultyLoadAlloted
+class SettingsFacultyLoadAllotedReadView(LoginRequiredMixin, UserPassesTestMixin,BSModalReadView):
+    model = User
+    context_object_name = 'faculty-load-alloted'
+    template_name = 'load_manager/components/modals/read.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['viewtype'] = 'faculty-load-alloted'
+        context['faculty'] = f"{kwargs['object'].first_name} {kwargs['object'].last_name}"
+        context['alloted_subjs'] = FacultyLoad.objects.filter(subject__professor=kwargs['object'])
+        context['times'] = PreferredTime.TIME_SELECT
+        context['days'] = DAY_OF_THE_WEEK
+        return context
+    def test_func(self):
+        return self.request.user.is_superuser
+
 class SectionOfferingCreateView(LoginRequiredMixin, UserPassesTestMixin,BSModalCreateView):
     template_name = 'load_manager/components/modals/create.html'
     form_class = SettingsForm
