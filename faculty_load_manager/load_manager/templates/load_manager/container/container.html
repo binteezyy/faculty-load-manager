@@ -1,5 +1,5 @@
 {% extends "load_manager/base/base.html" %}
-{% load staticfiles %}
+{% load static %}
 {% block container %}
 
 <ul class="navbar-nav sidebar">
@@ -8,7 +8,7 @@
       <a href="{% url 'user-profile' request.user.id %}" style="text-decoration:none;color: inherit;">
         <div class="row">
           <div class="col pt-3 center-block text-center">
-            <img class="profile rounded-circle" src="/media/{{ avatar }}" >
+            <img class="profile rounded-circle" src="/media/{{ avatar }}">
           </div>
         </div>
         <div class="row">
@@ -20,7 +20,8 @@
         </div>
         <div class="row">
           <div class="col center-block text-center">
-            <a href="{% url 'logout' %}" style="text-decoration:none"><button type="button" class="btn btn-block btn-raised btn-danger" name="button">Logout</button></a>
+            <a href="{% url 'logout' %}" style="text-decoration:none"><button type="button"
+                class="btn btn-block btn-raised btn-danger" name="button">Logout</button></a>
           </div>
         </div>
         <br>
@@ -50,7 +51,7 @@
     <li class="sb-item {% if viewtype == 'rooms' %}active{% endif %} dashboard">
       <a class="sb-link" href="{% url 'room' %}">
         <i></i>
-        <span class="sidebar-title">Room</span>
+        <span class="sidebar-title">Rooms</span>
       </a>
     </li>
     <li class="sb-item {% if viewtype == 'settings' %}active{% endif %} dashboard">
@@ -59,16 +60,23 @@
         <span class="sidebar-title">Settings</span>
       </a>
     </li>
-    <li class="sb-item {% if viewtype == 'section-offering' %}active{% endif %} dashboard">
-      <a class="sb-link" href="{% url 'section-offering' %}">
+    <li class="sb-item {% if viewtype == 'sections' %}active{% endif %} dashboard">
+      <a class="sb-link" href="{% url 'sections' %}">
         <i></i>
-        <span class="sidebar-title">Section Offering</span>
+        <span class="sidebar-title">Sections</span>
       </a>
     </li>
+    <hr>
     <li class="sb-item {% if viewtype == 'faculty-load' %}active{% endif %} dashboard">
       <a class="sb-link" href="{% url 'faculty-load' %}">
         <i></i>
         <span class="sidebar-title">Faculty Load</span>
+      </a>
+    </li>
+    <li class="sb-item {% if viewtype == 'section-offering' %}active{% endif %} dashboard">
+      <a class="sb-link" href="{% url 'section-offering' %}">
+        <i></i>
+        <span class="sidebar-title">Section Offering</span>
       </a>
     </li>
     <li class="sb-item {% if viewtype == 'user-pool-management' %}active{% endif %} dashboard">
@@ -83,7 +91,7 @@
 </ul>
 <div id="main-container">
   <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4" style="z-index: 1;">
-    <a href="#" class="navbar-brand mb-0 h1o"> Computer Engineering Faculty Load</a>
+    <a href="#" class="navbar-brand mb-0 h1o"> Computer Engineering Faculty Load </a>
     {% if status != 'Locked' %}
     <h3><span class="badge {% if status == 'Not Opened' %}badge-secondary
           {% elif status == 'Open'%}badge-success

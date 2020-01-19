@@ -1,12 +1,11 @@
 {% extends 'container/container.html' %}
-{% load staticfiles %}
+{% load static %}
 {% block content %}
 {% for field in form %}
-    <label>
-        <input type="textarea">
-        <span>{{ field.name }}</span>
-    </label>
+<label>
+    <input type="textarea">
+    <span>{{ field.name }}</span>
+</label>
 {% endfor %}
 {% block header %}
 {% endblock header %}
-

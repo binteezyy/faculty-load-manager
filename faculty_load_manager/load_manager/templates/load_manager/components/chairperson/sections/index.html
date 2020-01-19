@@ -1,0 +1,96 @@
+{% extends 'load_manager/container/container.html' %}
+{% load staticfiles %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static "load_manager.css" %}">
+  <link rel="stylesheet" href="{% static "vendor/DataTables/DataTables-1.10.18/css/dataTables.bootstrap4.min.css" %}">
+{% endblock %}
+
+{% block extra_js %}
+
+    <script type="text/javascript" src="{% static "vendor/DataTables/datatables.min.js" %}"></script>
+    <script type="text/javascript">
+      var cur_table = $('#sections-table').DataTable( {
+        // "select": true,
+        // "buttons": true,
+        "dataType":'json',
+        "ajax": {
+         "processing": true,
+         "dataSrc":'',
+         "url": "{% url 'sections-table' 'current' %}",
+        },
+        "dom": "<'row'<'col-md-4'l><'col-md-8'<'row float-right'<'col-6 'Bf><'col-6 create-sections hidden'>>>>" +
+              "<'row'<'col-md-6'><'col-md-6'>>" +
+              "<'row'<'col-md-12't>><'row'<'col-md-12'ip>>",
+        "drawCallback": function(settings, json) {
+          // $("div.create-sections").html('<button type="button" id="create-section" class="float-right btn btn-s btn-success btn-raised" name="button">Create <i class="fas fa-plus"></i></button>');
+          // $(".create-sections").modalForm({formURL: "{% url 'create-block-section' %}"});
+          $(".read-room").each(function () {
+              $(this).modalForm({formURL: $(this).data('id')});
+            });
+            $(".delete-section").each(function () {
+              $(this).modalForm({formURL: $(this).data('id')});
+            });
+            $(".update-section").each(function () {
+              $(this).modalForm({formURL: $(this).data('id')});
+            });
+        },
+        "columnDefs": [
+          { "className": 'col-name text-center',
+            "targets":   0,
+            "data": "fields.year-lvl",
+            },
+          { "className": 'col-year text-center',
+            "targets":   1,
+            "data": "fields.section",
+            },
+          { "className": 'col-section text-center',
+            "targets":   2,
+            "data": "fields.id",
+            render:function(data, type, row)
+              {
+                let render = '<button type="button" class="read-room btn btn-raised btn-sm btn-primary m-1" data-id="/read/sections/'+data+'">'+
+                  '<span class="fa fa-eye"></span></button>' +
+                  '<button type="button" class="delete-section btn btn-sm btn-raised btn-warning m-1" data-id="/delete/section/'+data+'">'+
+                  '<span class="fa fa-trash"></span></button>'+
+                  '<button type="button" class="update-section btn btn-sm btn-raised btn-success m-1" data-id="/update/section/'+data+'">'+
+                    '<span class="fa fa-edit"></span></button>';
+                return render
+
+              },
+          },
+        ]});
+    </script>
+    <script type="text/javascript">
+        $(".delete-section").forEach(function () {
+          $(this).modalForm({formURL: $(this).data('id')});
+        });
+        $(".update-section").forEach(function () {
+          $(this).modalForm({formURL: $(this).data('id')});
+        });
+    </script>
+
+{% endblock %}
+{% block content %}
+{% include "_modal.html" with size="modal-xl" %}
+    <div class="card animated fadeInDown lm-list p-3">
+      <div class="card-header">
+        <h5>Current School-Year Sections [{{ curr_sy }}]</h5>
+      </div>
+      <div class="card-content">
+        <div class="table-responsive p-2">
+          <table id="sections-table" class="table table-bordered table-hover" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info">
+           <thead >
+             <tr role="row">
+               <th style="width:5%" class="text-center">Year</th>
+               <th style="width:10%" class="text-center">Section</th>
+               <th style="width:3%"  class="text-center">Action</th>
+             </tr>
+           </thead>
+           <tbody></tbody>
+         </table>
+
+        </div>
+      </div>
+    </div>
+{% endblock %}

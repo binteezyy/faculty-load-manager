@@ -1,70 +1,89 @@
 {% extends 'load_manager/container/container.html' %}
-{% load staticfiles %}
+{% load static %}
 
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static "load_manager.css" %}">
-  <link rel="stylesheet" href="{% static "vendor/DataTables/DataTables-1.10.18/css/dataTables.bootstrap4.min.css" %}">
+<link rel="stylesheet" href="{% static "load_manager.css" %}">
+<link rel="stylesheet" href="{% static "vendor/DataTables/DataTables-1.10.18/css/dataTables.bootstrap4.min.css" %}">
 {% endblock %}
 
 {% block extra_js %}
-  <script type="text/javascript" src="{% static "vendor/DataTables/datatables.min.js" %}"></script>
+<script type="text/javascript" src="{% static "vendor/DataTables/datatables.min.js" %}"></script>
 
-  <script type="text/javascript">
-  $('#psched-table').DataTable( {
+<script type="text/javascript">
+  $('#psched-table').DataTable({
     // "select": true,
     // "buttons": true,
-    "dataType":'json',
+    "dataType": 'json',
     "ajax": {
-     "processing": true,
-     "dataSrc":'',
-     "url": "{% url 'load-manager-history-tables' %}",
+      "processing": true,
+      "dataSrc": '',
+      "url": "{% url 'load-manager-history-tables' %}",
     },
-    "initComplete": function(settings, json) {
+    "initComplete": function (settings, json) {
       $(".read-prefer").each(function () {
-          $(this).modalForm({formURL: $(this).data('id')});
-        });
+        $(this).modalForm({ formURL: $(this).data('id') });
+      });
+      $(".read-load-alloted").each(function () {
+        $(this).modalForm({ formURL: $(this).data('id') });
+      });
     },
     "columnDefs": [
-      { "className": 'col-id text-center',
-        "targets":   0,
+      {
+        "className": 'col-id text-center',
+        "targets": 0,
         "data": "fields.id",
-        },
-      { "className": 'col-date-submit',
-        "targets":   1,
+      },
+      {
+        "className": 'col-date-submit',
+        "targets": 1,
         "data": "fields.date_submit",
-        },
-      { "className": 'col-school-year',
-        "targets":   2,
+      },
+      {
+        "className": 'col-school-year',
+        "targets": 2,
         "data": 'fields.school_year',
       },
-      { "className": 'col-semester',
-        "targets":   3,
+      {
+        "className": 'col-semester',
+        "targets": 3,
         "data": 'fields.semester',
       },
-      { "className": 'col-status',
-        "targets":   4,
+      {
+        "className": 'col-status',
+        "targets": 4,
         "data": 'fields.status',
       },
-      { "className": 'col-details text-center',
-        "targets":   5,
+      {
+        "className": 'col-details text-center',
+        "targets": 5,
         "data": 'fields.id',
-        render:function(data, type, row)
-          {
-            let render = '<button type="button" class="read-prefer btn btn-sm btn-raised btn-primary m-1" data-id="/read/settings/faculty-prefer/'+data+'">'+
-              'REVIEW <span class="far fa-eye"></span></button>'
-            return render
-          },
+        render: function (data, type, row) {
+          let render = '<button type="button" class="read-prefer btn btn-sm btn-raised btn-primary m-1" data-id="/read/settings/faculty-prefer/' + data + '">' +
+            'REVIEW <span class="far fa-eye"></span></button>'
+          return render
+        },
+      },
+      {
+        "className": 'col-view-load-alloted text-center',
+        "targets": 6,
+        "data": 'fields.user_id',
+        render: function (data, type, row) {
+          let render = '<button type="button" class="read-load-alloted btn btn-sm btn-raised btn-primary m-1" data-id="/read/settings/faculty-load-alloted/' + data + '">' +
+            'VIEW <span class="far fa-eye"></span></button>'
+          return render
+        },
       },
 
-    //   { "className": 'col-quotation-description text-nowrap',
-    //     "targets":   3,
-    //     "data": 'fields.total',
-    //   },
-    // ],
-    // dom:"<'row'<'col-sm-12 col-md-12 border p-2'f>>" + //<'col-sm-12 col-md-6'f>
-    //       "<'row'<'col-sm-12'tr>>" ,
-  ]});
-  </script>
+      //   { "className": 'col-quotation-description text-nowrap',
+      //     "targets":   3,
+      //     "data": 'fields.total',
+      //   },
+      // ],
+      // dom:"<'row'<'col-sm-12 col-md-12 border p-2'f>>" + //<'col-sm-12 col-md-6'f>
+      //       "<'row'<'col-sm-12'tr>>" ,
+    ]
+  });
+</script>
 {% endblock %}
 {% block content %}
 {% include "_modal.html" %}
@@ -100,28 +119,27 @@
               </thead>
               {% for val,day in days %}
               <tr>
-                  <th>{{ day }}</th>
-                  {% for v, time in times %}
-                    <td{% for pday,ptime in ptime %}
-                        {% if pday == val and ptime == v %}
-                          style="background-color:red"{% endif %}
-                    {% endfor %}</td>
-                  {% endfor %}
+                <th>{{ day }}</th>
+                {% for v, time in times %}
+                <td {% for pday,ptime in ptimes %} {% if pday == val and ptime == v %} style="background-color:red;"
+                  {% endif %} {% endfor %}>
+                </td>
+                {% endfor %}
               </tr>
               {% endfor %}
-          </table>
+            </table>
           </div>
         </div>
       </div>
       {% else %}
-        <a href="{% url 'load-manager-create' %}" style="text-decoration:none">
-          <button type="button" class="btn btn-success btn-raised btn-block btn-lg">
-            SUBMIT PREFERRED SCHEDULE
-          </button>
-        </a>
+      <a href="{% url 'load-manager-create' %}" style="text-decoration:none">
+        <button type="button" class="btn btn-success btn-raised btn-block btn-lg">
+          SUBMIT PREFERRED SCHEDULE
+        </button>
+      </a>
       {% endif %}
-      </div>
     </div>
+  </div>
 
 </div>
 {% endif %}
@@ -132,19 +150,21 @@
   </div>
   <div class="card-content">
     <div class="table-responsive p-3">
-      <table id="psched-table" class="table table-bordered table-hover" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info">
-       <thead>
-         <tr role="row" class="text-center">
-           <th style="width:5%">Form No.</th>
-           <th style="width:10%">Date Submitted</th>
-           <th style="width:10%">School Year</th>
-           <th style="width:10%">Semester</th>
-           <th style="width:10%">Status</th>
-           <th style="width:10%">Action(s)</th>
-         </tr>
-       </thead>
-       <tbody class="text-center"></tbody>
-     </table>
+      <table id="psched-table" class="table table-bordered table-hover" width="100%" cellspacing="0" role="grid"
+        aria-describedby="dataTable_info">
+        <thead>
+          <tr role="row" class="text-center">
+            <th style="width:5%">Form No.</th>
+            <th style="width:10%">Date Submitted</th>
+            <th style="width:10%">School Year</th>
+            <th style="width:10%">Semester</th>
+            <th style="width:10%">Status</th>
+            <th style="width:10%">Action(s)</th>
+            <th style="width:10%">View Load</th>
+          </tr>
+        </thead>
+        <tbody class="text-center"></tbody>
+      </table>
 
     </div>
   </div>

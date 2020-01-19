@@ -1,0 +1,127 @@
+{% load staticfiles %}
+<style>
+  #schedule-table td.highlighted {
+      background-color: red;
+  }
+
+  #schedule-table.table-bordered {
+      border: 1 px solid black;
+      margin-top: 20px;
+  }
+
+  #schedule-table.table-bordered > thead > tr > th{
+      border:1px solid black;
+  }
+  #schedule-table.table-bordered > tbody > tr > th{
+      border:1px solid black;
+  }
+  #schedule-table.table-bordered > tbody > tr > td{
+      border:1px solid black;
+  }
+
+  .amber-textarea textarea.md-textarea:focus:not([readonly]) {
+      border-bottom: 1px solid #ffa000;
+      box-shadow: 0 1px 0 0 #ffa000;
+  }
+  .active-amber-textarea.md-form label.active {
+      color: #ffa000;
+  }
+  .active-amber-textarea.md-form textarea.md-textarea:focus:not([readonly])+label {
+      color: #ffa000; /* text on textarea */
+  }
+  .modal-lg{
+    max-width: 1200px !important;
+  }
+</style>
+
+<div class="modal-header">
+  <h4 class="modal-title">{{ title }}</h4>
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<form method="post" autocomplete="on">
+  {% csrf_token %}
+  <div class="modal-body">
+    <form id="modal-form" method="POST" >
+      {% csrf_token %}
+      <input type='hidden' value='{{block_prefer.pk}}' name='select-pk'>
+      <div class="ptime">
+        <h5>Section Preference <a href="#" data-toggle="tooltip" data-placement="right" title="Click and drag to select multiple preferred time">
+            <!-- <span class="glyphicon glyphicon-question-sign"></span> -->
+            <i class="far fa-question-circle" style="color:black"></i>
+        </a></h5>
+
+        <div class="container table-responsive">
+            <table class="table table-bordered" id="schedule-table" style="text-align: center">
+              <tbody>
+                <tr>
+                  <td>TIME/DAY</td>
+                  {% for val,day in days %}
+                    <th>{{day}}</th>
+                  {% endfor %}
+                </tr>
+                {% for v, time in times %}
+                <tr class="time">
+                  <td>{{time}}</td>
+                  {% for val,day in days %}
+                  <td class="
+                  {% for time in block_prefer.preferred_time.all  %}
+                    {% if time.select_time == v and time.select_day == val %}highlighted{% endif %}
+                  {% endfor %}"
+                  >
+                      <input type="checkbox" name="timedays" value="{{val}}-{{v}}"
+                      {% for time in block_prefer.preferred_time.all  %}
+                        {% if time.select_time == v and time.select_day == val %}checked{% endif %}
+                      {% endfor %}
+                      style="display:none"
+                      >
+                  </td>
+                  {% endfor %}
+                </tr>
+                {%endfor%}
+              </tbody>
+            </table>
+        </div>
+      </div>
+  </div>
+
+
+  <div class="modal-footer p-3">
+    <a href="{% url 'update-section-weekdays' block_prefer.pk %}"><button type="button" class="btn btn-block btn-raised btn-info">WEEKDAYS</button></a>
+    <button type="submit" class="btn btn-block btn-raised btn-success">Submit</button>
+    </form>
+  </div>
+  <script type="text/javascript">
+      var isMouseDown = false,
+          isHighlighted;
+      $("#schedule-table input:checkbox").click(function() {
+          return false;
+      });
+      $("#schedule-table td:not(:first-child)")
+          .mousedown(function() {
+              isMouseDown = true;
+              $(this).toggleClass("highlighted");
+              isHighlighted = $(this).hasClass("highlighted");
+              $(this).find("input:checkbox").prop("checked", isHighlighted);
+              // console.log($(this).find("input:checkbox").prop("checked"));
+              // console.log($(this).find("input:checkbox").prop("value"));
+              return false;
+          })
+          .mouseover(function() {
+              if(isMouseDown) {
+                  $(this).toggleClass("highlighted", isHighlighted);
+                  $(this).find("input:checkbox").prop("checked", isHighlighted);
+                  // console.log($(this).find("input:checkbox").prop("checked"));
+                  // console.log($(this).find("input:checkbox").prop("value"));
+              }
+          })
+          .bind("selectstart", function() {
+              return false;
+          })
+
+      $(document).mouseup(function() {
+          isMouseDown = false;
+      });
+  </script>

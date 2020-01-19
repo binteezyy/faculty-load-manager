@@ -7,120 +7,136 @@
 {%endblock%}
 {% block content %}
 {% if csetting != None %}
-  <div class="card animated fadeInDown">
-    <div class="card-header">
-      <h5>Current Setting</h5>
+<div class="card animated fadeInDown">
+  <div class="card-header">
+    <h5>Current Submissions <span class="badge badge-pill badge-primary">{{ csetting.get_status_display }}</span></h5>
+  </div>
+  <div class="card-content">
+    {% if csetting.status == 0 %}
+    <form id="settings" class="p-3" method="post">
+      <h5>First Year</h5>
+      <div id="first-year" class="form-row year-row">
+        <div class="col-md-2">
+          <label for="first-section">Sections</label>
+          <input name="first-section" class="form-control setting-input" type="number" min="0"
+            value="{{csetting.first_sections}}" style="padding: .28125rem .28125rem !important" />
+        </div>
+        <div class="col-md">
+          <label for="first-select">Curriculum</label>
+          <select name="first-select" class="custom-select setting-input"
+            {% if csetting.first_sections == 0 and c.setting.first_sections == None %}disabled{% endif %}>
+            {% for option in curriculum %}
+            <option value="{{ option.pk }}" {% if csetting.first_curriculum == option %}selected{% endif %}>{{ option }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <br>
+
+      <h5>Second Year</h5>
+      <div id="second-year" class="form-row year-row">
+        <div class="col-md-2">
+          <label for="second-section">Sections</label>
+          <input name="second-section" class="form-control setting-input" type="number" min="0"
+            value="{{csetting.second_sections}}" style="padding: .28125rem .28125rem !important" />
+        </div>
+        <div class="col-md">
+          <label for="second-select">Curriculum</label>
+          <select name="second-select" class="custom-select setting-input"
+            {% if csetting.second_sections == 0 and c.setting.second_sections == None %}disabled{% endif %}>
+            {% for option in curriculum %}
+            <option value="{{ option.pk }}" {% if csetting.second_curriculum == option %}selected{% endif %}>
+              {{ option }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <h5>Third Year</h5>
+      <div id="third-year" class="form-row year-row">
+        <div class="col-md-2">
+          <label for="third-section">Sections</label>
+          <input name="third-section" class="form-control setting-input" type="number" min="0"
+            value="{{csetting.third_sections}}" style="padding: .28125rem .28125rem !important" />
+        </div>
+        <div class="col-md">
+          <label for="third-select">Curriculum</label>
+          <select name="third-select" class="custom-select setting-input"
+            {% if csetting.third_sections == 0 and c.setting.third_sections == None %}disabled{% endif %}>
+            {% for option in curriculum %}
+            <option value="{{ option.pk }}" {% if csetting.third_curriculum == option %}selected{% endif %}>{{ option }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <h5>Fourth Year</h5>
+      <div id="fourth-year" class="form-row year-row">
+        <div class="col-md-2">
+          <label for="fourth-section">Sections</label>
+          <input name="fourth-section" class="form-control setting-input" type="number" min="0"
+            value="{{csetting.fourth_sections}}" style="padding: .28125rem .28125rem !important" />
+        </div>
+        <div class="col-md">
+          <label for="fourth-select">Curriculum</label>
+          <select name="fourth-select" class="custom-select setting-input"
+            {% if csetting.fourth_sections == 0 and c.setting.fourth_sections == None %}disabled{% endif %}>
+            {% for option in curriculum %}
+            <option value="{{ option.pk }}" {% if csetting.fourth_curriculum == option %}selected{% endif %}>
+              {{ option }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <h5>Fifth Year</h5>
+      <div id="fifth-year" class="form-row year-row">
+        <div class="col-md-2">
+          <label for="fifth-section">Sections</label>
+          <input name="fifth-section" class="form-control setting-input" type="number" min="0"
+            value="{{csetting.fifth_sections}}" style="padding: .28125rem .28125rem !important" />
+        </div>
+        <div class="col-md">
+          <label for="fifth-select">Curriculum</label>
+          <select name="fifth-select" class="custom-select setting-input"
+            {% if csetting.fifth_sections == 0 and c.setting.fifth_sections == None %}disabled{% endif %}>
+            {% for option in curriculum %}
+            <option value="{{ option.pk }}" {% if csetting.fifth_curriculum == option %}selected{% endif %}>{{ option }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <br>
+    </form>
+    {% elif csetting.status == 1 %}
+    <div class="table-responsive p-4">
+      <table id="open-settings" class="table table-hover" width="100%" cellspacing="0" role="grid"
+        aria-describedby="dataTable_info">
+        <thead>
+          <tr role="row" class="text-center">
+            <th style="width:1%"></th>
+            <th class="" style="width:1%">Form ID</th>
+            <th class="" style="width:10%">Faculty</th>
+            <th class="" style="width:10%">Action(s)</th>
+          </tr>
+        </thead>
+      </table>
     </div>
-    <div class="card-content">
-      <p>{{ csetting.get_status_display }}</p>
-      {% if csetting.status == 0 %}
-      <form id="settings" class="p-3" method="post">
-        <h5>First Year</h5>
-        <div id="first-year" class="form-row year-row">
-          <div class="col-md-2">
-            <label for="first-section">Sections</label>
-            <input name="first-section" class="form-control setting-input" type="number" min="0" value="{{csetting.first_sections}}" style="padding: .28125rem .28125rem !important"/>
-          </div>
-          <div class="col-md">
-            <label for="first-select">Curriculum</label>
-            <select name="first-select" class="custom-select setting-input" {% if csetting.first_sections == 0 and c.setting.first_sections == None %}disabled{% endif %}>
-              {% for option in curriculum %}
-              <option value="{{ option.pk }}" {% if csetting.first_curriculum == option %}selected{% endif %}>{{ option }}</option>
-              {% endfor %}
-            </select>
-          </div>
-        </div>
-        <br>
+    {% elif csetting.status == 2 %}
 
-        <h5>Second Year</h5>
-        <div id="second-year" class="form-row year-row">
-          <div class="col-md-2">
-            <label for="second-section">Sections</label>
-            <input name="second-section" class="form-control setting-input" type="number" min="0" value="{{csetting.second_sections}}" style="padding: .28125rem .28125rem !important"/>
-          </div>
-          <div class="col-md">
-            <label for="second-select">Curriculum</label>
-            <select name="second-select" class="custom-select setting-input" {% if csetting.second_sections == 0 and c.setting.second_sections == None %}disabled{% endif %}>
-              {% for option in curriculum %}
-              <option value="{{ option.pk }}" {% if csetting.second_curriculum == option %}selected{% endif %}>{{ option }}</option>
-              {% endfor %}
-            </select>
-          </div>
-        </div>
-
-        <h5>Third Year</h5>
-        <div id="third-year" class="form-row year-row">
-          <div class="col-md-2">
-            <label for="third-section">Sections</label>
-            <input name="third-section" class="form-control setting-input" type="number" min="0" value="{{csetting.third_sections}}" style="padding: .28125rem .28125rem !important"/>
-          </div>
-          <div class="col-md">
-            <label for="third-select">Curriculum</label>
-            <select name="third-select" class="custom-select setting-input" {% if csetting.third_sections == 0 and c.setting.third_sections == None %}disabled{% endif %}>
-              {% for option in curriculum %}
-              <option value="{{ option.pk }}" {% if csetting.third_curriculum == option %}selected{% endif %}>{{ option }}</option>
-              {% endfor %}
-            </select>
-          </div>
-        </div>
-
-        <h5>Fourth Year</h5>
-        <div id="fourth-year" class="form-row year-row">
-          <div class="col-md-2">
-            <label for="fourth-section">Sections</label>
-            <input name="fourth-section" class="form-control setting-input" type="number" min="0" value="{{csetting.fourth_sections}}" style="padding: .28125rem .28125rem !important"/>
-          </div>
-          <div class="col-md">
-            <label for="fourth-select">Curriculum</label>
-            <select name="fourth-select" class="custom-select setting-input" {% if csetting.fourth_sections == 0 and c.setting.fourth_sections == None %}disabled{% endif %}>
-              {% for option in curriculum %}
-              <option value="{{ option.pk }}" {% if csetting.fourth_curriculum == option %}selected{% endif %}>{{ option }}</option>
-              {% endfor %}
-            </select>
-          </div>
-        </div>
-
-        <h5>Fifth Year</h5>
-        <div id="fifth-year" class="form-row year-row">
-          <div class="col-md-2">
-            <label for="fifth-section">Sections</label>
-            <input name="fifth-section" class="form-control setting-input" type="number" min="0" value="{{csetting.fifth_sections}}" style="padding: .28125rem .28125rem !important"/>
-          </div>
-          <div class="col-md">
-            <label for="fifth-select">Curriculum</label>
-            <select name="fifth-select" class="custom-select setting-input" {% if csetting.fifth_sections == 0 and c.setting.fifth_sections == None %}disabled{% endif %}>
-              {% for option in curriculum %}
-              <option value="{{ option.pk }}" {% if csetting.fifth_curriculum == option %}selected{% endif %}>{{ option }}</option>
-              {% endfor %}
-            </select>
-          </div>
-        </div>
-        <br>
-      </form>
-  {% elif csetting.status == 1 %}
-  <div class="table-responsive p-4">
-    <table id="open-settings" class="table table-hover" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info">
-      <thead>
-        <tr role="row" class="text-center">
-          <th style="width:1%"></th>
-          <th class="" style="width:1%">Form ID</th>
-          <th class="" style="width:10%">Faculty</th>
-          <th class="" style="width:10%">Action(s)</th>
-        </tr>
-      </thead>
-    </table>
-    </div>
-  {% elif csetting.status == 2 %}
-
-  {% elif csetting.status == 3 %}
-  {% endif %}
+    {% elif csetting.status == 3 %}
+    {% endif %}
   </div>
 
   <div class="card-footer">
     <div class="float-right">
       {% if csetting.status == 0 %}
       <button id="opening-save" type="button" name="button" class="btn btn-m btn-raised btn-success hide">SAVE</button>
-      <button id="encoding-open" type="button" name="button" class="btn btn-m btn-raised btn-primary">Open and Generate</button>
+      <button id="encoding-open" type="button" name="button" class="btn btn-m btn-raised btn-primary">Open and
+        Generate</button>
       {% endif %}
     </div>
   </div>
@@ -134,18 +150,19 @@
   <div class="card-content">
     <div class="table-responsive p-4">
       <button type="button" class="btn btn-success active create-settings">Create <i class="fas fa-plus"></i> </button>
-      <table id="settings-table" class="table table-hover" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info">
+      <table id="settings-table" class="table table-hover" width="100%" cellspacing="0" role="grid"
+        aria-describedby="dataTable_info">
         <thead>
           <tr role="row" class="text-center">
             <th class="" style="width:5%">ID</th>
             <th class="" style="width:10%">School Year</th>
-            <th class="" class=""style="width:10%">Semester</th>
+            <th class="" class="" style="width:10%">Semester</th>
             <th class="" style="width:10%">Action(s)</th>
           </tr>
         </thead>
       </table>
-      </div>
     </div>
+  </div>
 
 </div>
 
@@ -153,124 +170,130 @@
 {% endblock content %}
 
 {% block extra_js %}
-  <script src="{% static "vendor/select2/js/select2.min.js" %}"></script>
-  <script type="text/javascript" src="{% static "vendor/DataTables/datatables.min.js" %}"></script>
-  <script type="text/javascript" src="{% static "vendor/DataTables/DataTables-1.10.18/js/dataTables.bootstrap4.min.js" %}"></script>
+<script src="{% static "vendor/select2/js/select2.min.js" %}"></script>
+<script type="text/javascript" src="{% static "vendor/DataTables/datatables.min.js" %}"></script>
+<script type="text/javascript"
+  src="{% static "vendor/DataTables/DataTables-1.10.18/js/dataTables.bootstrap4.min.js" %}"></script>
 
-  <script type="text/javascript">
+<script type="text/javascript">
   {% if csetting.status == 0 %}
-  $(".setting-input").change(function() {
+  $(".setting-input").change(function () {
     $('#opening-save').removeClass('hide');
   });
   {% elif csetting.status == 1 %}
-  $('#open-settings').DataTable( {
-    "dataType":'json',
+  $('#open-settings').DataTable({
+    "dataType": 'json',
     "ajax": {
-     "processing": true,
-     "dataSrc":'',
-     "url": "{% url 'chairperson-settings-open-table' %}",
+      "processing": true,
+      "dataSrc": '',
+      "url": "{% url 'chairperson-settings-open-table' %}",
     },
-    "initComplete": function(settings, json) {
+    "initComplete": function (settings, json) {
       $(".read-setting-faculty-prefer").each(function () {
-          $(this).modalForm({formURL: $(this).data('id')});
-        });
+        $(this).modalForm({ formURL: $(this).data('id') });
+      });
       $(".delete-setting-faculty-prefer").each(function () {
-        $(this).modalForm({formURL: $(this).data('id')});
+        $(this).modalForm({ formURL: $(this).data('id') });
       });
     },
     "columnDefs": [
-      { "className": 'col-id text-center',
-        "targets":   0,
-        "data": "fields.id",
-        },
-      { "className": 'col-id text-center',
-        "targets":   1,
+      {
+        "className": 'col-id text-center',
+        "targets": 0,
         "data": "fields.id",
       },
-      { "className": 'col-setting-sy text-center',
-        "targets":   2,
+      {
+        "className": 'col-id text-center',
+        "targets": 1,
+        "data": "fields.id",
+      },
+      {
+        "className": 'col-setting-sy text-center',
+        "targets": 2,
         "data": "fields.faculty",
-        },
-      { "className": 'col-details text-center',
-        "targets":   3,
+      },
+      {
+        "className": 'col-details text-center',
+        "targets": 3,
         "data": 'fields.id',
         "orderable": false,
-        render:function(data, type, row)
-          {
-            let render = '<button type="button" class="read-setting-faculty-prefer btn btn-sm btn-raised btn-primary m-1" data-id="/read/settings/faculty-prefer/'+data+'">'+
-              '<span class="far fa-eye"></span></button>' +
-              '<button type="button" class="delete-setting-faculty-prefer btn btn-sm btn-raised btn-warning m-1" data-id="/delete/settings/faculty-prefer/'+data+'">'+
-                '<span class="fa fa-trash"></span></button>'
-            return render
-          },
+        render: function (data, type, row) {
+          let render = '<button type="button" class="read-setting-faculty-prefer btn btn-sm btn-raised btn-primary m-1" data-id="/read/settings/faculty-prefer/' + data + '">' +
+            '<span class="far fa-eye"></span></button>' +
+            '<button type="button" class="delete-setting-faculty-prefer btn btn-sm btn-raised btn-warning m-1" data-id="/delete/settings/faculty-prefer/' + data + '">' +
+            '<span class="fa fa-trash"></span></button>'
+          return render
+        },
       }]
-    });
-  {% endif %}
-  $('.year-row input').on('input',function(e){
-    selectForm = $(this).parents('.year-row').find('select');
-   if (this.value === '0') {
-     $(selectForm).prop('disabled', true);
-   } else {
-     $(selectForm).prop('disabled', false)
-   }
   });
-  $(".create-settings").modalForm({formURL: "{% url 'create-settings' %}"});
-  $('#settings-table').DataTable( {
-    "dataType":'json',
+  {% endif %}
+  $('.year-row input').on('input', function (e) {
+    selectForm = $(this).parents('.year-row').find('select');
+    if (this.value === '0') {
+      $(selectForm).prop('disabled', true);
+    } else {
+      $(selectForm).prop('disabled', false)
+    }
+  });
+  $(".create-settings").modalForm({ formURL: "{% url 'create-settings' %}" });
+  $('#settings-table').DataTable({
+    "dataType": 'json',
     "ajax": {
-     "processing": true,
-     "dataSrc":'',
-     "url": "{% url 'settings-table' %}",
+      "processing": true,
+      "dataSrc": '',
+      "url": "{% url 'settings-table' %}",
     },
-    "initComplete": function(settings, json) {
+    "drawCallback": function (settings, json) {
       $(".read-setting").each(function () {
-          $(this).modalForm({formURL: $(this).data('id')});
-        });
+        $(this).modalForm({ formURL: $(this).data('id') });
+      });
       $(".delete-setting").each(function () {
-        $(this).modalForm({formURL: $(this).data('id')});
+        $(this).modalForm({ formURL: $(this).data('id') });
       });
       $(".update-setting").each(function () {
-        $(this).modalForm({formURL: $(this).data('id')});
+        $(this).modalForm({ formURL: $(this).data('id') });
       });
     },
     createdRow: function (row, data, dataIndex, cells) {
-      if(data.fields.status){
-        $(row).css({"background-image": "linear-gradient(to right, #ffecd2 0%, #fcb69f 100%)"})
+      if (data.fields.status) {
+        $(row).css({ "background-image": "linear-gradient(to right, #ffecd2 0%, #fcb69f 100%)" })
       }
     },
     "columnDefs": [
-      { "className": 'col-id text-center',
-        "targets":   0,
+      {
+        "className": 'col-id text-center',
+        "targets": 0,
         "data": "fields.id",
-        },
-      { "className": 'col-setting-sy text-center',
-        "targets":   1,
+      },
+      {
+        "className": 'col-setting-sy text-center',
+        "targets": 1,
         "data": "fields.sy",
-        render:function(data, type, row)
-          {
-            return '<a href="/settings/'+data[0]+'">'+data[1]+'</a>'
-          },
+        render: function (data, type, row) {
+          return '<a href="/settings/' + data[0] + '">' + data[1] + '</a>'
         },
-      { "className": 'col-semester text-center',
-        "targets":   2,
+      },
+      {
+        "className": 'col-semester text-center',
+        "targets": 2,
         "data": 'fields.semester',
       },
-      { "className": 'col-details text-center',
-        "targets":   3,
+      {
+        "className": 'col-details text-center',
+        "targets": 3,
         "data": 'fields.id',
-        render:function(data, type, row)
-          {
-            let render = '<button type="button" class="read-setting btn btn-sm btn-raised btn-primary m-1" data-id="/read/settings/'+data+'">'+
-              '<span class="far fa-eye"></span></button>' +
-              '<button type="button" class="delete-setting btn btn-sm btn-raised btn-warning m-1" data-id="/delete/settings/'+data+'">'+
-                '<span class="fa fa-trash"></span></button>'+
-              '<button type="button" class="update-setting btn btn-sm btn-raised btn-warning m-1" data-id="/update/settings/'+data+'">'+
-                '<span class="fa fa-edit"></span></button>';
+        render: function (data, type, row) {
+          let render = '<button type="button" class="read-setting btn btn-sm btn-raised btn-primary m-1" data-id="/read/settings/' + data + '">' +
+            '<span class="far fa-eye"></span></button>' +
+            '<button type="button" class="delete-setting btn btn-sm btn-raised btn-warning m-1" data-id="/delete/settings/' + data + '">' +
+            '<span class="fa fa-trash"></span></button>' +
+            '<button type="button" class="update-setting btn btn-sm btn-raised btn-warning m-1" data-id="/update/settings/' + data + '">' +
+            '<span class="fa fa-edit"></span></button>';
 
-            return render
-          },
+          return render
+        },
       }]
-    });
+  });
   {% if csetting != None %}
   $("#opening-save").modalForm({
     formURL: "{% url 'chairperson-settings-save' viewtype csetting.school_year.pk csetting.semester%}"
@@ -283,5 +306,5 @@
   // SAVE
 
 
-  </script>
+</script>
 {% endblock %}

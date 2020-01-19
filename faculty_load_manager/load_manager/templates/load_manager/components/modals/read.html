@@ -1,14 +1,20 @@
 {% load widget_tweaks %}
-
+<style media="screen">
+  .section p {
+    font-size: 0.75rem !important;
+  }
+</style>
 <div class="modal-header">
   <h3 class="modal-title">{% if viewtype == 'settings' %}{{ setting }}
-                          {% elif viewtype == 'section-offering' %}{{ section_offering }}
-                          {% elif viewtype == 'faculty-prefer' %} {{ faculty }}
-                          {% elif viewtype == 'subject' %}{{ subject }}
-                          {% elif viewtype == 'faculty-load' %}Faculty Load
-                          {% elif viewtype == 'room' %}{{ subject }}
-                          {% elif viewtype == 'user' %}{{ first_name }} {{ last_name }}
-                         {% endif %}</h3>
+    {% elif viewtype == 'section-offering' %}{{ section_offering }}
+    {% elif viewtype == 'faculty-prefer' %} {{ faculty }}
+    {% elif viewtype == 'subject' %}{{ subject }}
+    {% elif viewtype == 'faculty-load' %}Faculty Load
+    {% elif viewtype == 'room' %}{{ subject }}
+    {% elif viewtype == 'user' %}{{ first_name }} {{ last_name }}
+    {% elif viewtype == 'section' %}YEAR:{{ section.year_level }} SECTION:{{ section.section }}
+    {% elif viewtype == 'faculty-load-alloted' %} {{faculty}} Load Alloted
+    {% endif %}</h3>
   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
     <span aria-hidden="true">&times;</span>
   </button>
@@ -18,62 +24,62 @@
 
   <div class="container-fluid">
     {% if viewtype == 'settings' %}
-      <h3></h3>
-      <table class="table table-striped">
-        <thead>
-          <th scope="col">Year Level</th>
-          <th scope="col">Sections Allocated</th>
-          <th scope="col">Curriculum</th>
-        </thead>
-        <tbody>
-          {% if first_section != 0 %}
-          <tr>
-            <th scope="row">First Year</th>
-            <td>{{ first_section }}</td>
-            <td>{{ first_curriculum }}</td>
-          </tr>
-          {% endif %}
-          {% if second_section != 0 %}
-          <tr>
-            <th scope="row">Second Year</th>
-            <td>{{ second_section }}</td>
-            <td>{{ second_curriculum }}</td>
-          </tr>
-          {% endif %}
-          {% if third_section != 0 %}
-          <tr>
-            <th scope="row">Third Year</th>
-            <td>{{ third_section }}</td>
-            <td>{{ third_curriculum }}</td>
-          </tr>
-          {% endif %}
-          {% if fourth_section != 0 %}
-          <tr>
-            <th scope="row">Fourth Year</th>
-            <td>{{ fourth_section }}</td>
-            <td>{{ fourth_curriculum }}</td>
-          </tr>
-          {% endif %}
-          {% if fifth_section != 0 %}
-          <tr>
-            <th scope="row">Fifth Year</th>
-            <td>{{ fifth_section }}</td>
-            <td>{{ fifth_curriculum }}</td>
-          </tr>
-          {% endif %}
-        </tbody>
-      </table>
+    <h3></h3>
+    <table class="table table-striped">
+      <thead>
+        <th scope="col">Year Level</th>
+        <th scope="col">Sections Allocated</th>
+        <th scope="col">Curriculum</th>
+      </thead>
+      <tbody>
+        {% if first_section != 0 %}
+        <tr>
+          <th scope="row">First Year</th>
+          <td>{{ first_section }}</td>
+          <td>{{ first_curriculum }}</td>
+        </tr>
+        {% endif %}
+        {% if second_section != 0 %}
+        <tr>
+          <th scope="row">Second Year</th>
+          <td>{{ second_section }}</td>
+          <td>{{ second_curriculum }}</td>
+        </tr>
+        {% endif %}
+        {% if third_section != 0 %}
+        <tr>
+          <th scope="row">Third Year</th>
+          <td>{{ third_section }}</td>
+          <td>{{ third_curriculum }}</td>
+        </tr>
+        {% endif %}
+        {% if fourth_section != 0 %}
+        <tr>
+          <th scope="row">Fourth Year</th>
+          <td>{{ fourth_section }}</td>
+          <td>{{ fourth_curriculum }}</td>
+        </tr>
+        {% endif %}
+        {% if fifth_section != 0 %}
+        <tr>
+          <th scope="row">Fifth Year</th>
+          <td>{{ fifth_section }}</td>
+          <td>{{ fifth_curriculum }}</td>
+        </tr>
+        {% endif %}
+      </tbody>
+    </table>
     {% elif viewtype == 'section-offering' %}
-      <table class="table">
-        <thead>
-          <tr>
-                <th>Professor</th>
-                <td>{{ professor}}</td>
-          </tr>
-        </thead>
-      </table>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Professor</th>
+          <td>{{ professor}}</td>
+        </tr>
+      </thead>
+    </table>
     {% elif viewtype == 'faculty-prefer' %}
-      <div class="container">
+    <div class="container">
       <div class="row">
         <h4>Preferred Subjects</h4>
         <ol>
@@ -86,113 +92,177 @@
         <h4>Preferred Time</h4>
         <div class="table-responsive">
           <table class="table table-bordered" id="schedule-table" style="text-align: center">
-              <thead>
-                <th>TIME</th>
-                {% for v, time in times %}
-                <td>{{ time }}</td>
-                {%endfor%}
-              </thead>
-              {% for val,day in days %}
-              <tr>
-                  <th>{{ day }}</th>
-                  {% for v, time in times %}
-                    <td{% for pday,ptime in ptime %}
-                        {% if pday == val and ptime == v %}
-                          style="background-color:red"{% endif %}
-                    {% endfor %}</td>
-                  {% endfor %}
-              </tr>
-              {% endfor %}
-          </table>
-        </div>
-      </div>
-    </div>
-    {% elif viewtype == 'sem-off-subject' %}
-      <h3></h3>
-      <table class="table table-striped">
-        <thead>
-          <th scope="col">Year Level</th>
-          <th scope="col">Sections Allocated</th>
-          <th scope="col">Curriculum</th>
-        </thead>
-        <tbody>
-          {% if first_section != 0 %}
-          <tr>
-            <th scope="row">First Year</th>
-            <td>{{ first_section }}</td>
-            <td>{{ first_curriculum }}</td>
-          </tr>
-          {% endif %}
-          {% if second_section != 0 %}
-          <tr>
-            <th scope="row">Second Year</th>
-            <td>{{ second_section }}</td>
-            <td>{{ second_curriculum }}</td>
-          </tr>
-          {% endif %}
-          {% if third_section != 0 %}
-          <tr>
-            <th scope="row">Third Year</th>
-            <td>{{ third_section }}</td>
-            <td>{{ third_curriculum }}</td>
-          </tr>
-          {% endif %}
-          {% if fourth_section != 0 %}
-          <tr>
-            <th scope="row">Fourth Year</th>
-            <td>{{ fourth_section }}</td>
-            <td>{{ fourth_curriculum }}</td>
-          </tr>
-          {% endif %}
-          {% if fifth_section != 0 %}
-          <tr>
-            <th scope="row">Fifth Year</th>
-            <td>{{ fifth_section }}</td>
-            <td>{{ fifth_curriculum }}</td>
-          </tr>
-          {% endif %}
-        </tbody>
-      </table>
-    {% elif viewtype == 'room' %}
-    <div class="container">
-      <div class="row">
-        <div class="table-responsive">
-          <div class="table-responsive">
-            <table class="table table-bordered" id="schedule-table" style="text-align: center">
-                <thead>
-                  <th>TIME</th>
-                  {% for v, time in times %}
-                  <td>{{ time }}</td>
-                  {%endfor%}
-                </thead>
-                {% for val,day in days %}
-                <tr>
-                    <th>{{ day }}</th>
-                    {% for v, time in times %}
-                      <td>{% for sched in room_sched %}
-                          {% for i in sched.load_schedule.preferred_time.all %}
-                            {% if i.select_day == val and i.select_time == v %}
-                            <p> <b>[{{ sched.subject.block_section }}]</b></p>
-                            <p>{{ sched.subject.subject.subject_name }}</p>
-                            <p>{{ sched.subject.professor.first_name }} {{ sched.subject.professor.last_name }}</p>
-                            {% endif %}
+            <thead>
+              <th>TIME</th>
+              {% for v, time in times %}
+              <td>{{ time }}</td>
+              {%endfor%}
+            </thead>
+            {% for val,day in days %}
+            <tr>
+              <th>{{ day }}</th>
+              {% for v, time in times %}
+              <td{% for pday,ptime in ptime %} {% if pday == val and ptime == v %} style="background-color:red"
+                {% endif %} {% endfor %}</td> {% endfor %} </tr> {% endfor %} </table> </div> </div> </div>
+                {% elif viewtype == 'sem-off-subject' %} <h3>
+                </h3>
+                <table class="table table-striped">
+                  <thead>
+                    <th scope="col">Year Level</th>
+                    <th scope="col">Sections Allocated</th>
+                    <th scope="col">Curriculum</th>
+                  </thead>
+                  <tbody>
+                    {% if first_section != 0 %}
+                    <tr>
+                      <th scope="row">First Year</th>
+                      <td>{{ first_section }}</td>
+                      <td>{{ first_curriculum }}</td>
+                    </tr>
+                    {% endif %}
+                    {% if second_section != 0 %}
+                    <tr>
+                      <th scope="row">Second Year</th>
+                      <td>{{ second_section }}</td>
+                      <td>{{ second_curriculum }}</td>
+                    </tr>
+                    {% endif %}
+                    {% if third_section != 0 %}
+                    <tr>
+                      <th scope="row">Third Year</th>
+                      <td>{{ third_section }}</td>
+                      <td>{{ third_curriculum }}</td>
+                    </tr>
+                    {% endif %}
+                    {% if fourth_section != 0 %}
+                    <tr>
+                      <th scope="row">Fourth Year</th>
+                      <td>{{ fourth_section }}</td>
+                      <td>{{ fourth_curriculum }}</td>
+                    </tr>
+                    {% endif %}
+                    {% if fifth_section != 0 %}
+                    <tr>
+                      <th scope="row">Fifth Year</th>
+                      <td>{{ fifth_section }}</td>
+                      <td>{{ fifth_curriculum }}</td>
+                    </tr>
+                    {% endif %}
+                  </tbody>
+                </table>
+                {% elif viewtype == 'room' %}
+                <div class="container">
+                  <div class="row">
+                    <div class="table-responsive">
+                      <div class="table-responsive">
+                        <table class="table table-bordered" id="schedule-table" style="text-align: center">
+                          <thead>
+                            <th>TIME</th>
+                            {% for v, time in times %}
+                            <td>{{ time }}</td>
+                            {%endfor%}
+                          </thead>
+                          {% for val,day in days %}
+                          <tr>
+                            <th>{{ day }}</th>
+                            {% for v, time in times %}
+                            <td>{% for sched in room_sched %}
+                              {% for i in sched.load_schedule.preferred_time.all %}
+                              {% if i.select_day == val and i.select_time == v %}
+                              <p> <b>[{{ sched.subject.block_section }}]</b></p>
+                              <p>{{ sched.subject.subject.subject_name }}</p>
+                              <p>{{ sched.subject.professor.first_name }} {{ sched.subject.professor.last_name }}</p>
+                              {% endif %}
+                              {% endfor %}
+                              {% endfor %}
+                            </td>
+                            {% endfor %}
+                          </tr>
                           {% endfor %}
-                      {% endfor %}</td>
-                    {% endfor %}
-                </tr>
-                {% endfor %}
-            </table>
-          </div>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% elif viewtype == 'user'%}
+                <img src="/media/{{ img }}" alt="">
+                {% elif viewtype == 'section' %}
+                <div class="container section">
+                  <div class="row">
+                    <div class="table-responsive">
+                      <div class="table-responsive">
+                        <table class="table table-bordered" id="schedule-table" style="text-align: center">
+                          <thead>
+                            <th>TIME</th>
+                            {% for v, time in times %}
+                            <td>{{ time }}</td>
+                            {%endfor%}
+                          </thead>
+                          {% for val,day in days %}
+                          <tr>
+                            <th>{{ day }}</th>
+                            {% for v, time in times %}
+                            <td>{% for sched in room_sched %}
+                              {% for i in sched.load_schedule.preferred_time.all %}
+                              {% if i.select_day == val and i.select_time == v %}
+                              <p>{{ sched.subject.subject.subject_name }}</p>
+                              <p>{{ sched.subject.professor.first_name }} {{ sched.subject.professor.last_name }}</p>
+                              {% endif %}
+                              {% endfor %}
+                              {% endfor %}
+                            </td>
+                            {% endfor %}
+                          </tr>
+                          {% endfor %}
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% elif viewtype == 'faculty-load-alloted' %}
+                <div class="container">
+                  <div class="row">
+                    <div class="table-responsive">
+                      <div class="table-responsive">
+                        <h4>Subjects</h4>
+                        <ol>
+                          {% for subj in alloted_subjs %}
+                          <li> {{subject.subject}} -{{subject.load_schedule}} </li>
+                          {% endfor %}
+                        </ol>
+                        <table class="table table-bordered" id="schedule-table" style="text-align: center">
+                          <thead>
+                            <th>TIME</th>
+                            {% for v, time in times %}
+                            <td>{{ time }}</td>
+                            {%endfor%}
+                          </thead>
+                          {% for val,day in days %}
+                          <tr>
+                            <th>{{ day }}</th>
+                            {% for v, time in times %}
+                            <td>{% for sched in alloted_subjs %}
+                              {% for i in sched.load_schedule.preferred_time.all %}
+                              {% if i.select_day == val and i.select_time == v %}
+                              <p> <b>[{{ sched.subject.block_section }}]</b></p>
+                              <p>{{ sched.subject.subject.subject_name }}</p>
+                              {% endif %}
+                              {% endfor %}
+                              {% endfor %}
+                            </td>
+                            {% endfor %}
+                          </tr>
+                          {% endfor %}
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% endif %}
         </div>
+
       </div>
-    </div>
-    {% elif viewtype == 'user'%}
-    <img src="/media/{{ img }}" alt="">
-    {% endif %}
-  </div>
 
-</div>
-
-<div class="modal-footer">
-  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-</div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
