@@ -62,7 +62,7 @@ def ss():
 def startup():
     from .models import Year,SchoolYear,PreferredTime,DAY_OF_THE_WEEK
     from django.utils import timezone
-    ss()
+    # ss()
     # YEAR
     for i in range(1904,int(timezone.now().strftime("%Y")) +3):
         Year.objects.get_or_create(year=i)
