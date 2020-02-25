@@ -21,6 +21,17 @@ import re
 from bs4 import BeautifulSoup
 from django.utils import timezone
 
+try:
+    csettings = Setting.objects.get(current=True)
+    status = csettings.get_status_display
+    announcements = Announcement.objects.order_by('-created')[:5]
+except Exception as e:
+    csettings = None
+    status = ''
+    accouncements = None
+context = {
+    'status': status,
+}
 def home_view(request):
     next = request.GET.get('next')
     status = ''
@@ -34,7 +45,7 @@ def home_view(request):
         status = ''
         accouncements = None
     if request.user.is_authenticated:
-        context = {
+        context.update({
             'user': request.user,
             'avatar': UserProfile.objects.get(user=request.user).avatar,
             'user_type': FacultyProfile.objects.get(faculty=request.user).get_faculty_type_display,
@@ -42,7 +53,7 @@ def home_view(request):
             'viewtype': 'home',
             'title': 'Home',
             'announcements': announcements,
-        }
+        })
         return render(request, 'load_manager/components/home.html', context)
     else:
         form = UserLoginForm(request.POST or None)
@@ -57,10 +68,10 @@ def home_view(request):
                 return redirect(next)
             return HttpResponseRedirect(reverse('home'))
 
-        context = {
+        context.update({
             'form': form,
             'title': 'Login',
-        }
+        })
         return render(request, 'users/components/login.html', context)
 
 
@@ -150,7 +161,7 @@ def load_manager_list(request):
     except:
         settings = None
 
-    context = {
+    context.update({
         'avatar': UserProfile.objects.get(user=request.user).avatar,
         'user_type': FacultyProfile.objects.get(faculty=request.user).get_faculty_type_display,
         'preferred_time': psched,
@@ -162,7 +173,7 @@ def load_manager_list(request):
         'viewtype': 'load-manager',
         'submission': cs,
         'psubj': psched,
-    }
+    })
 
     if psched != None:
         context['ptimes']=psched.preferred_time.all().values_list('select_day','select_time')
@@ -201,7 +212,7 @@ def load_manager_create(request):
     import os
     os.system('cls')
     print(faculty_type)
-    context = {
+    context.update({
         'title': 'LOAD MANAGER | FORM',
         'viewtype': 'load-manager',
         'user': request.user,
@@ -212,7 +223,7 @@ def load_manager_create(request):
         'time_schedules': time_schedules,
         'days': DAY_OF_THE_WEEK,
         'times': PreferredTime.TIME_SELECT,
-    }
+    })
     if request.method=="POST":
         os.system('cls')
         selected = request.POST.getlist('timedays')
@@ -250,12 +261,12 @@ def load_manager_create(request):
 @user_passes_test(lambda u: u.is_superuser or u.is_staff )
 def curriculum_settings(request):
     curriculums = Curriculum.objects.all()
-    context = {
+    context.update({
         'avatar': UserProfile.objects.get(user=request.user).avatar,
         'user_type': FacultyProfile.objects.get(faculty=request.user).get_faculty_type_display,
         'viewtype': 'curriculum',
         'curriculums': curriculums,
-    }
+    })
 
     return render(request, 'load_manager/components/chairperson/curriculum.html', context)
 
@@ -267,12 +278,12 @@ def curriculum_subject_edit(request, pk):
     subjects = Subject.objects.filter(curriculum=curriculum).order_by('-offered', 'subject_code')
 
     if request.method == 'GET':
-        context = {
+        context.update({
             'avatar': UserProfile.objects.get(user=request.user).avatar,
             'user_type': FacultyProfile.objects.get(faculty=request.user).get_faculty_type_display,
             'curriculum': curriculum,
             'subjects': subjects,
-        }
+        })
         return render(request, 'load_manager/components/chairperson/curriculum-edit.html', context)
 
 @login_required
@@ -338,9 +349,9 @@ def curriculum_settings_table(request):
     else:
         x = FacultyProfile.F_TYPE
         print(x)
-        context = {
+        context.update({
             'faculty_type': x,
-        }
+        })
         return render(request, 'load_manager/components/chairperson/users-management/add-users.html', context)
 
 #  ============= SITE SETTINGS
@@ -352,7 +363,7 @@ def site_settings(request):
         current_settings = Setting.objects.get(current=True)
     except:
         current_settings = None
-    context = {
+    context.update({
         'avatar': UserProfile.objects.get(user=request.user).avatar,
         'user_type': FacultyProfile.objects.get(faculty=request.user).get_faculty_type_display,
         'title': 'Settings',
@@ -362,7 +373,7 @@ def site_settings(request):
         'school_year': SchoolYear.objects.all(),
         'semesters': SEMESTERS(),
         'curriculum': curriculum,
-    }
+    })
     # settings = Setting.objects.get_or_create()
 
     return render(request, 'load_manager/components/chairperson/settings/index.html', context)
@@ -372,12 +383,12 @@ def site_settings(request):
 def site_settings_view(request,pk):
     curriculum = Curriculum.objects.all()
 
-    context = {
+    context.update({
         'viewtype': 'settings',
         'school_year': SchoolYear.objects.all(),
         'semesters': SEMESTERS(),
         'curriculum': curriculum,
-    }
+    })
     # settings = Setting.objects.get_or_create()
 
     # return render(request, , context)
@@ -401,7 +412,7 @@ def site_settings_table(request):
 @login_required
 @user_passes_test(lambda u: u.is_superuser or u.is_staff )
 def site_settings_save(request,viewtype,sy,sem):
-    context = {
+    context.update({
         'viewtype': 'settings',
         'title': 'Semester Settings',
         'message': f'Do you want to save setting for SY[<b>{SchoolYear.objects.get(pk=sy)}</b>] <b>{Setting.objects.get(current=True).get_semester_display()}</b>',
@@ -457,19 +468,19 @@ def site_settings_save(request,viewtype,sy,sem):
 
                  }
                  """
-    }
+    })
     return render(request, 'load_manager/components/modals/save.html', context)
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser or u.is_staff )
 def site_settings_open(request,sy,sem):
     csettings = Setting.objects.get(current=True)
-    context = {
+    context.update({
         'title': 'Open Encoding',
         'school_year': csettings.school_year,
         'semester': csettings.get_semester_display,
         'message': '',
-    }
+    })
     return render(request, 'load_manager/components/chairperson/settings/modals/encoding-open.html', context)
 
 @login_required
@@ -496,13 +507,13 @@ def section_offering(request):
     except Exception as e:
         current_settings = None
 
-    context = {
+    context.update({
         'avatar': UserProfile.objects.get(user=request.user).avatar,
         'user_type': FacultyProfile.objects.get(faculty=request.user).get_faculty_type_display,
         'title': 'Section Offering',
         'viewtype': 'section-offering',
         'settings': current_settings,
-    }
+    })
     # settings = Setting.objects.get_or_create()
 
     return render(request, 'load_manager/components/chairperson/section-offering/index.html', context)
@@ -545,13 +556,13 @@ def faculty_load(request):
     except Exception as e:
         current_settings = None
 
-    context = {
+    context.update({
         'avatar': UserProfile.objects.get(user=request.user).avatar,
         'user_type': FacultyProfile.objects.get(faculty=request.user).get_faculty_type_display,
         'title': 'Section Offering',
         'viewtype': 'faculty-load',
         'settings': current_settings,
-    }
+    })
     # settings = Setting.objects.get_or_create()
 
     return render(request, 'load_manager/components/chairperson/faculty-load.html', context)
@@ -608,13 +619,13 @@ def rooms(request):
     except Exception as e:
         current_settings = None
 
-    context = {
+    context.update({
         'avatar': UserProfile.objects.get(user=request.user).avatar,
         'user_type': FacultyProfile.objects.get(faculty=request.user).get_faculty_type_display,
         'title': 'Rooms',
         'viewtype': 'rooms',
         'settings': current_settings,
-    }
+    })
     # settings = Setting.objects.get_or_create()
 
     return render(request, 'load_manager/components/chairperson/room/index.html', context)
@@ -662,14 +673,14 @@ def sections(request):
     except Exception as e:
         current_settings = None
         curr_sy = None
-    context = {
+    context.update({
         'avatar': UserProfile.objects.get(user=request.user).avatar,
         'user_type': FacultyProfile.objects.get(faculty=request.user).get_faculty_type_display,
         'title': 'Sections',
         'curr_sy': curr_sy,
         'viewtype': 'sections',
         'settings': current_settings,
-    }
+    })
 
     return render(request, 'load_manager/components/chairperson/sections/index.html', context)
 
@@ -722,7 +733,7 @@ from django.core.files.storage import FileSystemStorage
 def curriculum_upload(request):
 
     if request.method == 'GET':
-        context = {}
+        context.update({})
         return render(request, 'load_manager/components/chairperson/curriculum-upload.html', context)
 
     elif request.method == 'POST' and request.FILES['myfile']:
@@ -913,9 +924,9 @@ def generate_semester_offering(request):
 
     semOff.save()
 
-    context = {
+    context.update({
         'subjects': semOff.subject.all(),
-    }
+    })
 
     return redirect('generate_section_offering')
 
