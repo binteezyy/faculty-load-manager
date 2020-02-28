@@ -1690,7 +1690,7 @@ def assign_prof(request):
         # here
         announcement_message = f'Faculty load has now been allocated for {sy} - {semester}'
         new_announcement = Announcement(
-            title="Faculty Load", message=announcement_message)
+            title="Faculty Load", message=announcement_message, author=request.user)
         new_announcement.save()
     return redirect('faculty-load')
 
