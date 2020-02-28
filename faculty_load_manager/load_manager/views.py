@@ -18,6 +18,7 @@ from django.contrib.auth import login
 from .forms import UserLoginForm, UserRegisterForm
 
 import os
+import platform
 import json
 import re
 from bs4 import BeautifulSoup
@@ -791,9 +792,13 @@ def curriculum_upload(request):
         fs = FileSystemStorage()
         filename = fs.save(myfile.name, myfile)
 
-        uploaded_file_url = (str(settings.BASE_DIR) + str(fs.url(filename))
-                             ).replace('/', '\\')  # if deployed on windows
-        # uploaded_file_url = (str(settings.BASE_DIR) + str(fs.url(filename))) #.replace('/', '\\') #if deployed on linux
+        if platform.system() == 'Windows':
+            uploaded_file_url = (str(settings.BASE_DIR) + str(fs.url(filename))
+                                 ).replace('/', '\\')  # if deployed on windows
+        elif platform.system() == 'Linux':
+            # .replace('/', '\\') #if deployed on linux
+            uploaded_file_url = (str(settings.BASE_DIR) +
+                                 str(fs.url(filename)))
         # return HttpResponse(uploaded_file_url)
         # PARSE
 
