@@ -10,40 +10,41 @@
 {% endblock %}
 {% block content %}
 {% include "_modal.html" %}
-    <div class="card animated fadeInDown settings-card">
-    <div class="card-header">
-        <h5>Faculty Load</h5>
-    </div>
-    <div class="card-content">
-        <div class="container-fluid">
-            <div class="row">
-            </div>
-            <div class="row p-3">
-                <div class="col">
-                    <div class="table-responsive">
-                        <table id="faculty-load-table" class="table table-bordered table-hover" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info">
-                            <thead>
-                                <tr role="row" class="text-center">
-                                    <th style="width:10%">Subject</th>
-                                    <th style="width:10%">Section</th>
-                                    <th style="width:10%">Schedule</th>
-                                    <th style="width:10%">Prof</th>
-                                    <th style="width:10%">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+<div class="card animated fadeInDown settings-card">
+  <div class="card-header">
+    <h5>Faculty Load</h5>
+  </div>
+  <div class="card-content">
+    <div class="container-fluid">
+      <div class="row">
+      </div>
+      <div class="row p-3">
+        <div class="col">
+          <div class="table-responsive">
+            <table id="faculty-load-table" class="table table-bordered table-hover" width="100%" cellspacing="0"
+              role="grid" aria-describedby="dataTable_info">
+              <thead>
+                <tr role="row" class="text-center">
+                  <th style="width:10%">Subject</th>
+                  <th style="width:10%">Section</th>
+                  <th style="width:10%">Schedule</th>
+                  <th style="width:10%">Prof</th>
+                  <th style="width:10%">Actions</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
         </div>
+      </div>
     </div>
-    <div class="card-footer">
-        <a href="{% url 'sched-faculty-load' %}" class=>
-          <button id="assign-btn" class="btn btn-primary btn-raised btn-block" type="button" name="button">
-             Assign Faculty Load</button>
-        </a>
-    </div>
+  </div>
+  <div class="card-footer">
+    <a href="{% url 'assign-prof-sched-fl' %}" class=>
+      <button id="assign-btn" class="btn btn-primary btn-raised btn-block" type="button" name="button">
+        Assign Faculty Load</button>
+    </a>
+  </div>
 </div>
 {% endblock content %}
 
@@ -53,85 +54,85 @@
 <script type="text/javascript" src="{% static "vendor/DataTables/datatables.min.js" %}"></script>
 <script type="text/javascript">
 
-    $(document).ready(function () {
-        // $("#curriculum-upload").modalForm({
-        //     formURL: "{% url 'settings-curriculum-upload' %}"
-        // });
-        // $('#curriculum-select').select2({
-        //     // maximumSelectionLength: 3,
-        // });
-        // $('#curriculum-select').on('select2:select', function (e) {
-        //     alert('wow');
-        // });
+  $(document).ready(function () {
+    // $("#curriculum-upload").modalForm({
+    //     formURL: "{% url 'settings-curriculum-upload' %}"
+    // });
+    // $('#curriculum-select').select2({
+    //     // maximumSelectionLength: 3,
+    // });
+    // $('#curriculum-select').on('select2:select', function (e) {
+    //     alert('wow');
+    // });
 
-        var tables = '/' + $('#curriculum-select').val() + '/subjects/';
-        $('#faculty-load-table').DataTable({
-            "dataType": 'json',
-            "ajax": {
-                "processing": true,
-                "dataSrc": '',
-                "url": "{% url 'chairperson-faculty-load-table'  %}",
-            },
-            "drawCallback": function(settings, json) {
-              $(".read-faculty-load").each(function () {
-                  $(this).modalForm({formURL: $(this).data('id')});
-                });
-              $(".delete-faculty-load").each(function () {
-                $(this).modalForm({formURL: $(this).data('id')});
-              });
-              $(".update-faculty-load").each(function () {
-                $(this).modalForm({formURL: $(this).data('id')});
-              });
-            },
-            "columnDefs": [
-                {
-                    "className": 'col-fl-subject text-center',
-                    "targets": 0,
-                    "data": "fields.fl-subject",
-                },
-                {
-                    "className": 'col-fl-section text-center',
-                    "targets": 1,
-                    "data": "fields.fl-section",
-                },
-                {
-                    "className": 'col-fl-sched text-center',
-                    "targets": 2,
-                    "data": "fields.fl-sched",
-                },
-                {
-                    "className": 'col-fl-prof text-center',
-                    "targets": 3,
-                    "data": "fields.fl-prof",
-                },
-                { "className": 'col-details text-center',
-                  "targets":   -1,
-                  "data": 'fields.fl-id',
-                  render:function(data, type, row)
-                    {
-                      let render = '<button type="button" class="read-faculty-load btn btn-sm btn-raised btn-primary m-1" data-id="/read/faculty-load/'+data+'">'+
-                        '<span class="far fa-eye"></span></button>' +
-                        '<button type="button" class="delete-faculty-load btn btn-sm btn-raised btn-warning m-1" data-id="/delete/faculty-load/'+data+'">'+
-                          '<span class="fa fa-trash"></span></button>'+
-                        '<button type="button" class="update-faculty-load btn btn-sm btn-raised btn-warning m-1" data-id="/update/faculty-load/'+data+'">'+
-                          '<span class="fa fa-edit"></span></button>';
-                      return render
-                    },
-                },
-            ]
-        })
-        $('#assign-btn').click(function() {
-          $('div.card-content .container-fluid').empty();
-          alert("PLEASE WAIT");
-          $('#assign-btn').hide();
-          $('div.card-content .container-fluid').html("<div class='row text-center'>"+
-            "<div class='col p-3'>"+
-              "<h5>PLEASE WAIT...</h5>"+
-              "<img src='https://media.giphy.com/media/17mNCcKU1mJlrbXodo/giphy.gif' width='100px' alt=''>"+
-            "</div>"+
-          "</div>");
+    var tables = '/' + $('#curriculum-select').val() + '/subjects/';
+    $('#faculty-load-table').DataTable({
+      "dataType": 'json',
+      "ajax": {
+        "processing": true,
+        "dataSrc": '',
+        "url": "{% url 'chairperson-faculty-load-table'  %}",
+      },
+      "drawCallback": function (settings, json) {
+        $(".read-faculty-load").each(function () {
+          $(this).modalForm({ formURL: $(this).data('id') });
         });
+        $(".delete-faculty-load").each(function () {
+          $(this).modalForm({ formURL: $(this).data('id') });
+        });
+        $(".update-faculty-load").each(function () {
+          $(this).modalForm({ formURL: $(this).data('id') });
+        });
+      },
+      "columnDefs": [
+        {
+          "className": 'col-fl-subject text-center',
+          "targets": 0,
+          "data": "fields.fl-subject",
+        },
+        {
+          "className": 'col-fl-section text-center',
+          "targets": 1,
+          "data": "fields.fl-section",
+        },
+        {
+          "className": 'col-fl-sched text-center',
+          "targets": 2,
+          "data": "fields.fl-sched",
+        },
+        {
+          "className": 'col-fl-prof text-center',
+          "targets": 3,
+          "data": "fields.fl-prof",
+        },
+        {
+          "className": 'col-details text-center',
+          "targets": -1,
+          "data": 'fields.fl-id',
+          render: function (data, type, row) {
+            let render = '<button type="button" class="read-faculty-load btn btn-sm btn-raised btn-primary m-1" data-id="/read/faculty-load/' + data + '">' +
+              '<span class="far fa-eye"></span></button>' +
+              '<button type="button" class="delete-faculty-load btn btn-sm btn-raised btn-warning m-1" data-id="/delete/faculty-load/' + data + '">' +
+              '<span class="fa fa-trash"></span></button>' +
+              '<button type="button" class="update-faculty-load btn btn-sm btn-raised btn-warning m-1" data-id="/update/faculty-load/' + data + '">' +
+              '<span class="fa fa-edit"></span></button>';
+            return render
+          },
+        },
+      ]
+    })
+    $('#assign-btn').click(function () {
+      $('div.card-content .container-fluid').empty();
+      alert("PLEASE WAIT");
+      $('#assign-btn').hide();
+      $('div.card-content .container-fluid').html("<div class='row text-center'>" +
+        "<div class='col p-3'>" +
+        "<h5>PLEASE WAIT...</h5>" +
+        "<img src='https://media.giphy.com/media/17mNCcKU1mJlrbXodo/giphy.gif' width='100px' alt=''>" +
+        "</div>" +
+        "</div>");
     });
+  });
 
 
 </script>

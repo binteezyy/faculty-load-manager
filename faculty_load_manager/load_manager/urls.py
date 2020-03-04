@@ -168,9 +168,13 @@ urlpatterns = [
     path('chairperson/clear-prof', views.clear_prof, name='clear-prof'),
 
     # ALGO
+    path('chairperson/assign-prof-sched-fl',
+         views.assign_prof_sched_fl, name='assign-prof-sched-fl'),
+    #
     path('chairperson/sched-fl', views.sched_faculty_load,
          name='sched-faculty-load'),
     path('chairperson/assign-prof', views.assign_prof, name='assign-prof'),
+    #
     path('chairperson/allocate-so', views.allocate_section_offering,
          name='allocate_section_offering'),
     path('chairperson/allocate-fl', views.allocate_faculty_load,
